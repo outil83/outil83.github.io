@@ -1,0 +1,59 @@
+<html>
+<head>
+  <title>View chores</title>
+  <script type="text/javascript">
+      window.onload = function() {
+      $.getJSON("https://docs.google.com/spreadsheets/d/1_QvIfoGgaYm8YH_450KZqKAnuZAljfggr4jfgY_XhY4/od6/public/values?alt=json", function (data) {
+
+      var sheetData = data.feed.entry;
+      
+      alert(sheetData.stringify());
+
+      var i;
+      for (i = 0; i < sheetData.length; i++) {
+
+        var timestamp = data.feed.entry[i]['gsx$_cn6ca']['$t'];
+        var member = data.feed.entry[i]['gsx$_cokwr']['$t'];
+        var chores1 = data.feed.entry[i]['gsx$_cpzh4']['$t'];
+        var chores2 = data.feed.entry[i]['gsx$_cpzh4']['$t'];
+
+        document.getElementById('demo').innerHTML += ('<tr>'+'<td>'+timestamp+'</td>'+'<td>'+member+'</td>'+'<td>'+chores1+'</td>'+'<td>'+chores2+'</td>'+'</tr>');
+
+      }
+    });
+    }
+
+  </script>
+</head>
+<body>
+  <div class="container text-center my-4">
+
+    <p class="font-weight-bold">The data in the table comes from the google spreadsheet</p>
+
+    <a class="btn btn-primary mb-4" href="https://docs.google.com/spreadsheets/d/1_QvIfoGgaYm8YH_450KZqKAnuZAljfggr4jfgY_XhY4/edit?usp=sharing" role="button" target="_blank">Click to see the source sheet</a>
+
+    <!-- Table  -->
+    <table class="table table bordered table-striped" id="testTable">
+      <!-- Table head -->
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Member</th>
+          <th>Get Ready by 8 am</th>
+          <th>Breakfast by 9 am</th>
+        </tr>
+      </thead>
+      <!-- Table head -->
+
+      <!-- Table body -->
+      <tbody id="demo">
+
+      
+      </tbody>
+      <!-- Table body -->
+    </table>
+    <!-- Table  -->
+
+  </div>
+</body>
+</html>
