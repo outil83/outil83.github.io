@@ -22,10 +22,11 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
             <div class="container">
-                <a class="navbar-brand js-scroll-trigger" href="#page-top">Chores</a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><span class="fa fa-smile mr-2"></span>Home</a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#chores">Submit</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#chores">Chores</a></li>
+                        <li class="nav-item"><a id='navToScore' class="nav-link js-scroll-trigger" href="#score">Points</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
                     </ul>
                 </div>
@@ -54,7 +55,7 @@
                     <div class="col-lg-10 align-self-end">
                         <h1 class="text-uppercase text-white font-weight-bold" id="selectedChildName"></h1>
                         <h2 class="text-uppercase text-white font-weight-bold rp-1">Submit your chores here and earn points</h2>
-                        <button class="btn btn-primary rp-1" onclick="$('#score').toggle();">Show/Hide Points</button>
+                        <button class="btn btn-primary rp-1" onclick="$('#navToScore').click();">See Points</button>
 						<button type="button" class="btn btn-danger" onclick="$('#childNameModal').slideDown();">
 							Not you ?!
 						</button>
@@ -63,7 +64,15 @@
             </div>
         </header>
         <!-- chores section-->
-        <section id="score" class="bg-success">
+        <section id="chores">
+            <div class="container-fluid p-0">
+                <div class="row no-gutters" id="choresContainer">
+                    <!-- filled by loadChores() function based on window.staticSetup -->
+                </div>
+            </div>
+        </section>
+        <!-- points section-->
+        <section id="score" class="bg-info">
             <div class="container">
                 <div class="row align-items-center justify-content-center text-center">
                     <div class="col-lg-10 align-self-end">
@@ -78,87 +87,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="chores-point">
+                                    <!-- filled by loadPoints() function from google sheet -->
                                 </tbody>
                             </table>
                         </div> 
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- chores section-->
-        <section id="chores">
-            <div class="container-fluid p-0">
-                <div class="row no-gutters" id="choresContainer">
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('morningBrush'); return false;"
-                            ><img class="img-fluid" src="assets/img/morning-brush.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Morning Brush</div>
-                                <div class="project-name">Submit</div>
-                            </div></a>
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('breakfast'); return false;"
-                            ><img class="img-fluid" src="assets/img/breakfast.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Breakfast</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('roomCleaning'); return false;"
-                            ><img class="img-fluid" src="assets/img/room-cleaning.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Room Cleaning</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('lunch'); return false;"
-                            ><img class="img-fluid" src="assets/img/lunch-thali.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Lunch</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('study'); return false;"
-                            ><img class="img-fluid" src="assets/img/study.png" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Study</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('dinner'); return false;"
-                            ><img class="img-fluid" src="assets/img/dinner.jpg" alt="" />
-                            <div class="portfolio-box-caption p-3">
-                                <div class="project-category text-white-50">Dinner</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('nightBrush'); return false;"
-                            ><img class="img-fluid" src="assets/img/night-brush.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Brush</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
-                    </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <a class="portfolio-box" href="#" onclick="submit('sleep'); return false;"
-                            ><img class="img-fluid" src="assets/img/sleep-girl.jpg" alt="" />
-                            <div class="portfolio-box-caption">
-                                <div class="project-category text-white-50">Sleep</div>
-                                <div class="project-name">Submit</div>
-                            </div></a
-                        >
                     </div>
                 </div>
             </div>
@@ -219,7 +151,7 @@
 		  </div>
 		
 		<div id="choreTemplate" class="hide">
-                    <div class="col-lg-4 col-sm-6">
+                    <div class="col-lg-4 col-sm-6 border border-dark">
                         <a class="portfolio-box" href="#" onclick="submit('{choreId}'); return false;"
                             ><img class="img-fluid" src="assets/img/{image}" alt="" />
                             <div class="portfolio-box-caption">
@@ -227,6 +159,10 @@
                                 <div class="project-name">Submit</div>
                             </div></a
                         >
+                    <a id="check-{choreId}" href="#" title="tick-mark" style="color: greenyellow;font-size: 50px; position: absolute; top: 0px; left: 0px; display: none;">
+                        <i class="fa fa-check"></i>
+                    </a>
+
                     </div>
 
 		</div>
@@ -279,18 +215,23 @@
 			function loadChores() {
 				var chores = window.staticSetup.chores;
 				var choresContainer = $('#choresContainer');
+                var cholesIdByName = {};
+                
 				choresContainer.html("");
 				for (var choreId in chores) {
+                    cholesIdByName[chores[choreId].name] = choreId;
+                    
 					var html = $("#choreTemplate").html();
-					html = html.replace('{choreId}', choreId)
+					html = html.replace(/{choreId}/g, choreId)
 					.replace('{name}', chores[choreId].name)
 					.replace('{image}', chores[choreId].image);
 					choresContainer.append(html);
 				}
+                
+                window.staticSetup.cholesIdByName = cholesIdByName;
 			}
 			
 			$(document).ready(function() {
-                $('#score').hide();
                 loadStaticSetup(function() {
                     loadChores();
                     var childName = $.getCookie('childName');
@@ -301,6 +242,7 @@
                         saveChildName(childName);
                     }
                     loadScore();
+                    loadEntries();
                 });
 			});
             
@@ -319,6 +261,67 @@
                     choresPointHtml = choresPointHtml + "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td></tr>";
                 });
                 $("#chores-point").html(choresPointHtml);
+            }
+            
+            function loadEntries() {
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var choresSheet = new $.Sheet({sheetId: '1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU', apiKey: 'AIzaSyAlakYIB9ixy3iHFmgyjalbQ3oWO-VJQjs'});
+                var values = choresSheet.getValues('chores_ext', 'A3:H202');
+                console.log('Response: ' + JSON.stringify(values));
+                window.entries = {
+                    all: [],
+                    byChild: {},
+                    byDate: {},
+                    byDateAndChild: {}
+                };
+                values.values.forEach(function(row, index, array) {
+                    if (index == 0) {
+                        return; // skip header
+                    }
+                    if (!row[1]) {
+                        return ; // skip empty record
+                    }
+                    var entry = {};
+                    entry.id = row[0];
+                    entry.timestamp = row[1];
+                    entry.child = row[2];
+                    entry.chore = row[3];
+                    entry.date = row[4];
+                    entry.time = row[5];
+                    entry.partOfDay = row[6];
+                    entry.point = row[7];
+                    
+                    window.entries.all.push(entry);
+                    
+                    if (!window.entries.byChild[entry.child]) {
+                        window.entries.byChild[entry.child] = [];
+                        console.log("By Child :: Key: " + (entry.child));
+                    }
+                    window.entries.byChild[entry.child].push(entry);
+                    
+                    if (!window.entries.byDate[entry.date]) {
+                        window.entries.byDate[entry.date] = [];
+                        console.log("By date :: Key: " + entry.date);
+                    }
+                    window.entries.byDate[entry.date].push(entry);
+                    
+                    if (!window.entries.byDateAndChild[entry.child + '_' + entry.date]) {
+                        window.entries.byDateAndChild[entry.child + '_' + entry.date] = [];
+                        console.log("By date and by Child :: Key: " + (entry.child + '_' + entry.date));
+                    }
+                    window.entries.byDateAndChild[entry.child + '_' + entry.date].push(entry);
+                });
+                var currentDate = new Date();
+                var currentDateDDMMYYYY = currentDate.getDate() + '/' + (currentDate.getMonth() < 9 ? '0' : '') + (currentDate.getMonth()+1) + '/' + currentDate.getFullYear();
+                if (window.staticSetup.selectedChildName) {
+                    var todaysEntries = window.entries.byDateAndChild[window.staticSetup.child[window.staticSetup.selectedChildName] + '_' + currentDateDDMMYYYY];
+                    if (todaysEntries) {
+                        todaysEntries.forEach(function (entry, index, array) {
+                            var choreId = window.staticSetup.cholesIdByName[entry.chore];
+                            $('#check-' + choreId).show();
+                        });
+                    }
+                }
             }
 		</script>
     </body>
