@@ -262,22 +262,18 @@
             
             function loadStaticSetup(callback) {
                 window.staticSetup = window.localStorage.getItem('staticSetup');
-                if (!window.staticSetup) {
-                    console.log('Static setup not found in local storage and hence getting default setup');
-                    $.ajax({
-                            async: true,
-                            type: 'GET',
-                            url: 'assets/json/static-setup.json',
-                            success: function(response) {
-                                    console.log('response: ' + response);
-                                    window.staticSetup = JSON.parse(response);
-                                    callback.call(null);
-                            },
-                            dataType: 'text'
-                    });
-                } else {
-                    callback.call(null);
-                }
+                console.log('Static setup not found in local storage and hence getting default setup');
+                $.ajax({
+                        async: true,
+                        type: 'GET',
+                        url: 'assets/json/static-setup.json',
+                        success: function(response) {
+                                console.log('response: ' + response);
+                                window.staticSetup = JSON.parse(response);
+                                callback.call(null);
+                        },
+                        dataType: 'text'
+                });
             }
 			
 			function loadChores() {
