@@ -1,0 +1,52 @@
+{
+    "chores": {
+        "morningBrush": { 
+            "name": "Morning Brush",
+            "image": "morning-brush.jpg"
+        },
+        "breakfast": { 
+            "name": "Breakfast",
+            "image": "breakfast.jpg"
+        },
+        "roomCleaning": {
+            "name": "Room cleaning",
+            "image": "room-cleaning.jpg"
+        },
+        "lunch": { 
+            "name": "Lunch",
+            "image": "lunch-thali.jpg"
+        },
+        "study": { 
+            "name": "Study",
+            "image": "study.png"
+        },
+        "dinner": { 
+            "name": "Dinner",
+            "image": "dinner.jpg"
+        },
+        "nightBrush": { 
+            "name": "Night Brush",
+            "image": "night-brush.jpg"
+        },
+        "sleep": { 
+            "name": "Sleep",
+            "image": "sleep-girl.jpg"
+        }
+    },
+
+    "child": {
+        "tanushree": "Tanushree",
+        "neil": "Neil"
+    },
+
+    "googleForm": {
+        "url": "https://docs.google.com/forms/d/e/1FAIpQLSeDhedDcUpLHqnOjiDWwC8uzgFW3OMh1UjGV_BhtvlSxlld3w/viewform?usp=pp_url",
+        "paramChildName": "entry.41965422",
+        "paramChore": "entry.879397477"
+    },
+    "googleSheet": {
+        "url": "https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing",
+        "sheetId": "1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU"
+    }
+
+}

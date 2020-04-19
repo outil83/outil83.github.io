@@ -54,15 +54,37 @@
                     <div class="col-lg-10 align-self-end">
                         <h1 class="text-uppercase text-white font-weight-bold" id="selectedChildName"></h1>
                         <h2 class="text-uppercase text-white font-weight-bold rp-1">Submit your chores here and earn points</h2>
-                        <a class="btn btn-primary rp-1" href="https://docs.google.com/forms/d/e/1FAIpQLSeDhedDcUpLHqnOjiDWwC8uzgFW3OMh1UjGV_BhtvlSxlld3w/viewanalytics" target="_self">View Responses</a>
+                        <button class="btn btn-primary rp-1" onclick="$('#score').toggle();">Show/Hide Points</button>
 						<button type="button" class="btn btn-danger" onclick="$('#childNameModal').slideDown();">
 							Not you ?!
 						</button>
-                        <hr class="divider my-4" />
                     </div>
                 </div>
             </div>
         </header>
+        <!-- chores section-->
+        <section id="score" class="bg-success">
+            <div class="container">
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h2 class="text-uppercase text-white font-weight-bold rp-1">Points Table</h2>
+                        <hr class="divider my-4" />
+                        <div class="table-responsive">
+                            <table class="table table-hover border-1">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="chores-point">
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </section>
         <!-- chores section-->
         <section id="chores">
             <div class="container-fluid p-0">
@@ -217,59 +239,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
 		<!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+		<!-- Google sheet JS-->
+        <script src="js/sheet.js"></script>
 		<!-- Include cookiealert script -->
 		<script src="js/cookiealert.js"></script>
 		<script type="text/javascript">
-			var staticSetup = {
-				chores: {
-					morningBrush: { 
-						name: 'Morning Brush',
-						image: 'morning-brush.jpg'
-					},
-					breakfast: { 
-						name: 'Breakfast',
-						image: 'breakfast.jpg'
-					},
-					roomCleaning: { 
-						name: 'Room cleaning',
-						image: 'room-cleaning.jpg'
-					},
-					lunch: { 
-						name: 'Lunch',
-						image: 'lunch-thali.jpg'
-					},
-					study: { 
-						name: 'Study',
-						image: 'study.png'
-					},
-					dinner: { 
-						name: 'Dinner',
-						image: 'dinner.jpg'
-					},
-					nightBrush: { 
-						name: 'Night Brush',
-						image: 'night-brush.jpg'
-					},
-					sleep: { 
-						name: 'Sleep',
-						image: 'sleep-girl.jpg'
-					}
-				},
-				
-				child: {
-					tanushree: 'Tanushree',
-					neil: 'Neil'
-				},
-				
-				googleForm: {
-					url: 'https://docs.google.com/forms/d/e/1FAIpQLSeDhedDcUpLHqnOjiDWwC8uzgFW3OMh1UjGV_BhtvlSxlld3w/viewform?usp=pp_url',
-					paramChildName: 'entry.41965422',
-					paramChore: 'entry.879397477',
-				},
-				
-				selectedChildName: undefined,
-				
-			};
 			
 			function submit(choreId) {
 				var googleForm = window.staticSetup.googleForm;
@@ -285,6 +259,26 @@
 				console.log('selected child: ' + window.staticSetup.selectedChildName);
 				$('#selectedChildName').text("Hi " + window.staticSetup.child[childName]);
 			}
+            
+            function loadStaticSetup(callback) {
+                window.staticSetup = window.localStorage.getItem('staticSetup');
+                if (!window.staticSetup) {
+                    console.log('Static setup not found in local storage and hence getting default setup');
+                    $.ajax({
+                            async: true,
+                            type: 'GET',
+                            url: 'assets/json/static-setup.json',
+                            success: function(response) {
+                                    console.log('response: ' + response);
+                                    window.staticSetup = JSON.parse(response);
+                                    callback.call(null);
+                            },
+                            dataType: 'text'
+                    });
+                } else {
+                    callback.call(null);
+                }
+            }
 			
 			function loadChores() {
 				var chores = window.staticSetup.chores;
@@ -300,15 +294,36 @@
 			}
 			
 			$(document).ready(function() {
-				loadChores();
-				var childName = $.getCookie('childName');
-				$('#selectedChildName').text("");
-				if (!childName) {
-					$("#childNameModal").slideDown();
-				} else {
-					saveChildName(childName);
-				}
+                $('#score').hide();
+                loadStaticSetup(function() {
+                    loadChores();
+                    var childName = $.getCookie('childName');
+                    $('#selectedChildName').text("");
+                    if (!childName) {
+                        $("#childNameModal").slideDown();
+                    } else {
+                        saveChildName(childName);
+                    }
+                    loadScore();
+                });
 			});
+            
+            function loadScore() {
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var choresSheet = new $.Sheet({sheetId: '1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU', apiKey: 'AIzaSyAlakYIB9ixy3iHFmgyjalbQ3oWO-VJQjs'});
+                console.log('Sheet ID - ' + choresSheet.getSheetId());
+                var values = choresSheet.getValues('summary', 'A1:B3');
+                console.log('Response: ' + JSON.stringify(values));
+                $("#chores-point").html("");
+                var choresPointHtml = "";
+                values.values.forEach(function(row, index, array) {
+                    if (index == 0) {
+                        return; // skip header
+                    }
+                    choresPointHtml = choresPointHtml + "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td></tr>";
+                });
+                $("#chores-point").html(choresPointHtml);
+            }
 		</script>
     </body>
 </html>
