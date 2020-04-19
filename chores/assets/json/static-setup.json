@@ -16,6 +16,10 @@
             "name": "Lunch",
             "image": "lunch-thali.jpg"
         },
+        "helpMom": { 
+            "name": "Help Mom",
+            "image": "help-mom.jpg"
+        },
         "study": { 
             "name": "Study",
             "image": "study.png"
