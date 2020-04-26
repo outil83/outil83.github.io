@@ -51,7 +51,7 @@
     "googleSheet": {
         "url": "https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing",
         "sheetId": "1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU",
-        "entries": "chores_ext!A3:H202",
+        "entries": "chores_ext!A3:H1003",
         "points": "summary!A1:B3"
     }
 
