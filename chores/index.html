@@ -265,8 +265,10 @@
             
             function loadEntries() {
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+		var sheetId = window.staticSetup.googleSheet.sheetId;
+		var choresRange = window.staticSetup.googleSheet.entries;
                 var choresSheet = new $.Sheet({sheetId: '1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU', apiKey: 'AIzaSyAlakYIB9ixy3iHFmgyjalbQ3oWO-VJQjs'});
-                var values = choresSheet.getValues('chores_ext', 'A3:H202');
+                var values = choresSheet.getValues(choresRange.split('!')[0], choresRange.split('!')[1]); //.getValues('chores_ext', 'A3:H202');
                 console.log('Response: ' + JSON.stringify(values));
                 window.entries = {
                     all: [],
