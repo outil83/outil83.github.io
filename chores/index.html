@@ -314,7 +314,7 @@
                     window.entries.byDateAndChild[entry.child + '_' + entry.date].push(entry);
                 });
                 var currentDate = new Date();
-                var currentDateDDMMYYYY = currentDate.getDate() + '/' + (currentDate.getMonth() < 9 ? '0' : '') + (currentDate.getMonth()+1) + '/' + currentDate.getFullYear();
+                var currentDateDDMMYYYY = (currentDate.getDate() < 10 ? '0' : '') + currentDate.getDate() + '/' + (currentDate.getMonth() < 9 ? '0' : '') + (currentDate.getMonth()+1) + '/' + currentDate.getFullYear();
                 if (window.staticSetup.selectedChildName) {
                     var todaysEntries = window.entries.byDateAndChild[window.staticSetup.child[window.staticSetup.selectedChildName] + '_' + currentDateDDMMYYYY];
                     if (todaysEntries) {
