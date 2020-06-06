@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PAC-MAN by Tanushree Prajapati</title>
+<style>
+    canvas {
+        border: 1px solid gray;
+    }
+</style>
+<link rel="shortcut icon" href="favicon.png" />
+</head>
+<body>
+    <iframe src="sounds/silence.mp3" allow="autoplay" style="display: none" id="audio"></iframe>
+    <audio controls autoplay loop style="display: none">
+      <source src="sounds/pacman_beginning.wav" type="audio/wav">
+      Your browser does not support the audio element.
+    </audio>
+    <div id="container" style="width: 100%">
+    </div>
+    <div id="control-panel">
+        <table>
+            <tr>
+                <td></td>
+                <td><button onclick="move({38: true})">UP</button></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><button onclick="move({37: true})">LEFT</button></td>
+                <td><button onclick="move({40: true})">DOWN</button></td>
+                <td><button onclick="move({39: true})">RIGHT</button></td>
+            </tr>
+        </table>
+    </div>
+    <!--<canvas id="canvasspace" width="600" height="400" ></canvas>-->
+    <script src="js/game.js" ></script>
+</body>
+</html>
