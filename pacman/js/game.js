@@ -1,181 +1,315 @@
-var score = 0;
-var gscore = 0;
-var ghost = false;
-var player = {
-    x: 50,
-    y: 100,
-    pacmouth: 320,
-    pacdir: 0,
-    pacsize: 32,
-    speed: 5,
-};
+var document = window.document;
 
-var enemy = {
-    x: 0,
-    y: 0,
-    speed: 5,
-    moving: 0,
-    eyedir: 0,
-    dirx: 0,
-    diry: 0,
-    ghostNum: 64 
-};
-
+/**
+ * Utility functions
+ */
 function num(n) {
     return Math.floor(Math.random() * n);
 }
 
-var canvas = document.createElement("canvas");
-var context = canvas.getContext("2d");
-// set height and width
-canvas.height = 400;
-canvas.width = 600;
-// load pakaman.png
-var mainImage = new Image();
-mainImage.ready = false;
-mainImage.onload = checkReady;
-mainImage.src = "packman.png";
-
-
-// append to document
-document.getElementById("container").append(canvas);
-
-function checkReady() {
-    this.ready = true;
-    playgame();
-}
-
-function playgame() {
-    render();
-    requestAnimationFrame(playgame);
-}
-
-function render() {
-    // fill canvas with background
-    context.fillStyle = "pink";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    
-    if(!ghost) {
-        enemy.ghostNum = num(5) * 64;
-        enemy.x = num(450);
-        enemy.y = num(200);
-        ghost = true
+/**
+ * Control Panel - start/pause game, control keys for pacman, etc. 
+ */
+var ControlPanel = {
+    pause: true,
+    isPaused : function () {
+        return this.pause;
+    },
+    paussed: function() {
+        this.pause = true;
+    },
+    play: function() {
+        this.pause = false;
     }
+};
+
+/**
+ * Player
+ */
+var Player = {
+    x: num(200),
+    y: num(300),
+    pacmouth: 320,
+    pacdir: 0,
+    pacsize: 32,
+    speed: 3,
+    moving: false,
     
-    if (player.moving) {
-        if (player.x >= (canvas.width - player.pacsize)) {
-            player.x = 0;
-        }
-        if (player.y >= (canvas.height - player.pacsize)) {
-            player.y = 0;
-        }
-        if (player.x < 0) {
-            player.x = canvas.width - player.pacsize;
-        }
-        if (player.y < 0) {
-            player.y = canvas.height - player.pacsize;
-        }
+    isMoving: function() {
+        return this.moving;
+    },
     
-        player.x += player.dirx;
-        player.y += player.diry;
+    move: function() {
+        if (this.moving) {
+            if (this.x >= (CanvasManager.canvas.width - this.pacsize)) {
+                this.x = 0;
+            }
+            if (this.y >= (CanvasManager.canvas.height - this.pacsize)) {
+                this.y = 0;
+            }
+            if (this.x < 0) {
+                this.x = CanvasManager.canvas.width - this.pacsize;
+            }
+            if (this.y < 0) {
+                this.y = CanvasManager.canvas.height - this.pacsize;
+            }
+
+            this.x += this.dirx;
+            this.y += this.diry;
+
+        }
+    },
+    
+    isOnLeft: function(x) {
+        return this.x < x;
+    },
+    
+    isOnTop: function(y) {
+        return this.y < y;
+    },
+    
+    draw: function() {
+        CanvasManager.draw(this.pacmouth, this.pacdir, 32, 32, this.x, this.y, this.pacsize, this.pacsize);
+    },
+    
+    animate: function() {
+        if (this.moving == true) {
+            if (this.pacmouth == 320) {
+                this.pacmouth = 352;
+            } else {
+                this.pacmouth = 320;
+            }
+        }
+    },
+    
+    moveLeft: function() {
+        this.dirx = -this.speed;
+        this.diry = 0;
+        this.pacdir = 64;
+        this.moving = true;
+    },
+    
+    moveUp: function() {
+        this.dirx = 0;
+        this.diry = -this.speed;
+        this.pacdir = 96;
+        this.moving = true;
+    },
+    
+    moveRight: function() {
+        this.dirx = this.speed;
+        this.diry = 0;
+        this.pacdir = 0;
+        this.moving = true;
+    },
+    
+    moveDown: function() {
+        this.dirx = 0;
+        this.diry = this.speed;
+        this.pacdir = 32;
+        this.moving = true;
+    }
+}
+
+/**
+ * Enemy
+ */
+var Enemy = {
+    x: 0,
+    y: 0,
+    speed: 3,
+    moving: 0,
+    eyedir: 0,
+    dirx: 0,
+    diry: 0,
+    ghostNum: 64,
+    
+    move: function() {
+        if(this.moving < 0) {
+            this.moving = (num(15)*3)+10+num(2);
+            //enemy.speed = num(5);
+            this.dirx = 0;
+            this.diry =0;
+            if(this.moving % 2) {
+                if (Player.isOnLeft(this.x)) {
+                    this.dirx = -this.speed;
+                    this.eyedir = 64;
+                } else {
+                    this.dirx = this.speed;
+                    this.eyedir = 0;
+                }
+            } else {
+                if (Player.isOnTop(this.y)) {
+                    this.diry = -this.speed;
+                    this.eyedir = 96;
+                } else {
+                    this.diry = this.speed;
+                    this.eyedir = 32;
+                }
+            }
+        }
+
+        this.x += this.dirx;
+        this.y += this.diry;
+        this.moving--;
+
+        if (this.x >= (CanvasManager.canvas.width - Player.pacsize)) {
+            this.x = 0;
+        }
+        if (this.y >= (CanvasManager.canvas.height - Player.pacsize)) {
+            this.y = 0;
+        }
+        if (this.x < 0) {
+            this.x = CanvasManager.canvas.width - Player.pacsize;
+        }
+        if (this.y < 0) {
+            this.y = CanvasManager.canvas.height - Player.pacsize;
+        }
+    },
+    
+    animate: function() {
+        if (this.ghostNum % 64) {
+            this.ghostNum -= 32;
+        } else {
+            this.ghostNum += 32;
+        }
+    },
+    
+    create: function() {
+        Enemy.ghostNum = num(5) * 64;
+        Enemy.x = num(450);
+        Enemy.y = num(200);
+    },
+    
+    draw: function() {
+        CanvasManager.draw(this.ghostNum, this.eyedir, 32, 32, this.x, this.y, Player.pacsize, Player.pacsize);
+    }
+};
+
+/**
+ * Canvas manager
+ */
+var CanvasManager = {
+    canvas: undefined,
+    context: undefined,
+    mainImage: undefined,
+    
+    initialize: function() {
+        this.canvas = document.createElement("canvas");
+        this.context = this.canvas.getContext("2d");
+        // set height and width
+        this.canvas.height = 400;
+        this.canvas.width = 600;
+        // load pakaman.png
+        this.mainImage = new Image();
+        this.mainImage.ready = false;
+        this.mainImage.onload = this.checkReady;
+        this.mainImage.src = "packman.png";
         
-    }
+        // append to document
+        document.getElementById("container").append(this.canvas);
+    },
     
-    if(enemy.moving < 0) {
-        enemy.moving = (num(15)*3)+10+num(2);
-        //enemy.speed = num(5);
-        enemy.dirx = 0;
-        enemy.diry =0;
-        if(enemy.moving % 2) {
-            if (player.x < enemy.x) {
-                enemy.dirx = -enemy.speed;
-                enemy.eyedir = 64;
-            } else {
-                enemy.dirx = enemy.speed;
-                enemy.eyedir = 0;
-            }
-        } else {
-            if (player.y < enemy.y) {
-                enemy.diry = -enemy.speed;
-                enemy.eyedir = 96;
-            } else {
-                enemy.diry = enemy.speed;
-                enemy.eyedir = 32;
-            }
+    checkReady: function() {
+        CanvasManager.mainImage.ready = true;
+        GameManager.playgame();
+    },
+    
+    render: function() {
+        this.context.fillStyle = "pink";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    
+    renderText: function(text, left, top) {
+        // add text of player score
+        this.context.font = "20px Verdana";
+        this.context.fillStyle = "blue";
+        this.context.fillText(text, left, top);
+    },
+    
+    draw: function(left, top, width, height, targetX, targetY, targetWidth, targetHeight) {
+        this.context.drawImage(this.mainImage, left, top, width, height, targetX, targetY, targetWidth, targetHeight);
+    }
+};
+
+/**
+ * Game manager
+ */
+var GameManager = {
+    score: 0,
+    gscore: 0,
+    ghost: false,
+    keyclick: {},
+    renderCount: 0,
+    
+    initialize: function() {
+        CanvasManager.initialize();
+        this.registerKeyCapture();
+    },
+    
+    registerKeyCapture: function() {
+        
+        document.addEventListener("keydown", function (event) {
+            GameManager.keyclick[event.keyCode] = true;
+            GameManager.move(GameManager.keyclick);
+        }, false);
+
+        document.addEventListener("keyup", function (event) {
+            delete GameManager.keyclick[event.keyCode];
+        }, false);
+        
+    },
+    
+    playgame: function() {
+        GameManager.render();
+        requestAnimationFrame(GameManager.playgame);
+    },
+    
+    render: function() {
+        if (ControlPanel.isPaused()) {
+            return ;
+        }
+        // fill canvas with background
+        CanvasManager.render();
+
+        if(!this.ghost) {
+            Enemy.create();
+            this.ghost = true;
+        }
+
+        Player.move();
+        Enemy.move();
+
+        if ((this.renderCount++) % 8 == 0) {
+            Enemy.animate();
+            Player.animate();
+        }
+        
+        CanvasManager.renderText("Pacman: " + this.score + " vs Ghost: " + this.gscore, 5, 20);
+
+        // draw player
+        Player.draw();
+        // draw enemy
+        Enemy.draw();
+    },
+
+    move: function(keyclick) {
+        //  alert("Keycode: " + JSON.stringify(keyclick));
+        if (27 in keyclick) {
+            ControlPanel.paussed();
+        } else if (32 in keyclick) {
+            ControlPanel.play();
+        } else if (37 in keyclick) {
+            Player.moveLeft();
+        } else if (38 in keyclick) {
+            Player.moveUp();
+        } else if (39 in keyclick) {
+            Player.moveRight();
+        } else if (40 in keyclick) {
+            Player.moveDown();
         }
     }
-    
-    enemy.x += enemy.dirx;
-    enemy.y += enemy.diry;
-    enemy.moving--;
 
-    if (enemy.x >= (canvas.width - player.pacsize)) {
-        enemy.x = 0;
-    }
-    if (enemy.y >= (canvas.height - player.pacsize)) {
-        enemy.y = 0;
-    }
-    if (enemy.x < 0) {
-        enemy.x = canvas.width - player.pacsize;
-    }
-    if (enemy.y < 0) {
-        enemy.y = canvas.height - player.pacsize;
-    }
-    if (enemy.moving % 8 == 0) {
-        if (enemy.ghostNum % 64) {
-            enemy.ghostNum -= 32;
-        } else {
-            enemy.ghostNum += 32;
-        }
-        if (player.moving == true) {
-            if (player.pacmouth == 320) {
-                player.pacmouth = 352;
-            } else {
-                player.pacmouth = 320;
-            }
-        }
-    }
-    
-    // add text of player score
-    context.font = "20px Verdana";
-    context.fillStyle = "blue";
-    context.fillText("Pacman: " + score + " vs Ghost: " + gscore, 2, 18);
-    
-    // draw player
-    context.drawImage(mainImage, enemy.ghostNum, enemy.eyedir, 32, 32, enemy.x, enemy.y, player.pacsize, player.pacsize);
-    context.drawImage(mainImage, player.pacmouth, player.pacdir, 32, 32, player.x, player.y, player.pacsize, player.pacsize);
-}
+};
 
-var keyclick = {};
-document.addEventListener("keydown", function (event) {
-    keyclick[event.keyCode] = true;
-    move(keyclick);
-}, false);
-
-document.addEventListener("keyup", function (event) {
-    delete keyclick[event.keyCode];
-}, false);
-
-function move(keyclick) {
-    if (37 in keyclick) {
-        player.dirx = -player.speed;
-        player.diry = 0;
-        player.pacdir = 64;
-        player.moving = true;
-    } else if (38 in keyclick) {
-        player.dirx = 0;
-        player.diry = -player.speed;
-        player.pacdir = 96;
-        player.moving = true;
-    } else if (39 in keyclick) {
-        player.dirx = player.speed;
-        player.diry = 0;
-        player.pacdir = 0;
-        player.moving = true;
-    } else if (40 in keyclick) {
-        player.dirx = 0;
-        player.diry = player.speed;
-        player.pacdir = 32;
-        player.moving = true;
-    }
-}
+GameManager.initialize();
