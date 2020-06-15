@@ -52,10 +52,14 @@ var Powerdot = {
         if (!this.isPresent()) {
             return false;
         }
-        if ((this.x - this.size) >= position.x 
-            && (this.x + this.size) <= (position.x + size)
-           && (this.y - this.size) >= position.y 
-            && (this.y + this.size) <= (position.y + size)) {
+        
+        var left = position.x;
+        var right = position.x + size;
+        var top = position.y;
+        var bottom = position.y + size;
+        
+        // left top cornder of pacman
+        if (left <= this.x && right >= this.x && top <= this.y && bottom >= this.y) {
             return true;
         }
         return false;
@@ -70,7 +74,7 @@ var Player = {
     y: num(300),
     pacmouth: 320,
     pacdir: 0,
-    pacsize: 32,
+    pacsize: Constants.PACSIZE,
     speed: 3,
     moving: false,
     
@@ -81,6 +85,15 @@ var Player = {
     isMoving: function() {
         return this.moving;
     },
+    
+    die: function() {
+        this.x = num(320);
+        this.y = num(200);
+        this.pacdir = 0;
+        this.pacmouth = 320;
+        this.moving = false;
+    },
+
     
     move: function() {
         if (this.moving) {
@@ -151,6 +164,21 @@ var Player = {
         this.diry = this.speed;
         this.pacdir = 32;
         this.moving = true;
+    },
+    
+    checkCollision: function(position, size) {        
+        var left = position.x;
+        var right = position.x + size;
+        var top = position.y;
+        var bottom = position.y + size;
+        
+        var centerX = this.x + this.pacsize/2;
+        var centerY = this.y + this.pacsize/2;
+        // left top cornder of pacman
+        if (left <= centerX && right >= centerX && top <= centerY && bottom >= centerY) {
+            return true;
+        }
+        return false;
     }
 }
 
@@ -169,9 +197,16 @@ var Enemy = {
     vulnerable: false,
     recoveryCount: 0,
     vulnerableGhostNum: 384,
+    vulnerableEyedir: 0,
+    
+    getPosition: function() {
+        return {x: this.x, y: this.y};
+    },
     
     makeVulnerable: function() {
         this.vulnerable = true;
+        this.vulnerableGhostNum = 6 * 64;
+        this.vulnerableEyedir = 0;
         this.recoveryCount = 640;
         this.speed = 2;
     },
@@ -232,7 +267,7 @@ var Enemy = {
     animate: function() {
         if (this.vulnerable) {
             this.vulnerableAnimationCount++;
-            if (this.vulnerableAnimationCount % 16 == 0) {
+            if (this.recoveryCount < 128 && this.vulnerableAnimationCount % 2 == 0) {
                 this.vulnerableEyedir = this.vulnerableEyedir == 0 ? 32 : 0;
             }
             if (this.vulnerableGhostNum % 64) {
@@ -250,9 +285,19 @@ var Enemy = {
     },
     
     create: function() {
-        Enemy.ghostNum = num(5) * 64;
-        Enemy.x = num(450);
-        Enemy.y = num(200);
+        this.ghostNum = num(5) * 64;
+        this.x = num(320);
+        this.y = num(200);
+        this.vulnerable = false;
+    },
+    
+    isVulnerable: function() {
+        return this.vulnerable;
+    },
+    
+    die: function() {
+        this.ghostNum = num(7) * 64;
+        this.eyedir = 64;
     },
     
     draw: function() {
@@ -261,6 +306,21 @@ var Enemy = {
         } else {
             CanvasManager.draw(this.vulnerableGhostNum, this.vulnerableEyedir, 32, 32, this.x, this.y, Constants.PACSIZE, Constants.PACSIZE);
         }
+    },
+    
+    checkCollision: function(position, size) {        
+        var left = position.x;
+        var right = position.x + size;
+        var top = position.y;
+        var bottom = position.y + size;
+        
+        var centerX = this.x + Constants.PACSIZE/2;
+        var centerY = this.y + Constants.PACSIZE/2;
+        // left top cornder of pacman
+        if (left <= centerX && right >= centerX && top <= centerY && bottom >= centerY) {
+            return true;
+        }
+        return false;
     }
 };
 
@@ -351,6 +411,13 @@ var GameManager = {
         requestAnimationFrame(GameManager.playgame);
     },
     
+    pause: function(timeInMillis) {
+        ControlPanel.paussed();
+        window.setTimeout(function() {
+            ControlPanel.play();
+        }, timeInMillis);
+    }, 
+    
     render: function() {
         if (ControlPanel.isPaused()) {
             return ;
@@ -370,7 +437,17 @@ var GameManager = {
         if(Powerdot.checkCollision(Player.getPosition(), Player.pacsize)) {
             Powerdot.present = false;
             Enemy.makeVulnerable();
+            this.pause(250);
+        }
+        if(Enemy.isVulnerable() && Player.checkCollision(Enemy.getPosition(), Constants.PACSIZE)) {
+            Enemy.die();
+            this.ghost = false;
             this.score++;
+            this.pause(1000);
+        } else if(!Enemy.isVulnerable() && Enemy.checkCollision(Player.getPosition(), Constants.PACSIZE)) {
+            Player.die();
+            this.gscore++;
+            this.pause(1000);
         }
 
         Powerdot.draw();
