@@ -37,8 +37,8 @@ var Powerdot = {
     },
     
     create: function() {
-        this.x = num(300) + 50;
-        this.y = num(300) + 50;
+        this.x = num(100) + 50;
+        this.y = num(100) + 50;
         this.present = true;
     },
     
@@ -70,8 +70,8 @@ var Powerdot = {
  * Player
  */
 var Player = {
-    x: num(200),
-    y: num(300),
+    x: num(100) + 50,
+    y: num(100) + 50,
     pacmouth: 320,
     pacdir: 0,
     pacsize: Constants.PACSIZE,
@@ -88,8 +88,8 @@ var Player = {
     },
     
     die: function() {
-        this.x = num(320);
-        this.y = num(200);
+        this.x = num(100) + 50;
+        this.y = num(100) + 50;
         this.pacdir = 0;
         this.dirx = this.speed;
         this.diry = 0;
