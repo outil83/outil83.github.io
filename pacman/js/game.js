@@ -27,8 +27,8 @@ var ControlPanel = {
 };
 
 var Powerdot = {
-    x: num(400),
-    y: num(400),
+    x: num(100),
+    y: num(100),
     size: (Constants.PACSIZE / 4),
     present: false,
     
@@ -37,8 +37,8 @@ var Powerdot = {
     },
     
     create: function() {
-        this.x = num(100) + 50;
-        this.y = num(100) + 50;
+        this.x = num(CanvasManager.canvas.width - 32) + 16;
+        this.y = num(CanvasManager.canvas.height - 32) + 16;
         this.present = true;
     },
     
