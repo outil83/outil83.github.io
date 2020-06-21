@@ -14,7 +14,7 @@ function num(n) {
  * Control Panel - start/pause game, control keys for pacman, etc. 
  */
 var ControlPanel = {
-    pause: true,
+    pause: false,
     isPaused : function () {
         return this.pause;
     },
@@ -76,7 +76,8 @@ var Player = {
     pacdir: 0,
     pacsize: Constants.PACSIZE,
     speed: 3,
-    moving: false,
+    moving: true,
+    moves: [],
     
     getPosition: function() {
         return {x: this.x, y: this.y};
@@ -90,10 +91,57 @@ var Player = {
         this.x = num(320);
         this.y = num(200);
         this.pacdir = 0;
+        this.dirx = this.speed;
+        this.diry = 0;
         this.pacmouth = 320;
-        this.moving = false;
+        this.moving = true;
+        this.moves = [];
     },
 
+    reachHere: function(targetX, targetY) {
+        var steps = {};
+        var canvasRect = CanvasManager.canvas.getBoundingClientRect();
+        targetX = targetX - canvasRect.left;
+        targetY = targetY - canvasRect.top;
+        this.nextStep(steps, this.x, this.y, targetX, targetY);
+        var next = steps.moves[steps.moves.length - 1];
+        steps.moves.push({x: targetX, y: targetY, dir: next.dir, dirX: next.dirX, dirY: next.dirY});
+        this.moves = steps.moves;
+    },
+    
+    nextStep: function(steps, srcX, srcY, targetX, targetY) {
+        if (!steps.moves) {
+            steps.moves = [];
+            // identify direction
+            if (srcX < targetX) { // onleft
+                steps.dirX = this.speed;
+            } else {
+                steps.dirX = -this.speed;
+            }
+            if (srcY < targetY) { // onleft
+                steps.dirY = this.speed;
+            } else {
+                steps.dirY = -this.speed;
+            }
+            steps.stepsX = Math.round(Math.abs(srcX - targetX) / this.speed);
+            steps.stepsY = Math.round(Math.abs(srcY - targetY) / this.speed);
+            steps.counterX = 0;
+            steps.counterY = 0;
+        }
+        var prev = (steps.moves.length == 0) ? {x: srcX, y: srcY, dir: this.pacdir, dirX: this.dirx, dirY: this.diry} : steps.moves[steps.moves.length - 1];
+        var next = {};
+        if(steps.counterX > steps.stepsX / 2 && steps.counterY < steps.stepsY) {
+            next = {x: prev.x + 0, y: prev.y + steps.dirY, dir: (steps.dirY < 0 ? 96 : 32), dirX: 0, dirY: steps.dirY};
+            steps.counterY++;
+        } else {
+            next = {x: prev.x + steps.dirX, y: prev.y + 0, dir: (steps.dirX < 0 ? 64 : 0), dirX: steps.dirX, dirY: 0};
+            steps.counterX++;
+        }
+        steps.moves.push(next);
+        if (steps.counterX < steps.stepsX || steps.counterY < steps.stepsY) {
+            this.nextStep(steps, next.x, next.y, targetX, targetY);
+        }
+    },
     
     move: function() {
         if (this.moving) {
@@ -114,6 +162,12 @@ var Player = {
             this.y += this.diry;
 
         }
+        // if automated 
+        if (this.moves.length > 0) {
+            this.x = this.moves[0].x;
+            this.y = this.moves[0].y;
+            this.moves.shift(); // remove first element
+        }
     },
     
     isOnLeft: function(x) {
@@ -125,6 +179,15 @@ var Player = {
     },
     
     draw: function() {
+        if (this.moves.length > 0) {
+            // draw steps
+            this.moves.forEach(function(move, index, array) {
+                CanvasManager.drawCircle(move.x + Player.pacsize/2, move.y + Player.pacsize/2, 3, "blue");
+            });
+            this.pacdir = this.moves[0].dir;
+            this.dirx = this.moves[0].dirX;
+            this.diry = this.moves[0].dirY;
+        }
         CanvasManager.draw(this.pacmouth, this.pacdir, 32, 32, this.x, this.y, this.pacsize, this.pacsize);
     },
     
@@ -336,8 +399,8 @@ var CanvasManager = {
         this.canvas = document.createElement("canvas");
         this.context = this.canvas.getContext("2d");
         // set height and width
-        this.canvas.height = 480;
-        this.canvas.width = 480;
+        //this.canvas.height = 480;
+        //this.canvas.width = 480;
         // load pakaman.png
         this.mainImage = new Image();
         this.mainImage.ready = false;
@@ -345,7 +408,38 @@ var CanvasManager = {
         this.mainImage.src = "packman.png";
         
         // append to document
-        document.getElementById("container").append(this.canvas);
+        var containerEl = document.getElementById("container");
+        containerEl.append(this.canvas);
+        document.body.onresize = CanvasManager.onresize;
+        
+        this.onresize(null);
+        
+        this.canvas.onclick = this.onclick;
+        if (this.canvas.touchstart) {
+            this.canvas.touchstart = this.ontouch;
+            this.canvas.touchmove = this.ontouch;
+            this.canvas.touchend = this.ontouch;
+        }
+    },
+    
+    /** TouchEvent object: https://www.w3schools.com/jsref/obj_touchevent.asp */
+    ontouch: function(e) {
+        var x = e.touches[0].clientX - 16;
+        var y = e.touches[0].clientY - 16;
+        GameManager.herePlease(x, y);
+    },
+    
+    onclick: function(e) {
+        var x = e.clientX - 16;
+        var y = e.clientY - 16;
+        GameManager.herePlease(x, y);
+    },
+    
+    onresize : function(e) {
+        var containerEl = document.getElementById("container");
+        var containerRect = containerEl.getBoundingClientRect();
+        CanvasManager.canvas.width = containerRect.width - 40;
+        CanvasManager.canvas.height = containerRect.height - 40;
     },
     
     checkReady: function() {
@@ -404,6 +498,10 @@ var GameManager = {
             delete GameManager.keyclick[event.keyCode];
         }, false);
         
+    },
+    
+    herePlease: function(x, y) {
+        Player.reachHere(x, y);
     },
     
     playgame: function() {
