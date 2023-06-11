@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>VIBGIYOR | Global Event</title>
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- Third party plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+		<!-- cookiealert styles -->
+		<link rel="stylesheet" href="css/cookiealert.css">
+        <link rel="stylesheet" href="css/JQLoader.css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+	</head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#memberDetail">Member Detail</a></li>
+                        <li class="nav-item"><a id='navToSubmitActivity' class="nav-link js-scroll-trigger" href="#submitActivity">Submit Activity</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+		<!-- START Bootstrap-Cookie-Alert -->
+
+		<div class="alert text-center cookiealert" role="alert">
+
+			<b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
+
+
+
+			<button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+
+				I agree
+
+			</button>
+
+		</div>
+		<!-- END Bootstrap-Cookie-Alert -->
+            <div class="container">
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h2 class="text-white font-weight-bold" id="selectedSupervisorName"></h2>
+                        <h3 class="text-uppercase text-white font-weight-bold rp-1">View member detail and submit member's activity</h3>
+                        <!--
+                            <button class="btn btn-primary rp-1" onclick="$('#navToDetail').click();">View Member</button>
+                        -->
+                        <button class="btn btn-primary rp-1" onclick="$('#navToSubmitActivity').click();">Submit Activity</button>
+						<button type="button" class="btn btn-danger" onclick="$('#supervisorModel').slideDown();">
+							Not you ?!
+						</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- memberDetail section-->
+        <section id="memberDetail" class="page-section bg-info">
+            <div class="container">
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h2 class="text-uppercase text-white font-weight-bold rp-1">Member Detail</h2>
+                        <hr class="divider my-4" />
+                        <div class="table-responsive">
+                            <table class="table table-hover border-1">
+                                <tbody id="member-detail">
+                                    <!-- filled by loadMemberDetail() function from google sheet -->
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- points section-->
+        <section id="submitActivity" class="page-section bg-warning">
+            <div class="container">
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h2 class="text-uppercase text-white font-weight-bold rp-1">Submit Activity</h2>
+                        <hr class="divider my-4" />
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Contact section-->
+        <section class="page-section" id="contact">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="mt-0">Let's Get In Touch!</h2>
+                        <hr class="divider my-4" />
+                        <p class="text-muted mb-5">Ready to start your next project with us? Give us a call or send us an email and we will get back to you as soon as possible!</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 ml-auto text-center mb-5 mb-lg-0">
+                        <i class="fas fa-phone fa-3x mb-3 text-muted"></i>
+                        <div>+91 (0) 98 20 875 260</div>
+                    </div>
+                    <div class="col-lg-4 mr-auto text-center">
+                        <i class="fas fa-envelope fa-3x mb-3 text-muted"></i
+                        ><!-- Make sure to change the email address in BOTH the anchor text and the link target below!--><a class="d-block" href="mailto:contact@yourwebsite.com">jayesh.prajapati@outil.co.in</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="bg-light py-5">
+            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
+        </footer>
+
+		  <!-- The Modal -->
+		  <div class="modal" id="supervisorModel">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+				  <h4 class="modal-title">Please select your name and enter your credential</h4>
+				  <button type="button" class="close" data-dismiss="modal" onclick="$('#supervisorModel').slideUp(); return true;">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+				  <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName">
+                    <!-- options to be added by loadSupervisors -->
+					<option value="VIBSUP0002">Radha Khade</option>
+					<option value="VIBSUP0001">Pallavi Khade</option>
+				  </select>
+				  <input title="Enter credential of selected supervisor" class="form-control" id="supervisorCredential" name="supervisorCredential" type="password">
+                  </input>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="if (validateSupervisor($('#supervisorName').val(), $('#supervisorCredential').val()) === true) { saveSupervisor($('#supervisorName').val(), $('#supervisorName').find(':selected').text()); $('#supervisorModel').slideUp();return true; } else { alert('Invalid credential entered!'); return false;}">Save and Remember</button>
+				</div>
+
+			  </div>
+			</div>
+		  </div>
+
+		<!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+		<!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+		<!-- Google sheet JS-->
+        <script src="js/sheet.js"></script>
+		<!-- Include cookiealert script -->
+		<script src="js/cookiealert.js"></script>
+        <script src="js/JQLoader.js"></script>
+		<script type="text/javascript">
+
+            window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
+			
+			function saveSupervisor(supervisorId, supervisorName) {
+				console.log('INFO: saveSupervisor START');
+				$.setCookie('supervisorId', supervisorId, 30);
+                $.setCookie('supervisorName', supervisorName, 30);
+				window.staticSetup.selectedSupervisorId = supervisorId;
+                window.staticSetup.selectedSupervisorName = supervisorName;
+				console.log('INFO: saveSupervisor: selected supervisor: ' + window.staticSetup.selectedSupervisorName + " (" + window.staticSetup.selectedSupervisorId + ")");
+                $('#selectedSupervisorName').text("Hi " + window.staticSetup.selectedSupervisorName);
+				console.log('INFO: saveSupervisor END');
+			}
+            
+			function validateSupervisor(supervisorId, otp) {
+                console.log("INFO: validateSupervisor START");
+                try {
+                    return (window.supervisorsById[supervisorId] && window.supervisorsById[supervisorId].otp === otp);
+                } finally {
+                    console.log("INFO: validateSupervisor END");
+                }
+			}
+            
+            function loadStaticSetup(callback) {
+                window.staticSetup = window.localStorage.getItem('staticSetup');
+                console.log('Static setup not found in local storage and hence getting default setup');
+                $.ajax({
+                        async: true,
+                        type: 'GET',
+                        url: 'assets/json/static-setup.json',
+                        success: function(response) {
+                                console.log('response: ' + response);
+                                window.staticSetup = JSON.parse(response);
+                                callback.call(null);
+                        },
+                        dataType: 'text'
+                });
+            }
+			
+            // Make sure to load query params
+            (window.onpopstate = function () {
+                var match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+            
+                window.urlParams = {};
+                while (match = search.exec(query)) {
+                    window.urlParams[decode(match[1])] = decode(match[2]);
+                }
+                console.log(JSON.stringify(window.urlParams));
+            })();
+
+            function loadSetup() {
+                console.log('INFO: loadSetup: START');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                console.log('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
+                var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
+                console.log('loadSetup: ' + JSON.stringify(values));
+                window.staticSetup.baseSetup = {};
+                values.values.forEach(function(row, index, array) {
+                    var key = '' + row[0];
+                    if (key !== "null" && key !== "undefined" && key.length > 0) {
+                        window.staticSetup.baseSetup[row[0]] = row[1];
+                    }
+                });
+                console.log('INFO: loadSetup: END');
+            }
+
+            function loadActivities() {
+                console.log('INFO: loadActivities: START');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                console.log('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
+                var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
+                console.log('loadActivities: ' + JSON.stringify(values));
+                var startDate = window.staticSetup.baseSetup['DATE'];
+                var groupId = 'DAY1';
+                if (startDate === window.staticSetup.baseSetup['DAY1']) {
+                    groupId = 'DAY1'
+                } else if (startDate === window.staticSetup.baseSetup['DAY2']) {
+                    groupId = 'DAY2'
+                } else if (startDate === window.staticSetup.baseSetup['DAY3']) {
+                    groupId = 'DAY3'
+                } else {
+                    groupId = 'UNKNOWN';
+                }
+                window.activities = [];
+                values.values.forEach(function(row, index, array) {
+                    if (row[1] === groupId) {
+                        window.activities.push({"activityId": row[0], "group": row[1], "name": row[2], "description": [3], "maxAllowed": row[4]});
+                    }
+                });
+                console.log('INFO: loadActivities: loaded activities - ' + JSON.stringify(window.activities));
+                console.log('INFO: loadActivities: END');
+            }
+
+            function loadSupervisors() {
+                console.log('INFO: loadSupervisors: START');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                console.log('INFO: loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
+                var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
+                console.log('INFO: loadSupervisors: API Response: ' + JSON.stringify(values));
+                window.supervisors = [];
+                window.supervisorsById = {};
+                var supervisorOptionsHtml = "";
+                $('#supervisorName').html("");
+                values.values.forEach(function(row, index, array) {
+                    var supervisorRecord = { "supervisorId": row[0], "supervisorName": row[1], "gender": row[2], "contact": row[3], "manager": row[4], "managerContact": row[5], "otp": row[6]};
+                    window.supervisors.push(supervisorRecord);
+                    window.supervisorsById[row[0]] = supervisorRecord;
+					
+                    supervisorOptionsHtml = supervisorOptionsHtml 
+                        + "<option value='" + supervisorRecord.supervisorId + "'>" + supervisorRecord.supervisorName + "</option>";
+                });
+                console.log('INFO: loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
+                $('#supervisorName').html(supervisorOptionsHtml);
+                console.log('INFO: loadSupervisors: END');
+            }
+
+            function loadMemberDetail() {
+                console.log('INFO: loadMemberDetail: START');
+                var memberId = window.urlParams['memberId'];
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                console.log('INFO: loadMemberDetail: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
+                var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
+                console.log('INFO: loadMemberDetail: API Response - ' + JSON.stringify(values));
+                $("#member-detail").html("");
+                var memberDetailHtml = "";
+                window.memberDetail = {};
+                values.values.forEach(function(row, index, array) {
+                    if (row[0] !== memberId) {
+                        return; // skip non-matching member
+                    }
+                    window.memberDetail['memberId'] = memberId;
+                    window.memberDetail['memberName'] = row[4];
+                    memberDetailHtml = memberDetailHtml 
+                        + "<tr><td>Member ID</td><td>" + row[0] + "<td>Type</td><td>" + row[1] + "</td></tr>"
+                        + "<tr><td>Name</td><td>" + row[4] + "</td></td><td>School</td><td>" + row[3] + "</td></tr>"
+                        + "<tr><td>Gender</td><td>" + row[5] + "</td><td>Class / Grade</td><td>" + row[9] + "</td></tr>"
+                        + "<tr><td>Phone / Mobile</td><td>" + row[6] + "</td><td>Division / Section</td><td>" + row[10] + "</td></tr>"
+                        + "<tr><td>Parent / Guardian</td><td>" + row[7] + "</td><td>Committee</td><td>" + row[2] + "</td></tr>"
+                        + "<tr><td>Parent Contact</td><td>" + row[8] + "</td><td>&nbsp;</td><td>&nbsp;</td></tr>"
+                        ;
+                });
+                console.log('INFO: loadMemberDetail: memberDetail - ' + JSON.stringify(window.memberDetail));
+                $("#member-detail").html(memberDetailHtml);
+                console.log('INFO: loadMemberDetail: END');
+            }
+
+			$(document).ready(function() {
+                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
+                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
+                var customWidth = (window.innerWidth / 2) - (300 / 2);
+                $('.loading_box').css({
+                    'left': (window.innerWidth / 2) - (300 / 2),
+                    'width': 300,
+                    'color': "#fff",
+                    'background-color': "#000",
+                    'text-align': "center"
+                });
+                loadStaticSetup(function() {
+                    try {
+                        loadSetup();
+                        loadSupervisors();
+                        loadMemberDetail();
+                        loadActivities();
+                        var supervisorId = $.getCookie('supervisorId');
+                        var supervisorName = $.getCookie('supervisorName');
+                        $('#selectedSupervisorName').text("");
+                        if (!supervisorId) {
+                            $("#supervisorModel").slideDown();
+                        } else {
+                            saveSupervisor(supervisorId, supervisorName);
+                        }
+                    } finally {
+                        $("body").JQLoader({action: "close" });
+                    }
+                });
+			});
+
+		</script>
+    </body>
+</html>
