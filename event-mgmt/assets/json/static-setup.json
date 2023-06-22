@@ -13,11 +13,145 @@
     "googleSheet": {
         "url": "https://docs.google.com/spreadsheets/d/12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM/edit?usp=sharing",
         "sheetId": "12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM",
-        "entries": "entries!A2:J1000",
-        "members": "members!A2:L1000",
-        "supervisors": "supervisors!A2:J1000",
+        "entries": "entries!A2:E1000",
+        "members": "members!A2:J1000",
+        "supervisors": "supervisors!A2:D100",
         "activities": "activities!A2:E100",
         "setup": "setup!B2:C6"
+    },
+    "metadata": {
+        "members": {
+            "id": {
+                "index": 0,
+                "name": "memberId",
+                "displayName": "Member Id"
+            },
+            "country": {
+                "index": 1,
+                "name": "country",
+                "displayName": "Representing Country"
+            },
+            "committee": {
+                "index": 2,
+                "name": "committee",
+                "displayName": "Representing Committee"
+            },
+            "school": {
+                "index": 3,
+                "name": "school",
+                "displayName": "School Location"
+            },
+            "name": {
+                "index": 4,
+                "name": "name",
+                "displayName": "Name"
+            },
+            "gender": {
+                "index": 5,
+                "name": "gender",
+                "displayName": "Gender",
+                "options": [ "M", "F"]
+            },
+            "registration": {
+                "index": 6,
+                "name": "registration",
+                "displayName": "Registration",
+                "options": [ "A", "B", "C", "D" ]
+            },
+            "accomodation": {
+                "index": 7,
+                "name": "accomodation",
+                "displayName": "Hotel Accomodation",
+                "options": [ "Not Eligible", "Hotel Novotel", "Hyatt Regency" ]
+            },
+            "schedule": {
+                "index": 8,
+                "name": "schedule",
+                "displayName": "Day wise Schedule",
+                "options": [ "scheduleA.pdf", "scheduleB.pdf", "scheduleC.pdf", "scheduleD.pdf" ]
+            }
+        },
+        "activities": {
+            "id": {
+                "index": 0,
+                "name": "activityId",
+                "displayName": "Activity Id"
+            },
+            "group": {
+                "index": 1,
+                "name": "group",
+                "displayName": "Group"
+            },
+            "name": {
+                "index": 2,
+                "name": "name",
+                "displayName": "Name"
+            },
+            "description": {
+                "index": 3,
+                "name": "description",
+                "displayName": "Description"
+            },
+            "max": {
+                "index": 4,
+                "name": "max",
+                "displayName": "Max Allowed"
+            },
+            "custom": {
+                "index": 5,
+                "name": "custom",
+                "displayName": "Custom"
+            }
+        },
+        "supervisor": {
+            "id": {
+                "index": 0,
+                "name": "supervisorId",
+                "displayName": "Supervisor Id"
+            },
+            "name": {
+                "index": 1,
+                "name": "name",
+                "displayName": "Name"
+            },
+            "gender": {
+                "index": 2,
+                "name": "gender",
+                "displayName": "Gender"
+            },
+            "otp": {
+                "index": 3,
+                "name": "otp",
+                "displayName": "OTP"
+            }
+        },
+        "entries": {
+            "timestamp": {
+                "index": 0,
+                "name": "timestamp",
+                "displayName": "Timestamp"
+            },
+            "supervisorId": {
+                "index": 1,
+                "name": "supervisorId",
+                "displayName": "Supervisor Id"
+            },
+            "memberId": {
+                "index": 2,
+                "name": "memberId",
+                "displayName": "Member Id"
+            },
+            "activtyId": {
+                "index": 3,
+                "name": "activityId",
+                "displayName": "Activity Id"
+            },
+            "remarks": {
+                "index": 4,
+                "name": "remarks",
+                "displayName": "Remarks"
+            }
+        }
     }
 
 }

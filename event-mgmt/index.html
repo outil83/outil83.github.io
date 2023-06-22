@@ -27,8 +27,6 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
                         <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#memberDetail">Member Detail</a></li>
-                        <li class="nav-item"><a id='navToSubmitActivity' class="nav-link js-scroll-trigger" href="#submitActivity">Submit Activity</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -56,12 +54,9 @@
                     <div class="col-lg-10 align-self-end">
                         <h2 class="text-white font-weight-bold" id="selectedSupervisorName"></h2>
                         <h3 class="text-uppercase text-white font-weight-bold rp-1">View member detail and submit member's activity</h3>
-                        <!--
-                            <button class="btn btn-primary rp-1" onclick="$('#navToDetail').click();">View Member</button>
-                        -->
-                        <button class="btn btn-primary rp-1" onclick="$('#navToSubmitActivity').click();">Submit Activity</button>
+                        <button class="btn btn-primary rp-1" onclick="$('#navToDetail').click();">Submit Activity</button>
 						<button type="button" class="btn btn-danger" onclick="$('#supervisorModel').slideDown();">
-							Not you ?!
+							Change Station / Activity ?!
 						</button>
                     </div>
                 </div>
@@ -81,39 +76,6 @@
                                 </tbody>
                             </table>
                         </div> 
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- points section-->
-        <section id="submitActivity" class="page-section bg-warning">
-            <div class="container">
-                <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-lg-10 align-self-end">
-                        <h2 class="text-uppercase text-white font-weight-bold rp-1">Submit Activity</h2>
-                        <hr class="divider my-4" />
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Contact section-->
-        <section class="page-section" id="contact">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8 text-center">
-                        <h2 class="mt-0">Let's Get In Touch!</h2>
-                        <hr class="divider my-4" />
-                        <p class="text-muted mb-5">Ready to start your next project with us? Give us a call or send us an email and we will get back to you as soon as possible!</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 ml-auto text-center mb-5 mb-lg-0">
-                        <i class="fas fa-phone fa-3x mb-3 text-muted"></i>
-                        <div>+91 (0) 98 20 875 260</div>
-                    </div>
-                    <div class="col-lg-4 mr-auto text-center">
-                        <i class="fas fa-envelope fa-3x mb-3 text-muted"></i
-                        ><!-- Make sure to change the email address in BOTH the anchor text and the link target below!--><a class="d-block" href="mailto:contact@yourwebsite.com">jayesh.prajapati@outil.co.in</a>
                     </div>
                 </div>
             </div>
@@ -167,6 +129,7 @@
 		<!-- Include cookiealert script -->
 		<script src="js/cookiealert.js"></script>
         <script src="js/JQLoader.js"></script>
+        <script src="js/event-mgmt.js"></script>
 		<script type="text/javascript">
 
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
@@ -259,10 +222,12 @@
                 } else {
                     groupId = 'UNKNOWN';
                 }
-                window.activities = [];
+                window.activities = new $.Activities();
+                metaActivities = window.staticSetup.metadata.activities;
                 values.values.forEach(function(row, index, array) {
-                    if (row[1] === groupId) {
-                        window.activities.push({"activityId": row[0], "group": row[1], "name": row[2], "description": [3], "maxAllowed": row[4]});
+                    activity = $.Activity.fromRecord(row, metaActivities);
+                    if (activity.getGroup() === groupId) {
+                        window.activities.add(activity);
                     }
                 });
                 console.log('INFO: loadActivities: loaded activities - ' + JSON.stringify(window.activities));
@@ -277,17 +242,16 @@
                 var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
                 var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
                 console.log('INFO: loadSupervisors: API Response: ' + JSON.stringify(values));
-                window.supervisors = [];
-                window.supervisorsById = {};
+                window.supervisors = new $.Supervisors();
+                metaSupervisor = window.staticSetup.metadata.supervisor;
                 var supervisorOptionsHtml = "";
                 $('#supervisorName').html("");
                 values.values.forEach(function(row, index, array) {
-                    var supervisorRecord = { "supervisorId": row[0], "supervisorName": row[1], "gender": row[2], "contact": row[3], "manager": row[4], "managerContact": row[5], "otp": row[6]};
-                    window.supervisors.push(supervisorRecord);
-                    window.supervisorsById[row[0]] = supervisorRecord;
+                    supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
+                    window.supervisors.add(supervisor);
 					
                     supervisorOptionsHtml = supervisorOptionsHtml 
-                        + "<option value='" + supervisorRecord.supervisorId + "'>" + supervisorRecord.supervisorName + "</option>";
+                        + "<option value='" + supervisor.getId() + "'>" + supervisor.getName() + "</option>";
                 });
                 console.log('INFO: loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
                 $('#supervisorName').html(supervisorOptionsHtml);
@@ -306,19 +270,19 @@
                 $("#member-detail").html("");
                 var memberDetailHtml = "";
                 window.memberDetail = {};
+                metaMembers = window.staticSetup.metadata.members;
                 values.values.forEach(function(row, index, array) {
-                    if (row[0] !== memberId) {
+                    var member = new $.Member.fromRecord(row, metaMembers);
+                    if (member.getId() !== memberId) {
                         return; // skip non-matching member
                     }
-                    window.memberDetail['memberId'] = memberId;
-                    window.memberDetail['memberName'] = row[4];
+                    window.memberDetail = member;
                     memberDetailHtml = memberDetailHtml 
-                        + "<tr><td>Member ID</td><td>" + row[0] + "<td>Type</td><td>" + row[1] + "</td></tr>"
-                        + "<tr><td>Name</td><td>" + row[4] + "</td></td><td>School</td><td>" + row[3] + "</td></tr>"
-                        + "<tr><td>Gender</td><td>" + row[5] + "</td><td>Class / Grade</td><td>" + row[9] + "</td></tr>"
-                        + "<tr><td>Phone / Mobile</td><td>" + row[6] + "</td><td>Division / Section</td><td>" + row[10] + "</td></tr>"
-                        + "<tr><td>Parent / Guardian</td><td>" + row[7] + "</td><td>Committee</td><td>" + row[2] + "</td></tr>"
-                        + "<tr><td>Parent Contact</td><td>" + row[8] + "</td><td>&nbsp;</td><td>&nbsp;</td></tr>"
+                        + "<tr><td>" + metaMembers.id.displayName +"</td><td>" + member.getId() + "<td>" + metaMembers.country.displayName + "</td><td>" + member.getCountry() + "</td></tr>"
+                        + "<tr><td>" + metaMembers.name.displayName + "</td><td>" + member.getName() + "</td></td><td>metaMembers.committee.displayName</td><td>" + member.getCommittee() + "</td></tr>"
+                        + "<tr><td>" + metaMembers.gender.displayName + "</td><td>" + member.getGender() + "</td><td>" + metaMembers.school.displayName + "</td><td>" + member.getSchool() + "</td></tr>"
+                        + "<tr><td>" + metaMembers.registration.displayName + "</td><td>" + member.getRegistration() + "</td><td>" + metaMembers.accomodation.displayName + "</td><td>" + member.getAccomodation() + "</td></tr>"
+                        + "<tr><td colspan='4'><a href='./files/" + member.getSchedule() + "' target='_blank'>" + metaMembers.schedule.displayName + "</a></td></tr>"
                         ;
                 });
                 console.log('INFO: loadMemberDetail: memberDetail - ' + JSON.stringify(window.memberDetail));
