@@ -241,7 +241,9 @@
         );
     };
     
-    
+    /**
+     * Constructs new instance of Members
+     */
     function Members() {
         this.members = [];
         this.memberById = new Map();
@@ -405,6 +407,155 @@
             row[metadata.schedule.index],
         );
     };
+
+    function Entries() {
+        this._entries = [];
+        this._entriesByUniqueId = new Map();
+        this._entriesByMemberId = new Map();
+    }
+
+    $.extend(Entries.prototype, {
+
+        /**
+         * 
+         * @param {Entry} entry
+         * @returns {string} 
+         */
+        getUniqueIdFromEntry : function (entry) {
+            return this.getUniqueId(entry.getMemberId(), entry.getActivityId());
+        },
+
+        /**
+         * 
+         * @param {string} memberId 
+         * @param {string} activityId 
+         * @returns {string}
+         */
+        getUniqueId : function (memberId, activityId) {
+            return memberId + "_" + activityId;
+        },
+
+        /**
+         * 
+         * @param {Entry} entry 
+         */
+        add : function(entry) {
+            this._entries.push(entry);
+            var entryUniqueId = this.getUniqueIdFromEntry(entry);
+            this._entriesByUniqueId.set(entryUniqueId, entry);
+
+            var entriesByMemberId = this._entriesByMemberId.get(entry.getMemberId());
+            if (!entriesByMemberId) {
+                entriesByMemberId = [];
+            }
+            entriesByMemberId.push(entry);
+            this._entriesByMemberId.set(entry.getMemberId(), entriesByMemberId);
+        },
+
+        /**
+         * 
+         * @param {string} uniqueId 
+         * @returns {Entry}
+         * @see getUniqueId
+         * @see getUniqueIdFromEntry
+         */
+        getByUniqueId : function(uniqueId) {
+            return this._entriesByUniqueId.get(uniqueId);
+        },
+
+        /**
+         * 
+         * @param {string} memberId 
+         * @returns {Entry[]}
+         */
+        getByMemberId : function(memberId) {
+            return this._entriesByMemberId.get(memberId);
+        },
+
+        /**
+         * 
+         * @returns {Entry[]}
+         */
+        getAll : function() {
+            return this._entries;
+        }
+    });
+
+
+    /**
+     * 
+     * @param {string} timestamp 
+     * @param {string} supervisorId 
+     * @param {string} activityId 
+     * @param {string} memberId 
+     * @param {string} remarks 
+     */
+    function Entry(timestamp, supervisorId, activityId, memberId, remarks) {
+        this.timestamp = timestamp;
+        this.supervisorId = supervisorId;
+        this.activityId = activityId;
+        this.memberId = memberId;
+        this.remarks = remarks;
+    }
+
+    $.extend(Entry.prototype, {
+        /**
+         * 
+         * @returns {string}
+         */
+        getTimestamp : function () {
+            return this.timestamp;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getSupervisorId : function () {
+            return this.supervisorId;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getActivityId : function () {
+            return this.activityId;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getMemberId : function () {
+            return this.memberId;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getRemarks : function () {
+            return this.remarks;
+        }
+
+    });
+
+    /**
+     * 
+     * @param {string[]} row 
+     * @param {object} metadata 
+     * @returns {Entry}
+     */
+    Entry.fromRecord = function (row, metadata) {
+        return new Entry(
+            row[metadata.timestamp.index], 
+            row[metadata.supervisorId.index], 
+            row[metadata.activityId.index], 
+            row[metadata.memberId.index], 
+            row[metadata.remarks.index]
+        );
+    };
     
     $.Activities = Activities;
     $.Activity = Activity;
@@ -412,5 +563,7 @@
     $.Supervisor = Supervisor;
     $.Members = Members;
     $.Member = Member;
+    $.Entries = Entries;
+    $.Entry = Entry;
     
 })(jQuery);

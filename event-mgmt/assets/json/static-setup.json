@@ -1,13 +1,11 @@
 {
 
     "googleForm": {
-        "url": "https://docs.google.com/forms/d/e/1FAIpQLSenxqUsVe-7A9rLfcPC4N8Bhvj5sRheu3c_Yk-H7xJS79xuhQ/viewform?usp=pp_url",
+        "customFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSenxqUsVe-7A9rLfcPC4N8Bhvj5sRheu3c_Yk-H7xJS79xuhQ/formResponse",
+        "prefilledFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSenxqUsVe-7A9rLfcPC4N8Bhvj5sRheu3c_Yk-H7xJS79xuhQ/viewform?usp=pp_url",
         "paramSupervisorId": "entry.17957928",
-        "paramSupervisorName": "entry.352398247",
         "paramMemberId": "entry.1406128866",
-        "paramMemberName": "entry.949097896",
         "paramActivityId": "entry.658499938",
-        "paramActivityName": "entry.1451572449",
         "paramRemarks": "entry.2026204865"
     },
     "googleSheet": {
@@ -141,7 +139,7 @@
                 "name": "memberId",
                 "displayName": "Member Id"
             },
-            "activtyId": {
+            "activityId": {
                 "index": 3,
                 "name": "activityId",
                 "displayName": "Activity Id"
