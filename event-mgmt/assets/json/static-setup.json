@@ -14,7 +14,7 @@
         "entries": "entries!A2:E1000",
         "members": "members!A2:J1000",
         "supervisors": "supervisors!A2:D100",
-        "activities": "activities!A2:E100",
+        "activities": "activities!A2:F100",
         "setup": "setup!B2:C6"
     },
     "metadata": {

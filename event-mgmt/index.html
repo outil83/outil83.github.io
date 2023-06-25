@@ -232,27 +232,17 @@
                 var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
                 console.log('loadActivities: ' + JSON.stringify(values));
                 var startDate = window.staticSetup.baseSetup['DATE'];
-                var groupId = 'DAY1';
-                if (startDate === window.staticSetup.baseSetup['DAY1']) {
-                    groupId = 'DAY1'
-                } else if (startDate === window.staticSetup.baseSetup['DAY2']) {
-                    groupId = 'DAY2'
-                } else if (startDate === window.staticSetup.baseSetup['DAY3']) {
-                    groupId = 'DAY3'
-                } else {
-                    groupId = 'UNKNOWN';
-                }
                 window.activities = new $.Activities();
                 metaActivities = window.staticSetup.metadata.activities;
                 var activityOptionsHtml = "";
                 $('#activity').html("");
                 values.values.forEach(function(row, index, array) {
                     activity = $.Activity.fromRecord(row, metaActivities);
-                    if (activity.getGroup() === groupId) {
+                    //if (activity.getGroup() === groupId) {
                         window.activities.add(activity);
                         activityOptionsHtml = activityOptionsHtml 
                         + "<option value='" + activity.getId() + "'>" + activity.getGroup() + " / " + activity.getName() + "</option>";
-                    }
+                    //}
                 });
                 $('#activity').html(activityOptionsHtml);
                 console.log('INFO: loadActivities: loaded activities - ' + JSON.stringify(window.activities));
@@ -377,11 +367,29 @@
                     console.log("INFO: handleSubmit : event = " + JSON.stringify(event));
                     event.preventDefault();
                     // duplicate submission check
+                    var activity = window.activities.getById(window.staticSetup.selectedActivityId);
                     var uniqueId = window.entries.getUniqueId(window.member.getId(), window.staticSetup.selectedActivityId);
                     var entry = window.entries.getByUniqueId(uniqueId);
                     if (entry) {
                         alert("Submission was already done for " + window.member.getName() + " at station " + window.staticSetup.selectedActivityName + "!");
                         return false;
+                    }
+                    if (activity.getCustom()) {
+                        var custom = "" + activity.getCustom();
+                        var checks = custom.trim().split(",");
+                        if (checks.length > 0) {
+                            var found = false;
+                            for (var i = 0; i < checks.length; ++i) {
+                                if (window.member.getRegistration() === checks[i].trim()) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found === false) {
+                                alert(window.member.getName() + " is not eligible for station " + window.staticSetup.selectedActivityName + ".");
+                                return false;
+                            }
+                        }
                     }
                     const formData = {};
                     formData[window.staticSetup.googleForm.paramSupervisorId] = window.staticSetup.selectedSupervisorId;
