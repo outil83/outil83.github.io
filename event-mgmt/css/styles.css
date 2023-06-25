@@ -9980,7 +9980,7 @@ hr.light {
 }
 
 .page-section {
-  padding: 8rem 0;
+  padding: 1rem 0;
 }
 
 #mainNav {
@@ -10119,4 +10119,10 @@ header.masthead h1 {
 
 #member-detail > tr > td {
   text-align: left;
+  font-size: medium;
+}
+
+#member-detail > tr > td.label {
+  font-size: small;
+  font-style: normal;
 }
