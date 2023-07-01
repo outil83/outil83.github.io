@@ -11,7 +11,7 @@
     "googleSheet": {
         "url": "https://docs.google.com/spreadsheets/d/12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM/edit?usp=sharing",
         "sheetId": "12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM",
-        "entries": "entries!A2:E1000",
+        "entries": "entries!A2:E12000",
         "members": "members!A2:J1000",
         "supervisors": "supervisors!A2:D100",
         "activities": "activities!A2:F100",

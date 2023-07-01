@@ -89,46 +89,71 @@
             <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
         </footer>
 
-		  <!-- The Modal -->
-		  <div class="modal" id="supervisorModel">
+        <!-- The Modal -->
+        <div class="modal" id="supervisorModel">
 			<div class="modal-dialog">
-			  <div class="modal-content">
+                <div class="modal-content">
 
-				<!-- Modal Header -->
-				<div class="modal-header">
-				  <h4 class="modal-title">Please select your name and enter your credential</h4>
-				  <button type="button" class="close" data-dismiss="modal" onclick="$('#supervisorModel').slideUp(); return true;">&times;</button>
-				</div>
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Change Station</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#supervisorModel').slideUp(); return true;">&times;</button>
+                    </div>
 
-				<!-- Modal body -->
-				<div class="modal-body">
-                    <p>Please select supervisor and input credential :</p>
-                    <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName">
-                        <!-- options to be added by loadSupervisors -->
-		    			<option value="VIBSUP0002">Radha Khade</option>
-			    		<option value="VIBSUP0001">Pallavi Khade</option>
-				    </select>
-				    <input title="Enter credential of selected supervisor" class="form-control" id="supervisorCredential" name="supervisorCredential" type="password">
-                    </input>
-                    <p></p>
-                    <p>Please select station / activity :</p>
-				    <select titla="Select Station / Activity from drop-down" class="form-control" id="activity" name="activity" onchange="if ($('#activity').find(':selected')) { $('#activityDescription').text(window.activities.getById($('#activity').find(':selected').val()).getDescription());}">
-                        <!-- options to be added by loadActivities -->
-					    <option value="VIBACT001">DAY1 / Registration</option>
-					    <option value="VIBACT002">DAY1 / Opening Ceremony</option>
-				    </select>
-                    <p></p>
-                    <p id="activityDescription"></p>
-				</div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p>Select Supervisor</p>
+                        <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName">
+                            <!-- options to be added by loadSupervisors -->
+                            <option value="VIBSUP0002">Radha Khade</option>
+                            <option value="VIBSUP0001">Pallavi Khade</option>
+                        </select>
+                        <input title="Enter credential of selected supervisor" class="form-control" id="supervisorCredential" name="supervisorCredential" type="password" placeholder="Password">
+                        </input>
+                        <p></p>
+                        <p>Select Station</p>
+                        <select titla="Select Station / Activity from drop-down" class="form-control" id="activity" name="activity" onchange="if ($('#activity').find(':selected')) { $('#activityDescription').text(window.activities.getById($('#activity').find(':selected').val()).getDescription());}">
+                            <!-- options to be added by loadActivities -->
+                            <option value="VIBACT001">DAY1 / Registration</option>
+                            <option value="VIBACT002">DAY1 / Opening Ceremony</option>
+                        </select>
+                        <p></p>
+                        <p id="activityDescription"></p>
+                    </div>
 
-				<!-- Modal footer -->
-				<div class="modal-footer">
-				  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="if (!$('#supervisorName').find(':selected')) { alert('First select appropriate supervisor!'); return false;} if (!$('#activity').find(':selected')) { alert('Please select appropriate station / activity!'); return false;} if (validateSupervisor($('#supervisorName').find(':selected').val(), $('#supervisorCredential').val()) === true) { saveSupervisor($('#supervisorName').val(), $('#supervisorName').find(':selected').text(), $('#activity').find(':selected').val()); $('#supervisorModel').slideUp();return true; } else { alert('Invalid credential entered!'); return false;}">Save and Remember</button>
-				</div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="if (!$('#supervisorName').find(':selected')) { alert('First select appropriate supervisor!'); return false;} if (!$('#activity').find(':selected')) { alert('Please select appropriate station / activity!'); return false;} if (validateSupervisor($('#supervisorName').find(':selected').val(), $('#supervisorCredential').val()) === true) { saveSupervisor($('#supervisorName').val(), $('#supervisorName').find(':selected').text(), $('#activity').find(':selected').val()); $('#supervisorModel').slideUp();return true; } else { alert('Invalid credential entered!'); return false;}">Save and Remember</button>
+                    </div>
 
-			  </div>
+                </div>
 			</div>
-		  </div>
+        </div>
+
+        <!-- The Modal -->
+        <div class="modal" id="messageModel">
+			<div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p id="message"></p>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">Close</button>
+                    </div>
+
+                </div>
+			</div>
+        </div>
 
 		<!-- Bootstrap core JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -149,45 +174,53 @@
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
 			
 			function saveSupervisor(supervisorId, supervisorName, activityId) {
-				console.log('INFO: saveSupervisor START');
-                var supervisor = window.supervisors.getById(supervisorId);
-                var activity = window.activities.getById(activityId);
-				$.setCookie('supervisorId', supervisor.getId(), 30);
-                $.setCookie('supervisorName', supervisor.getName(), 30);
-                $.setCookie('activityId', activity.getId(), 30);
-				window.staticSetup.selectedSupervisorId = supervisor.getId();
-                window.staticSetup.selectedSupervisorName = supervisor.getName();
-                window.staticSetup.selectedActivityId = activity.getId();
-                window.staticSetup.selectedActivityName = activity.getGroup() + " / " + activity.getName();
-				console.log('INFO: saveSupervisor: selected supervisor: ' + window.staticSetup.selectedSupervisorName + " (" + window.staticSetup.selectedSupervisorId + ")");
-                $('#selectedSupervisorName').text(window.staticSetup.selectedSupervisorName + " @ " + window.staticSetup.selectedActivityName);
-                console.log('INFO: saveSupervisor END');
+				startLog('saveSupervisor');
+                try {
+                    var supervisor = window.supervisors.getById(supervisorId);
+                    var activity = window.activities.getById(activityId);
+                    $.setCookie('supervisorId', supervisor.getId(), 30);
+                    $.setCookie('supervisorName', supervisor.getName(), 30);
+                    $.setCookie('activityId', activity.getId(), 30);
+                    window.staticSetup.selectedSupervisorId = supervisor.getId();
+                    window.staticSetup.selectedSupervisorName = supervisor.getName();
+                    window.staticSetup.selectedActivityId = activity.getId();
+                    window.staticSetup.selectedActivityName = activity.getGroup() + " / " + activity.getName();
+                    info('INFO: saveSupervisor: selected supervisor: ' + window.staticSetup.selectedSupervisorName + " (" + window.staticSetup.selectedSupervisorId + ")");
+                    $('#selectedSupervisorName').text(window.staticSetup.selectedSupervisorName + " @ " + window.staticSetup.selectedActivityName);
+                } finally {
+                    endLog('saveSupervisor');
+                }
 			}
             
 			function validateSupervisor(supervisorId, otp) {
-                console.log("INFO: validateSupervisor START");
+                startLog("validateSupervisor");
                 try {
                     var supervisor = window.supervisors.getById(supervisorId);
                     return (supervisor && supervisor.getOtp() === otp);
                 } finally {
-                    console.log("INFO: validateSupervisor END");
+                    endLog("validateSupervisor");
                 }
 			}
             
             function loadStaticSetup(callback) {
-                window.staticSetup = window.localStorage.getItem('staticSetup');
-                console.log('Static setup not found in local storage and hence getting default setup');
-                $.ajax({
-                        async: true,
-                        type: 'GET',
-                        url: 'assets/json/static-setup.json',
-                        success: function(response) {
-                                console.log('response: ' + response);
-                                window.staticSetup = JSON.parse(response);
-                                callback.call(null);
-                        },
-                        dataType: 'text'
-                });
+                startLog("loadStaticSetup");
+                try {
+                    window.staticSetup = window.localStorage.getItem('staticSetup');
+                    info('Static setup not found in local storage and hence getting default setup');
+                    $.ajax({
+                            async: true,
+                            type: 'GET',
+                            url: 'assets/json/static-setup.json',
+                            success: function(response) {
+                                    info('response: ' + response);
+                                    window.staticSetup = JSON.parse(response);
+                                    callback.call(null);
+                            },
+                            dataType: 'text'
+                    });
+                } finally {
+                    endLog("loadStaticSetup");
+                }
             }
 			
             // Make sure to load query params
@@ -202,17 +235,17 @@
                 while (match = search.exec(query)) {
                     window.urlParams[decode(match[1])] = decode(match[2]);
                 }
-                console.log(JSON.stringify(window.urlParams));
+                info("URL query parameters => " + JSON.stringify(window.urlParams));
             })();
 
             function loadSetup() {
-                console.log('INFO: loadSetup: START');
+                startLog('loadSetup');
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                 var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                console.log('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
                 var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
                 var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
-                console.log('loadSetup: ' + JSON.stringify(values));
+                info('loadSetup: ' + JSON.stringify(values));
                 window.staticSetup.baseSetup = {};
                 values.values.forEach(function(row, index, array) {
                     var key = '' + row[0];
@@ -220,17 +253,17 @@
                         window.staticSetup.baseSetup[row[0]] = row[1];
                     }
                 });
-                console.log('INFO: loadSetup: END');
+                endLog('loadSetup');
             }
 
             function loadActivities() {
-                console.log('INFO: loadActivities: START');
+                startLog('loadActivities');
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                 var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                console.log('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
                 var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
                 var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
-                console.log('loadActivities: ' + JSON.stringify(values));
+                info('loadActivities: ' + JSON.stringify(values));
                 var startDate = window.staticSetup.baseSetup['DATE'];
                 window.activities = new $.Activities();
                 metaActivities = window.staticSetup.metadata.activities;
@@ -245,18 +278,18 @@
                     //}
                 });
                 $('#activity').html(activityOptionsHtml);
-                console.log('INFO: loadActivities: loaded activities - ' + JSON.stringify(window.activities));
-                console.log('INFO: loadActivities: END');
+                info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
+                endLog('loadActivities');
             }
 
             function loadSupervisors() {
-                console.log('INFO: loadSupervisors: START');
+                startLog('loadSupervisors');
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                 var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                console.log('INFO: loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
                 var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
                 var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
-                console.log('INFO: loadSupervisors: API Response: ' + JSON.stringify(values));
+                info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
                 window.supervisors = new $.Supervisors();
                 metaSupervisor = window.staticSetup.metadata.supervisor;
                 var supervisorOptionsHtml = "";
@@ -268,20 +301,20 @@
                     supervisorOptionsHtml = supervisorOptionsHtml 
                         + "<option value='" + supervisor.getId() + "'>" + supervisor.getName() + "</option>";
                 });
-                console.log('INFO: loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
+                info('loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
                 $('#supervisorName').html(supervisorOptionsHtml);
-                console.log('INFO: loadSupervisors: END');
+                endLog('loadSupervisors');
             }
 
             function loadMemberDetail() {
-                console.log('INFO: loadMemberDetail: START');
+                startLog('loadMemberDetail');
                 var memberId = window.urlParams['memberId'];
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                 var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                console.log('INFO: loadMemberDetail: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                info('loadMemberDetail: Sheet ID - ' + eventMgmtSheet.getSheetId());
                 var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
                 var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
-                console.log('INFO: loadMemberDetail: API Response - ' + JSON.stringify(values));
+                info('loadMemberDetail:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
                 window.member = {};
                 metaMembers = window.staticSetup.metadata.members;
                 values.values.forEach(function(row, index, array) {
@@ -296,19 +329,19 @@
                     $("#school").text(member.getSchool());
                     $("#schedule").html("<a href='./files/" + member.getSchedule() + "' target='_blank'>Click to download " + metaMembers.schedule.displayName + "</a>");
                 });
-                console.log('INFO: loadMemberDetail: memberDetail - ' + JSON.stringify(window.member));
-                console.log('INFO: loadMemberDetail: END');
+                info('loadMemberDetail: memberDetail - ' + JSON.stringify(window.member));
+                endLog('loadMemberDetail');
             }
 
             function loadEntries() {
-                console.log('INFO: loadEntries: START');
+                startLog('loadEntries');
                 var memberId = window.urlParams['memberId'];
                 // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                 var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                console.log('INFO: loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
                 var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
                 var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
-                console.log('INFO: loadEntries: API Response - ' + JSON.stringify(values));
+                info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
                 window.entries = new $.Entries();
                 metaEntries = window.staticSetup.metadata.entries;
                 values.values.forEach(function(row, index, array) {
@@ -316,9 +349,9 @@
                     window.entries.add(entry);
                 });
                 if (window.member) {
-                    console.log('INFO: loadEntries: member entries - ' + JSON.stringify(window.entries.getByMemberId(window.member.getId())));
+                    info('loadEntries: member entries - ' + JSON.stringify(window.entries.getByMemberId(window.member.getId())));
                 }
-                console.log('INFO: loadEntries: END');
+                endLog('loadEntries');
             }
 
 			$(document).ready(function() {
@@ -358,70 +391,73 @@
 			});
 
             function initializeFormSubmit() {
-                console.log("INFO: initializeFormSubmit : START");
+                startLog("initializeFormSubmit");
                 const button = document.querySelector("#btnSubmit");
                 const form = document.querySelector("#submitActivity");
 
                 const handleSubmit = async (event) => {
-                    console.log("INFO: handleSubmit : START");
-                    console.log("INFO: handleSubmit : event = " + JSON.stringify(event));
-                    event.preventDefault();
-                    // duplicate submission check
-                    var activity = window.activities.getById(window.staticSetup.selectedActivityId);
-                    var uniqueId = window.entries.getUniqueId(window.member.getId(), window.staticSetup.selectedActivityId);
-                    var entry = window.entries.getByUniqueId(uniqueId);
-                    if (entry) {
-                        alert("Submission was already done for " + window.member.getName() + " at station " + window.staticSetup.selectedActivityName + "!");
-                        return false;
-                    }
-                    if (activity.getCustom()) {
-                        var custom = "" + activity.getCustom();
-                        var checks = custom.trim().split(",");
-                        if (checks.length > 0) {
-                            var found = false;
-                            for (var i = 0; i < checks.length; ++i) {
-                                if (window.member.getRegistration() === checks[i].trim()) {
-                                    found = true;
-                                    break;
+                    startLog("handleSubmit");
+                    try {
+                        info("handleSubmit : event = " + JSON.stringify(event));
+                        event.preventDefault();
+                        // duplicate submission check
+                        var activity = window.activities.getById(window.staticSetup.selectedActivityId);
+                        var uniqueId = window.entries.getUniqueId(window.member.getId(), window.staticSetup.selectedActivityId);
+                        var entry = window.entries.getByUniqueId(uniqueId);
+                        if (entry) {
+                            showMessage("Submission was already done for " + window.member.getName() + " at station " + window.staticSetup.selectedActivityName + "!");
+                            return false;
+                        }
+                        if (activity.getCustom()) {
+                            var custom = "" + activity.getCustom();
+                            var checks = custom.trim().split(",");
+                            if (checks.length > 0) {
+                                var found = false;
+                                for (var i = 0; i < checks.length; ++i) {
+                                    if (window.member.getRegistration() === checks[i].trim()) {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found === false) {
+                                    showMessage(window.member.getName() + " is not eligible for station " + window.staticSetup.selectedActivityName + ".");
+                                    return false;
                                 }
                             }
-                            if (found === false) {
-                                alert(window.member.getName() + " is not eligible for station " + window.staticSetup.selectedActivityName + ".");
-                                return false;
-                            }
                         }
-                    }
-                    const formData = {};
-                    formData[window.staticSetup.googleForm.paramSupervisorId] = window.staticSetup.selectedSupervisorId;
-                    formData[window.staticSetup.googleForm.paramMemberId] = window.member.getId();
-                    formData[window.staticSetup.googleForm.paramActivityId] = window.staticSetup.selectedActivityId;
-                    formData[window.staticSetup.googleForm.paramRemarks] = " ";
+                        const formData = {};
+                        formData[window.staticSetup.googleForm.paramSupervisorId] = window.staticSetup.selectedSupervisorId;
+                        formData[window.staticSetup.googleForm.paramMemberId] = window.member.getId();
+                        formData[window.staticSetup.googleForm.paramActivityId] = window.staticSetup.selectedActivityId;
+                        formData[window.staticSetup.googleForm.paramRemarks] = " ";
 
-                    console.log("INFO: handleSubmit : formData = " + JSON.stringify(formData));
+                        info("handleSubmit : formData = " + JSON.stringify(formData));
 
-                    const appendedFormData = newFormData({ ...formData });
+                        const appendedFormData = newFormData({ ...formData });
 
-                    try {
-                        button.disabled = true;
-                        button.textContent = "processing...";
-                        const response = await fetch(window.staticSetup.googleForm.customFormUrl, {
-                            method: "POST",
-                            mode: "no-cors",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: appendedFormData,
-                        });
-                        alert("Entry submit is successful.");
-                        console.log("INFO: Form submitted and response : " + JSON.stringify(response));
-                        loadEntries();
-                    } catch (error) {
-                        alert("Something went wrong, please try again.");
-                        console.log("ERROR: Form submission failed with error - " + JSON.stringify(error));
+                        try {
+                            button.disabled = true;
+                            button.textContent = "processing...";
+                            const response = await fetch(window.staticSetup.googleForm.customFormUrl, {
+                                method: "POST",
+                                mode: "no-cors",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: appendedFormData,
+                            });
+                            info("handleSubmit : Form submitted and response : " + JSON.stringify(response));
+                            showMessage("Entry submit is successful.");
+                            loadEntries();
+                        } catch (error) {
+                            showMessage("Something went wrong, please try again.");
+                            error("Form submission failed with error - " + JSON.stringify(error));
+                        } finally {
+                            button.disabled = false;
+                            button.textContent = "Submit";
+                        }
                     } finally {
-                        button.disabled = false;
-                        button.textContent = "Submit";
-                        console.log("INFO: handleSubmit : END");
+                        endLog("handleSubmit");
                     }
                 };
 
@@ -436,7 +472,7 @@
                     });
                     return formData;
                 };
-                console.log("INFO: initializeFormSubmit : END");
+                endLog("initializeFormSubmit");
             }
 
             /**
@@ -445,13 +481,13 @@
              * @returns {boolean}
              */
             function isAndroid() {
-                console.log("INFO: isAndroid START");
+                startLog("isAndroid");
                 try {
                     var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                    console.log("INFO: isAndroid : userAgent - " + userAgent);
+                    info("INFO: isAndroid : userAgent - " + userAgent);
                     return (/android/i.test(userAgent));
                 } finally {
-                    console.log("INFO: isAndroid END");
+                    endLog("isAndroid");
                 }
             }
 
@@ -461,15 +497,65 @@
              * @returns {boolean}
              */
              function isIOS() {
-                console.log("INFO: isIOS START");
+                startLog("isIOS");
                 try {
                     var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                    console.log("INFO: isIOS : userAgent - " + userAgent);
+                    info("INFO: isIOS : userAgent - " + userAgent);
                     // iOS detection from: http://stackoverflow.com/a/9039885/177710
                     return (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream);
                 } finally {
-                    console.log("INFO: isIOS END");
+                    endLog("isIOS");
                 }
+            }
+
+            /**
+             * Log as ERROR message along with timestamp
+             * @param {string} message
+             */
+             function error(message) {
+                console.log("ERROR: " + message);
+            }
+
+            /**
+             * Log as INFO message along with timestamp
+             * @param {string} message
+             */
+            function info(message) {
+                console.log("INFO: " + message);
+            }
+
+            /**
+             * Start log entry with message
+             * @param {string} key
+             * @param {string} message
+             */
+             function startLog(key, message) {
+                console.time("INFO: " + key);
+                if (message) {
+                    info(key + " START : " + message);
+                } else {
+                    info(key + " START");
+                }
+            }
+
+            /**
+             * End log entry with message
+             * 
+             * @param {string} key
+             * @param {string} message
+             */
+             function endLog(key, message) {
+                if (message) {
+                    info(key + " END : " + message);
+                } else {
+                    info(key + " END");
+                }
+                console.timeEnd("INFO: " + key);
+            }
+
+            function showMessage(message) {
+                $('#message').text(message);
+                $('#messageModel').slideDown();
             }
 		</script>
     </body>
