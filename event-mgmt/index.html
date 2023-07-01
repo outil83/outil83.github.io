@@ -73,6 +73,8 @@
                                 <button type="button" class="btn btn-secondary" onclick="$('#supervisorModel').slideDown();">
                                     Change Station
                                 </button>
+                                <a id="androidScanButton" hidden href="intent://goo.gl/iosgoogleapp/default?url=googleapp://home?lens_promo&min-version=77#Intent;package=;scheme=https;S.browser_fallback_url=https://goo.gl/iosgoogleapp/default%3Furl%3Dgoogleapp://home%3Flens_promo&min-version%3D77;end;">Scan</a>
+                                <a id="iOSScanButton" hidden href="https://search.app.goo.gl/?link=https://goo.gl/iosgoogleapp/default?url%3Dgoogleapp://home?lens_promo%26min-version%3D77&isi=284815942&ibi=com.google.GoogleMobile&utm_campaign=hpp_lens_marketing&utm_medium=hpp&utm_source=lens_google_com&ct=lens-images-hpp&mt=8&pt=9008&cid=8889716729255224030"></a>Scan
                                 <!--
                                 <p style="width: 100%; text-align: left;">Remarks: </p>
                                 <textarea class="form-control" name="remarks" id="remarks" rows="3" style="width: 100%"></textarea>                                
@@ -365,6 +367,12 @@
                     'background-color': "#000",
                     'text-align': "center"
                 });
+                if (isAndroid()) {
+                    $("#androidScanButton").removeAttr("hidden");
+                }
+                if (isIOS()) {
+                    $("#iOSScanButton").removeAttr("hidden");
+                }
                 loadStaticSetup(function() {
                     try {
                         loadSetup();
