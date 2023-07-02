@@ -267,18 +267,18 @@
                 var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
                 var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
                 info('loadActivities: ' + JSON.stringify(values));
-                var startDate = window.staticSetup.baseSetup['DATE'];
+                var groupId = window.staticSetup.baseSetup['CURRENT_DAY'];
                 window.activities = new $.Activities();
                 metaActivities = window.staticSetup.metadata.activities;
                 var activityOptionsHtml = "";
                 $('#activity').html("");
                 values.values.forEach(function(row, index, array) {
                     activity = $.Activity.fromRecord(row, metaActivities);
-                    //if (activity.getGroup() === groupId) {
+                    if (activity.getGroup() === groupId) {
                         window.activities.add(activity);
                         activityOptionsHtml = activityOptionsHtml 
                         + "<option value='" + activity.getId() + "'>" + activity.getGroup() + " / " + activity.getName() + "</option>";
-                    //}
+                    }
                 });
                 $('#activity').html(activityOptionsHtml);
                 info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
@@ -378,6 +378,9 @@
                         var supervisorId = $.getCookie('supervisorId');
                         var supervisorName = $.getCookie('supervisorName');
                         var activityId = $.getCookie('activityId');
+                        if (activityId && !window.activities.getById(activityId)) {
+                            activityId = undefined; // day has changed
+                        }
                         $('#selectedSupervisorName').text("");
                         if (!supervisorId || !activityId) {
                             $("#supervisorModel").slideDown();
