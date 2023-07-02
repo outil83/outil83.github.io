@@ -410,6 +410,7 @@
 
     function Entries() {
         this._entries = [];
+        this._entriesByActivityId = new Map();
         this._entriesByUniqueId = new Map();
         this._entriesByMemberId = new Map();
     }
@@ -450,6 +451,13 @@
             }
             entriesByMemberId.push(entry);
             this._entriesByMemberId.set(entry.getMemberId(), entriesByMemberId);
+
+            var entriesByActivityId = this._entriesByActivityId.get(entry.getActivityId());
+            if (!entriesByActivityId) {
+                entriesByActivityId = [];
+            }
+            entriesByActivityId.push(entry);
+            this._entriesByActivityId.set(entry.getActivityId(), entriesByActivityId);
         },
 
         /**
@@ -470,6 +478,15 @@
          */
         getByMemberId : function(memberId) {
             return this._entriesByMemberId.get(memberId);
+        },
+
+        /**
+         * 
+         * @param {string} activityId 
+         * @returns {Entry[]}
+         */
+        getByActivityId : function(activityId) {
+            return this._entriesByActivityId.get(activityId);
         },
 
         /**

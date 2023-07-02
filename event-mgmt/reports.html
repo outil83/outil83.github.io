@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Global Event Reports" />
+        <meta name="author" content="outil83" />
+        <title>VIBGIYOR | Global Event Reports</title>
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- Third party plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+		<!-- cookiealert styles -->
+		<link rel="stylesheet" href="css/cookiealert.css">
+        <link rel="stylesheet" href="css/JQLoader.css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+	</head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#memberDetail">Member Detail</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- memberDetail section-->
+        <section id="memberDetail" class="page-section bg-info">
+            <!-- START Bootstrap-Cookie-Alert -->
+
+            <div class="alert text-center cookiealert mt-5" role="alert">
+
+                <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
+
+
+
+                <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+
+                    I agree
+
+                </button>
+
+            </div>
+            <!-- END Bootstrap-Cookie-Alert -->
+            <div class="container">
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h5 class="text-white font-weight-bold">Reports</h5>
+                        <hr class="divider my-4" />
+                        <div id="reportOverall" hidden></div>
+                        <hr class="divider my-4" hidden />
+                        <div id="report1"></div>
+                        <hr class="divider my-4" />
+                        <div id="report2"></div>
+                        <hr class="divider my-4" />
+                        <div id="report3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="bg-light py-5">
+            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
+        </footer>
+
+        <!-- The Modal -->
+        <div class="modal" id="messageModel">
+			<div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p id="message"></p>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">Close</button>
+                    </div>
+
+                </div>
+			</div>
+        </div>
+
+		<!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+		<!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+		<!-- Google sheet JS-->
+        <script src="js/sheet.js"></script>
+		<!-- Include cookiealert script -->
+		<script src="js/cookiealert.js"></script>
+        <script src="js/JQLoader.js"></script>
+        <script src="js/event-mgmt.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript">
+
+            window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
+            
+            function loadStaticSetup(callback) {
+                startLog("loadStaticSetup");
+                try {
+                    window.staticSetup = window.localStorage.getItem('staticSetup');
+                    info('Static setup not found in local storage and hence getting default setup');
+                    $.ajax({
+                            async: true,
+                            type: 'GET',
+                            url: 'assets/json/static-setup.json',
+                            success: function(response) {
+                                    info('response: ' + response);
+                                    window.staticSetup = JSON.parse(response);
+                                    callback.call(null);
+                            },
+                            dataType: 'text'
+                    });
+                } finally {
+                    endLog("loadStaticSetup");
+                }
+            }
+			
+            // Make sure to load query params
+            (window.onpopstate = function () {
+                var match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+            
+                window.urlParams = {};
+                while (match = search.exec(query)) {
+                    window.urlParams[decode(match[1])] = decode(match[2]);
+                }
+                info("URL query parameters => " + JSON.stringify(window.urlParams));
+            })();
+
+            function loadSetup() {
+                startLog('loadSetup');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
+                var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
+                info('loadSetup: ' + JSON.stringify(values));
+                window.staticSetup.baseSetup = {};
+                values.values.forEach(function(row, index, array) {
+                    var key = '' + row[0];
+                    if (key !== "null" && key !== "undefined" && key.length > 0) {
+                        window.staticSetup.baseSetup[row[0]] = row[1];
+                    }
+                });
+                endLog('loadSetup');
+            }
+
+            function loadActivities() {
+                startLog('loadActivities');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
+                var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
+                info('loadActivities: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
+                window.currentDay = window.staticSetup.baseSetup['CURRENT_DAY'];
+                window.activities = new $.Activities();
+                metaActivities = window.staticSetup.metadata.activities;
+                values.values.forEach(function(row, index, array) {
+                    activity = $.Activity.fromRecord(row, metaActivities);
+                    window.activities.add(activity);
+                });
+                info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
+                endLog('loadActivities');
+            }
+
+            function loadSupervisors() {
+                startLog('loadSupervisors');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
+                var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
+                info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
+                window.supervisors = new $.Supervisors();
+                metaSupervisor = window.staticSetup.metadata.supervisor;
+                values.values.forEach(function(row, index, array) {
+                    supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
+                    window.supervisors.add(supervisor);
+                });
+                info('loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
+                endLog('loadSupervisors');
+            }
+
+            function loadMembers() {
+                startLog('loadMembers');
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                info('loadMembers: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
+                var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
+                info('loadMembers:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
+                window.members = new $.Members();
+                metaMembers = window.staticSetup.metadata.members;
+                values.values.forEach(function(row, index, array) {
+                    var member = new $.Member.fromRecord(row, metaMembers);
+                    window.members.add(member);
+                });
+                info('loadMembers: loaded members - ' + JSON.stringify(window.members));
+                endLog('loadMembers');
+            }
+
+            function loadEntries() {
+                startLog('loadEntries');
+                var memberId = window.urlParams['memberId'];
+                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
+                var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
+                info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
+                window.entries = new $.Entries();
+                metaEntries = window.staticSetup.metadata.entries;
+                values.values.forEach(function(row, index, array) {
+                    var entry = new $.Entry.fromRecord(row, metaEntries);
+                    window.entries.add(entry);
+                });
+                endLog('loadEntries');
+            }
+
+            function prepareReports() {
+                google.charts.load('current', {packages: ['corechart', 'bar']});
+                google.charts.setOnLoadCallback(drawAxisTickColors);
+            }
+
+            function drawAxisTickColors() {
+                var activities = window.activities.getAll();
+                var data = [];
+                var day1Data = [];
+                var day2Data = [];
+                var day3Data = [];
+                data.push(["Station", "Entries"]);
+                day1Data.push(["Station", "Entries"]);
+                day2Data.push(["Station", "Entries"]);
+                day3Data.push(["Station", "Entries"]);
+                activities.forEach((activity) => {
+                    var entries = window.entries.getByActivityId(activity.getId());
+                    var entryCount = entries ? entries.length : 0;
+                    var record = [activity.getGroup() + " / " + activity.getName(), entryCount];
+                    var record2 = [activity.getName(), entryCount];
+                    if (activity.getGroup() === "DAY1") {
+                        day1Data.push(record2);
+                    }
+                    if (activity.getGroup() === "DAY2") {
+                        day2Data.push(record2);
+                    }
+                    if (activity.getGroup() === "DAY3") {
+                        day3Data.push(record2);
+                    }
+                    data.push(record);
+                });
+
+                var data = google.visualization.arrayToDataTable(data);
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
+                var chart = new google.visualization.BarChart(document.getElementById('reportOverall'));
+                chart.draw(view, prepareChartOptions("Overall"));
+
+                data = google.visualization.arrayToDataTable(day1Data);
+                view = new google.visualization.DataView(data);
+                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
+                chart = new google.visualization.BarChart(document.getElementById('report1'));
+                chart.draw(view, prepareChartOptions("Day 1"));
+
+                data = google.visualization.arrayToDataTable(day2Data);
+                view = new google.visualization.DataView(data);
+                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
+                chart = new google.visualization.BarChart(document.getElementById('report2'));
+                chart.draw(view, prepareChartOptions("Day 2"));
+
+                data = google.visualization.arrayToDataTable(day3Data);
+                view = new google.visualization.DataView(data);
+                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
+                chart = new google.visualization.BarChart(document.getElementById('report3'));
+                chart.draw(view, prepareChartOptions("Day 3"));
+            }
+
+            /**
+             * @param {string} title
+             * @return {object} chart options
+             */
+            function prepareChartOptions(title) {
+                return {
+                    title: title,
+                    chartArea: {width: '50%'},
+                    bar: {groupWidth: "95%"},
+                    legend: { position: "none" },
+                    vAxis: {
+                        title: 'Stations',
+                        textStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                        },
+                        titleTextStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                        }
+                    }
+                };
+            }
+
+			$(document).ready(function() {
+                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
+                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
+                var customWidth = (window.innerWidth / 2) - (300 / 2);
+                $('.loading_box').css({
+                    'left': (window.innerWidth / 2) - (300 / 2),
+                    'width': 300,
+                    'color': "#fff",
+                    'background-color': "#000",
+                    'text-align': "center"
+                });
+                loadStaticSetup(function() {
+                    try {
+                        loadSetup();
+                        loadSupervisors();
+                        loadMembers();
+                        loadActivities();
+                        loadEntries();
+                        prepareReports();
+                    } finally {
+                        $("body").JQLoader({action: "close" });
+                    }
+                });
+			});
+
+            /**
+             * Log as ERROR message along with timestamp
+             * @param {string} message
+             */
+             function error(message) {
+                console.log("ERROR: " + message);
+            }
+
+            /**
+             * Log as INFO message along with timestamp
+             * @param {string} message
+             */
+            function info(message) {
+                console.log("INFO: " + message);
+            }
+
+            /**
+             * Start log entry with message
+             * @param {string} key
+             * @param {string} message
+             */
+             function startLog(key, message) {
+                console.time("INFO: " + key);
+                if (message) {
+                    info(key + " START : " + message);
+                } else {
+                    info(key + " START");
+                }
+            }
+
+            /**
+             * End log entry with message
+             * 
+             * @param {string} key
+             * @param {string} message
+             */
+             function endLog(key, message) {
+                if (message) {
+                    info(key + " END : " + message);
+                } else {
+                    info(key + " END");
+                }
+                console.timeEnd("INFO: " + key);
+            }
+
+            function showMessage(message) {
+                $('#message').text(message);
+                $('#messageModel').slideDown();
+            }
+		</script>
+    </body>
+</html>
