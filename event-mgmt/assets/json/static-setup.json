@@ -1,16 +1,15 @@
 {
-
     "googleForm": {
-        "customFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSenxqUsVe-7A9rLfcPC4N8Bhvj5sRheu3c_Yk-H7xJS79xuhQ/formResponse",
-        "prefilledFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSenxqUsVe-7A9rLfcPC4N8Bhvj5sRheu3c_Yk-H7xJS79xuhQ/viewform?usp=pp_url",
-        "paramSupervisorId": "entry.17957928",
-        "paramMemberId": "entry.1406128866",
-        "paramActivityId": "entry.658499938",
-        "paramRemarks": "entry.2026204865"
+        "customFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdzunDPeNglqD2wUBH7Oti1mfA4otJ0klor5GSH-E_wydQswg/formResponse",
+        "prefilledFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdzunDPeNglqD2wUBH7Oti1mfA4otJ0klor5GSH-E_wydQswg/viewform?usp=pp_url",
+        "paramSupervisorId": "entry.1873188188",
+        "paramMemberId": "entry.1679181068",
+        "paramActivityId": "entry.248355264",
+        "paramRemarks": "entry.1344007691"
     },
     "googleSheet": {
-        "url": "https://docs.google.com/spreadsheets/d/12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM/edit?usp=sharing",
-        "sheetId": "12C6a8pjCt35o10wgoJpgCWHSCnMLwigczF8Ais2pPiM",
+        "url": "https://docs.google.com/spreadsheets/d/1K2kct9TY8U-61fYWZG04rf3W_a3_9LOKFKOPQEIh660/edit?usp=sharing",
+        "sheetId": "1K2kct9TY8U-61fYWZG04rf3W_a3_9LOKFKOPQEIh660",
         "entries": "entries!A2:E12000",
         "members": "members!A2:J1000",
         "supervisors": "supervisors!A2:D100",
