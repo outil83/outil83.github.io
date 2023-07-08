@@ -34,12 +34,9 @@
         <!-- memberDetail section-->
         <section id="memberDetail" class="page-section bg-info">
             <!-- START Bootstrap-Cookie-Alert -->
-
             <div class="alert text-center cookiealert mt-5" role="alert">
 
                 <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
-
-
 
                 <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
 
@@ -49,7 +46,11 @@
 
             </div>
             <!-- END Bootstrap-Cookie-Alert -->
-            <div class="container">
+            <div id="divLoading" class="container">
+                <p>Please wait while page is loading...</p>
+            </div>
+
+            <div id="content" class="container" hidden>
                 <div class="row align-items-center justify-content-center text-center">
                     <div class="col-lg-10 align-self-end">
                         <h5 class="text-white font-weight-bold" id="selectedSupervisorName"></h5>
@@ -232,19 +233,29 @@
             function loadStaticSetup(callback) {
                 startLog("loadStaticSetup");
                 try {
-                    window.staticSetup = window.localStorage.getItem('staticSetup');
-                    info('Static setup not found in local storage and hence getting default setup');
-                    $.ajax({
-                            async: true,
+                    $.cacheManager.register("static-setup", new $.Cache("static-setup", new $.Cachable(), (1000 * 60 * 60)));
+                    var staticSetupCache = $.cacheManager.get("static-setup");
+
+                    window.staticSetup = staticSetupCache.load(function() {
+                        info('Static setup not found in local storage and hence getting default setup');
+                        var result = {};
+                        $.ajax({
+                            async: false,
                             type: 'GET',
                             url: 'assets/json/static-setup.json',
                             success: function(response) {
-                                    info('response: ' + response);
-                                    window.staticSetup = JSON.parse(response);
-                                    callback.call(null);
+                                info('loadStaticSetup - successfully fetched');
+                                result = JSON.parse(response);
                             },
                             dataType: 'text'
+                        });
+                        return result;
                     });
+                    if (!window.staticSetup) {
+                        alert("SYSTEM ERROR: Failed to load static setup!");
+                        return ;
+                    }
+                    callback.call(null);
                 } finally {
                     endLog("loadStaticSetup");
                 }
@@ -263,46 +274,66 @@
                     window.urlParams[decode(match[1])] = decode(match[2]);
                 }
                 info("URL query parameters => " + JSON.stringify(window.urlParams));
+                if (window.urlParams["clear"]) {
+                    window.localStorage.clear();
+                }
             })();
 
             function loadSetup() {
                 startLog('loadSetup');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
-                var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
-                info('loadSetup: ' + JSON.stringify(values));
+                $.cacheManager.register("setup", new $.Cache("setup", new $.Cachable(), (1000 * 60 * 60)));
+
+                var setupCache = $.cacheManager.get("setup");
+                var setupData = setupCache.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
+                    var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
+                    info('loadSetup: ' + JSON.stringify(values));
+                    var arrSetup = [];
+                    values.values.forEach(function(row, index, array) {
+                        var key = '' + row[0];
+                        if (key !== "null" && key !== "undefined" && key.length > 0) {
+                            arrSetup.push({ "key": row[0], "value": row[1]});
+                        }
+                    });
+                    return arrSetup;
+                });
                 window.staticSetup.baseSetup = {};
-                values.values.forEach(function(row, index, array) {
-                    var key = '' + row[0];
-                    if (key !== "null" && key !== "undefined" && key.length > 0) {
-                        window.staticSetup.baseSetup[row[0]] = row[1];
-                    }
+                setupData.forEach(setup => {
+                    window.staticSetup.baseSetup[setup["key"]] = setup["value"];
                 });
                 endLog('loadSetup');
             }
 
             function loadActivities() {
                 startLog('loadActivities');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
-                var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
-                info('loadActivities: ' + JSON.stringify(values));
-                var groupId = window.staticSetup.baseSetup['CURRENT_DAY'];
                 window.activities = new $.Activities();
-                metaActivities = window.staticSetup.metadata.activities;
+                window.activities.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
+                    var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
+                    info('loadActivities: ' + JSON.stringify(values));
+                    var groupId = window.staticSetup.baseSetup['CURRENT_DAY'];
+                    var metaActivities = window.staticSetup.metadata.activities;
+                    var arrActivities = [];
+                    values.values.forEach(function(row, index, array) {
+                        activity = $.Activity.fromRecord(row, metaActivities);
+                        if (activity && activity.getGroup() === groupId) {
+                            arrActivities.push(activity);
+                        }
+                    });
+                    return arrActivities;
+                });
+
                 var activityOptionsHtml = "";
                 $('#activity').html("");
-                values.values.forEach(function(row, index, array) {
-                    activity = $.Activity.fromRecord(row, metaActivities);
-                    if (activity.getGroup() === groupId) {
-                        window.activities.add(activity);
-                        activityOptionsHtml = activityOptionsHtml 
+                window.activities.getAll().forEach(activity => {
+                    activityOptionsHtml = activityOptionsHtml 
                         + "<option value='" + activity.getId() + "'>" + activity.getGroup() + " / " + activity.getName() + "</option>";
-                    }
                 });
                 $('#activity').html(activityOptionsHtml);
                 info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
@@ -311,20 +342,36 @@
 
             function loadSupervisors() {
                 startLog('loadSupervisors');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
-                var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
-                info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
                 window.supervisors = new $.Supervisors();
-                metaSupervisor = window.staticSetup.metadata.supervisor;
+                window.supervisors.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
+                    var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+
+                    metaSupervisor = window.staticSetup.metadata.supervisor;
+                    if (totalRecords == 0) {
+                        return [];
+                    }
+                    var arrSupervisors = [];
+                    values.values.forEach(function(row, index, array) {
+                        var supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
+                        if (supervisor) {
+                            arrSupervisors.push(supervisor);
+                        }
+                    });
+                    return arrSupervisors;
+                });
+
                 var supervisorOptionsHtml = "";
                 $('#supervisorName').html("");
-                values.values.forEach(function(row, index, array) {
-                    supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
-                    window.supervisors.add(supervisor);
-					
+                window.supervisors.getAll().forEach(supervisor => {
                     supervisorOptionsHtml = supervisorOptionsHtml 
                         + "<option value='" + supervisor.getId() + "'>" + supervisor.getName() + "</option>";
                 });
@@ -335,64 +382,125 @@
 
             function loadMemberDetail() {
                 startLog('loadMemberDetail');
-                var memberId = window.urlParams['memberId'];
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadMemberDetail: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
-                var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
-                info('loadMemberDetail:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.member = {};
-                metaMembers = window.staticSetup.metadata.members;
-                values.values.forEach(function(row, index, array) {
-                    var member = new $.Member.fromRecord(row, metaMembers);
-                    if (member.getId() !== memberId) {
-                        return; // skip non-matching member
+                try {
+                    window.members = new $.Members();
+                    window.members.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadMemberDetail: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
+                        var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadMemberDetail:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var arrMembers = [];
+                        var metaMembers = window.staticSetup.metadata.members;
+                        values.values.forEach(function(row, index, array) {
+                            var member = new $.Member.fromRecord(row, metaMembers);
+                            if (member) {
+                                arrMembers.push(member);
+                            }
+                        });
+                        return arrMembers;
+                    });
+                    var memberId = window.urlParams['memberId'];
+                    if (!memberId) {
+                        showMessage("Invalid access! The 'memberId' query parameter is missing.");
+                        return ;
                     }
-                    window.member = member;
+                    window.member = window.members.getById(memberId);
+                    if (!window.member) {
+                        showMessage("Invalid member id - " + memberId);
+                        return ;
+                    }
                     $("#delegate").text(member.getName() + " (" + member.getId() + ")");
                     $("#representing").text(member.getCountry() + ", " + member.getCommittee());
                     $("#registration").text(member.getRegistration() + " (" + member.getAccomodation() + ")");
                     $("#school").text(member.getSchool());
+                    var metaMembers = window.staticSetup.metadata.members;
                     $("#schedule").html("<a href='./files/" + member.getSchedule() + "' target='_blank'>Click to download " + metaMembers.schedule.displayName + "</a>");
-                });
-                info('loadMemberDetail: memberDetail - ' + JSON.stringify(window.member));
-                endLog('loadMemberDetail');
+
+                    info('loadMemberDetail: memberDetail - ' + JSON.stringify(window.member));
+                } finally {
+                    endLog('loadMemberDetail');
+                }
             }
 
             function loadEntries() {
                 startLog('loadEntries');
-                var memberId = window.urlParams['memberId'];
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
-                var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
-                info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.entries = new $.Entries();
-                metaEntries = window.staticSetup.metadata.entries;
-                values.values.forEach(function(row, index, array) {
-                    var entry = new $.Entry.fromRecord(row, metaEntries);
-                    window.entries.add(entry);
-                });
-                if (window.member) {
-                    info('loadEntries: member entries - ' + JSON.stringify(window.entries.getByMemberId(window.member.getId())));
+                try {
+                    window.entries = new $.Entries();
+                    window.entries.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
+                        var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var metaEntries = window.staticSetup.metadata.entries;
+                        var arrEntries = [];
+                        values.values.forEach(function(row, index, array) {
+                            var entry = new $.Entry.fromRecord(row, metaEntries);
+                            if (entry) {
+                                arrEntries.push(entry);
+                            }
+                        });
+                        return arrEntries;
+                    });
+                    if (window.member) {
+                        info('loadEntries: member entries - ' + JSON.stringify(window.entries.getByMemberId(window.member.getId())));
+                    }
+                } finally {
+                    endLog('loadEntries');
                 }
-                endLog('loadEntries');
             }
 
-			$(document).ready(function() {
-                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
-                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
-                var customWidth = (window.innerWidth / 2) - (300 / 2);
-                $('.loading_box').css({
-                    'left': (window.innerWidth / 2) - (300 / 2),
-                    'width': 300,
-                    'color': "#fff",
-                    'background-color': "#000",
-                    'text-align': "center"
-                });
+            function loadSubsequentEntries() {
+                startLog('loadSubsequentEntries');
+                try {
+                    var arrEntries = window.entries.getAll();
+                    var startOfRange = "A" + (arrEntries.length + 2); // +1 header and +1 for range row start from 1
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
+                    var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1].replace("A2", startOfRange));
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                    if (totalRecords == 0) {
+                        return ;
+                    }
+                    var metaEntries = window.staticSetup.metadata.entries;
+                    values.values.forEach(function(row, index, array) {
+                        var entry = new $.Entry.fromRecord(row, metaEntries);
+                        if (entry) {
+                            window.entries.add(entry);
+                        }
+                    });
+                    window.entries.save();
+                } finally {
+                    endLog('loadSubsequentEntries');
+                }
+            }
+
+            function initialize() {
                 loadStaticSetup(function() {
+                    startLog("loadStaticSetupCallback");
                     try {
                         loadSetup();
                         loadSupervisors();
@@ -416,8 +524,25 @@
 
                     } finally {
                         $("body").JQLoader({action: "close" });
+                        endLog("loadStaticSetupCallback");
                     }
                 });
+            }
+
+			$(document).ready(function() {
+                $("#divLoading").remove();
+                $("#content").removeAttr("hidden");
+                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
+                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
+                var customWidth = (window.innerWidth / 2) - (300 / 2);
+                $('.loading_box').css({
+                    'left': (window.innerWidth / 2) - (300 / 2),
+                    'width': 300,
+                    'color': "#fff",
+                    'background-color': "#000",
+                    'text-align': "center"
+                });
+                window.setTimeout(initialize, 100);
 			});
 
             function initializeFormSubmit() {
@@ -430,6 +555,8 @@
                     try {
                         info("handleSubmit : event = " + JSON.stringify(event));
                         event.preventDefault();
+                        // ensure to load sub-sequent entries
+                        loadSubsequentEntries();
                         // duplicate submission check
                         var activity = window.activities.getById(window.staticSetup.selectedActivityId);
                         var uniqueId = window.entries.getUniqueId(window.member.getId(), window.staticSetup.selectedActivityId);

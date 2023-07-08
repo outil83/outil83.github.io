@@ -1,13 +1,164 @@
 (function($) {
     "use strict"; // Start of use strict
 
+    const CACHE_KEY_ACTIVITIES = "activities";
+    const CACHE_EVICATION_ACTIVITIES = 1000 * 60 * 60; // 1 hour
+
+    const CACHE_KEY_SUPERVISORS = "supervisors";
+    const CACHE_EVICATION_SUPERVISORS = 1000 * 60 * 60; // 1 hour
+
+    const CACHE_KEY_MEMBERS = "members";
+    const CACHE_EVICATION_MEMBERS = 1000 * 60 * 10; // 10 minutes
+
+    const CACHE_KEY_ENTRIES = "entries";
+    const CACHE_EVICATION_ENTRIES = 1000 * 60 * 60 * 2; // 2 hour
+
+    function Cachable() {
+        // DO NOTHING
+    }
+
+    $.extend(Cachable.prototype, {
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {any}
+         */
+        fromCache: function(content) {
+            return JSON.parse(content);
+        },
+
+        /**
+         * 
+         * @param {any} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return JSON.stringify(data);
+        }
+        
+    });
+
+    function CacheManager() {
+        this.mapCache = new Map();
+    }
+
+    $.extend(CacheManager.prototype, {
+
+        /**
+         * 
+         * @param {string} cacheKey 
+         * @param {Cache} cache 
+         */
+        register: function(cacheKey, cache) {
+            this.mapCache.set(cacheKey, cache);
+        },
+
+        /**
+         * 
+         * @param {string} cacheKey 
+         * @returns {Cache}
+         */
+        get: function(cacheKey) {
+            return this.mapCache.get(cacheKey);
+        }
+    });
+
+    $.cacheManager = new CacheManager();
+
+    /**
+     * 
+     * @param {Cachable} cachable 
+     */
+    function Cache(cacheKey, cachable, evicationPeriod) {
+        this._cacheKey = cacheKey;
+        this._cachable = cachable;
+        this._evicationPeriod = evicationPeriod;
+    }
+
+    $.extend(Cache.prototype, {
+
+
+        /**
+         * 
+         * @param {any} data 
+         */
+        save : function(data) {
+            localStorage.setItem(this._cacheKey, this._cachable.toCache(data));
+            localStorage.setItem(this._cacheKey + "_time", JSON.stringify(new Date().getTime()));
+        },
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {object}
+         */
+        load : function(callback) {
+            var strTime = localStorage.getItem(this._cacheKey + "_time");
+            var strCachedData = localStorage.getItem(this._cacheKey)
+            if (strTime && strCachedData) {
+                var time = Number(strTime);
+                if (new Date().getTime() - time < this._evicationPeriod) {
+                    return this._cachable.fromCache(localStorage.getItem(this._cacheKey));
+                }
+            }
+            var data = callback.call(null);
+            this.save(data);
+            return data;
+        }
+    });
+
     function Activities() {
+        this.cachable = new Cachable();
+        $.cacheManager.register(CACHE_KEY_ACTIVITIES, new Cache(CACHE_KEY_ACTIVITIES, this, CACHE_EVICATION_ACTIVITIES)); // 1 minute
+
         this.activities = [];
         this.activityById = new Map();
         this.activityByName = new Map();
     }
 
+
     $.extend(Activities.prototype, {
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {Activity[]}
+         */
+        load: function(callback) {
+            var arrActivities = $.cacheManager.get(CACHE_KEY_ACTIVITIES).load(callback);
+            arrActivities.forEach(activity => {
+                this.add(activity);
+            });
+            return this.getAll();
+        },
+
+        save: function() {
+            $.cacheManager.get(CACHE_KEY_ACTIVITIES).save(this.activities);
+        },
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {Activity[]}
+         */
+        fromCache: function(content) {
+            var arrActivities = this.cachable.fromCache(content);
+            var arrResult = [];
+            arrActivities.forEach(jsonActivity => {
+                arrResult.push(Activity.fromJson(jsonActivity));
+            });
+            return arrResult;
+        },
+
+        /**
+         * 
+         * @param {any} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return this.cachable.toCache(data);
+        },
 
         /**
          * 
@@ -121,6 +272,9 @@
      * @returns {Activity}
      */
     Activity.fromRecord = function (row, metadata) {
+        if (!row[metadata.id.index] || row[metadata.id.index] === "") {
+            return ;
+        }
         return new Activity(
             row[metadata.id.index], 
             row[metadata.group.index], 
@@ -131,13 +285,72 @@
         );
     };
 
+    /**
+     * 
+     * @param {object} data 
+     * @returns {Activity}
+     */
+    Activity.fromJson = function (data) {
+        return new Activity(
+            data["id"],
+            data["group"], 
+            data["name"], 
+            data["description"], 
+            data["maxAllowed"],
+            data["custom"]
+        );
+    };
+
     function Supervisors() {
+        this.cachable = new Cachable();
+        $.cacheManager.register(CACHE_KEY_SUPERVISORS, new Cache(CACHE_KEY_SUPERVISORS, this, CACHE_EVICATION_SUPERVISORS));
+
         this.supervisors = [];
         this.supervisorById = new Map();
         this.supervisorByName = new Map();
     }
 
     $.extend(Supervisors.prototype, {
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {Supervisor[]}
+         */
+        load: function(callback) {
+            var arrSupervisors = $.cacheManager.get(CACHE_KEY_SUPERVISORS).load(callback);
+            arrSupervisors.forEach(supervisor => {
+                this.add(supervisor);
+            });
+            return this.getAll();
+        },
+
+        save: function() {
+            $.cacheManager.get(CACHE_KEY_SUPERVISORS).save(this.supervisors);
+        },
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {Supervisor[]}
+         */
+        fromCache: function(content) {
+            var arrSupervisors = this.cachable.fromCache(content);
+            var arrResult = [];
+            arrSupervisors.forEach(jsonSupervisor => {
+                arrResult.push(Supervisor.fromJson(jsonSupervisor));
+            });
+            return arrResult;
+        },
+
+        /**
+         * 
+         * @param {Supervisor[]} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return this.cachable.toCache(data);
+        },
 
         /**
          * 
@@ -233,6 +446,9 @@
      * @returns {Supervisor}
      */
     Supervisor.fromRecord = function (row, metadata) {
+        if (!row[metadata.id.index] || row[metadata.id.index] === "") {
+            return ;
+        }
         return new Supervisor(
             row[metadata.id.index], 
             row[metadata.name.index], 
@@ -240,17 +456,74 @@
             row[metadata.otp.index]
         );
     };
+
+    /**
+     * 
+     * @param {object} data 
+     * @returns {Supervisor}
+     */
+    Supervisor.fromJson = function (data) {
+        return new Supervisor(
+            data["id"], 
+            data["name"], 
+            data["gender"], 
+            data["otp"]
+        );
+    };
     
     /**
      * Constructs new instance of Members
      */
     function Members() {
+        this.cachable = new Cachable();
+        $.cacheManager.register(CACHE_KEY_MEMBERS, new Cache(CACHE_KEY_MEMBERS, this, CACHE_EVICATION_MEMBERS));
+
         this.members = [];
         this.memberById = new Map();
         this.memberByName = new Map();
     }
 
     $.extend(Members.prototype, {
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {Member[]}
+         */
+        load: function(callback) {
+            var arrMembers = $.cacheManager.get(CACHE_KEY_MEMBERS).load(callback);
+            arrMembers.forEach(member => {
+                this.add(member);
+            });
+            return this.getAll();
+        },
+
+        save: function() {
+            $.cacheManager.get(CACHE_KEY_MEMBERS).save(this.members);
+        },
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {Member[]}
+         */
+        fromCache: function(content) {
+            var arrMembers = this.cachable.fromCache(content);
+            var arrResult = [];
+            arrMembers.forEach(jsonMember => {
+                arrResult.push(Member.fromJson(jsonMember));
+            });
+            return arrResult;
+        },
+
+        /**
+         * 
+         * @param {Member[]} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return this.cachable.toCache(data);
+        },
 
         /**
          * 
@@ -392,9 +665,12 @@
      * 
      * @param {string[]} row 
      * @param {object} metadata 
-     * @returns {Supervisor}
+     * @returns {Member}
      */
     Member.fromRecord = function (row, metadata) {
+        if (!row[metadata.id.index] || row[metadata.id.index] === "") {
+            return ;
+        }
         return new Member(
             row[metadata.id.index], 
             row[metadata.name.index], 
@@ -408,7 +684,29 @@
         );
     };
 
+    /**
+     * 
+     * @param {object} data 
+     * @returns {Member}
+     */
+    Member.fromJson = function (data) {
+        return new Member(
+            data["id"], 
+            data["name"], 
+            data["gender"], 
+            data["country"],
+            data["committee"],
+            data["school"],
+            data["registration"],
+            data["accomodation"],
+            data["schedule"],
+        );
+    };
+
     function Entries() {
+        this.cachable = new Cachable();
+        $.cacheManager.register(CACHE_KEY_ENTRIES, new Cache(CACHE_KEY_ENTRIES, this, CACHE_EVICATION_ENTRIES));
+
         this._entries = [];
         this._entriesByActivityId = new Map();
         this._entriesByUniqueId = new Map();
@@ -416,6 +714,46 @@
     }
 
     $.extend(Entries.prototype, {
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {Entry[]}
+         */
+        load: function(callback) {
+            var arrEntries = $.cacheManager.get(CACHE_KEY_ENTRIES).load(callback);
+            arrEntries.forEach(entry => {
+                this.add(entry);
+            });
+            return this.getAll();
+        },
+
+        save: function() {
+            $.cacheManager.get(CACHE_KEY_ENTRIES).save(this._entries);
+        },
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {Entry[]}
+         */
+        fromCache: function(content) {
+            var arrEntries = this.cachable.fromCache(content);
+            var arrResult = [];
+            arrEntries.forEach(jsonEntry => {
+                arrResult.push(Entry.fromJson(jsonEntry));
+            });
+            return arrResult;
+        },
+
+        /**
+         * 
+         * @param {Entry[]} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return this.cachable.toCache(data);
+        },
 
         /**
          * 
@@ -442,6 +780,7 @@
          */
         add : function(entry) {
             this._entries.push(entry);
+
             var entryUniqueId = this.getUniqueIdFromEntry(entry);
             this._entriesByUniqueId.set(entryUniqueId, entry);
 
@@ -565,6 +904,9 @@
      * @returns {Entry}
      */
     Entry.fromRecord = function (row, metadata) {
+        if (!row[metadata.timestamp.index] || row[metadata.timestamp.index] === "") {
+            return ;
+        }
         return new Entry(
             row[metadata.timestamp.index], 
             row[metadata.supervisorId.index], 
@@ -573,7 +915,24 @@
             row[metadata.remarks.index]
         );
     };
-    
+
+    /**
+     * 
+     * @param {object} data 
+     * @returns {Entry}
+     */
+    Entry.fromJson = function (data) {
+        return new Entry(
+            data["timestamp"], 
+            data["supervisorId"], 
+            data["activityId"], 
+            data["memberId"], 
+            data["remarks"]
+        );
+    };
+
+    $.Cache = Cache;
+    $.Cachable = Cachable;
     $.Activities = Activities;
     $.Activity = Activity;
     $.Supervisors = Supervisors;
