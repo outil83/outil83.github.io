@@ -126,7 +126,7 @@
 
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="if (!$('#supervisorName').find(':selected')) { alert('First select appropriate supervisor!'); return false;} if (!$('#activity').find(':selected')) { alert('Please select appropriate station / activity!'); return false;} if (validateSupervisor($('#supervisorName').find(':selected').val(), $('#supervisorCredential').val()) === true) { saveSupervisor($('#supervisorName').val(), $('#supervisorName').find(':selected').text(), $('#activity').find(':selected').val()); $('#supervisorModel').slideUp();return true; } else { alert('Invalid credential entered!'); return false;}">Save and Remember</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="return saveAndRemember();">Save and Remember</button>
                     </div>
 
                 </div>
@@ -175,6 +175,30 @@
 		<script type="text/javascript">
 
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
+
+            function saveAndRemember() {
+                if (!$('#supervisorName').find(':selected')) { 
+                    alert('First select appropriate supervisor!'); 
+                    return false;
+                } 
+                if (!$('#activity').find(':selected')) { 
+                    alert('Please select appropriate station / activity!'); 
+                    return false;
+                }
+                var savedSupervisorId = $.getCookie('supervisorId');
+                var supervisorId = $('#supervisorName').find(':selected').val();
+                var supervisorName = $('#supervisorName').find(':selected').text();
+                var otp = $('#supervisorCredential').val();
+                if (savedSupervisorId === supervisorId || validateSupervisor(supervisorId, otp) === true) {
+                    var activityId = $('#activity').find(':selected').val();
+                    saveSupervisor(supervisorId, supervisorName, activityId); 
+                    $('#supervisorModel').slideUp();
+                    return true; 
+                } else { 
+                    alert('Invalid credential entered!'); 
+                    return false;
+                }
+            }
 			
 			function saveSupervisor(supervisorId, supervisorName, activityId) {
 				startLog('saveSupervisor');
