@@ -235,8 +235,8 @@
             function loadStaticSetup(callback) {
                 startLog("loadStaticSetup");
                 try {
-                    $.cacheManager.register("static-setup", new $.Cache("static-setup", new $.Cachable(), (1000 * 60 * 60)));
-                    var staticSetupCache = $.cacheManager.get("static-setup");
+                    $.cacheManager.register(CACHE_KEY_STAIC_SETUP, new $.Cache(CACHE_KEY_STAIC_SETUP, new $.Cachable(), (1000 * 60 * 60)));
+                    var staticSetupCache = $.cacheManager.get(CACHE_KEY_STAIC_SETUP);
 
                     window.staticSetup = staticSetupCache.load(function() {
                         info('Static setup not found in local storage and hence getting default setup');
