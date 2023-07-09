@@ -84,8 +84,13 @@
          * @param {any} data 
          */
         save : function(data) {
-            localStorage.setItem(this._cacheKey, this._cachable.toCache(data));
-            localStorage.setItem(this._cacheKey + "_time", JSON.stringify(new Date().getTime()));
+            if (window.cacheEnabled === true) {
+                localStorage.setItem(this._cacheKey, this._cachable.toCache(data));
+                localStorage.setItem(this._cacheKey + "_time", JSON.stringify(new Date().getTime()));    
+            } else {
+                localStorage.removeItem(this._cacheKey);
+                localStorage.removeItem(this._cacheKey + "_time");    
+            }
         },
 
         /**
@@ -96,12 +101,14 @@
         load : function(callback) {
             var strTime = localStorage.getItem(this._cacheKey + "_time");
             var strCachedData = localStorage.getItem(this._cacheKey)
-            if (strTime && strCachedData) {
+            if (window.cacheEnabled === true && strTime && strCachedData) {
                 var time = Number(strTime);
                 if (new Date().getTime() - time < this._evicationPeriod) {
                     return this._cachable.fromCache(localStorage.getItem(this._cacheKey));
                 }
+                console.log("INFO: Cache.load - Eviction period has expired!")
             }
+            console.log("INFO: Cache.enabled - " + window.cacheEnabled);
             var data = callback.call(null);
             this.save(data);
             return data;

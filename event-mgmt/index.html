@@ -176,6 +176,8 @@
 		<script type="text/javascript">
 
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
+            window.CACHE_KEY_STAIC_SETUP = "static-setup";
+            window.cacheEnabled = false;
 
             function saveAndRemember() {
                 if (!$('#supervisorName').find(':selected')) { 
@@ -254,6 +256,9 @@
                     if (!window.staticSetup) {
                         alert("SYSTEM ERROR: Failed to load static setup!");
                         return ;
+                    }
+                    if (window.staticSetup.cache && window.staticSetup.cache.enabled === true) {
+                        window.cacheEnabled = true;
                     }
                     callback.call(null);
                 } finally {
