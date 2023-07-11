@@ -151,6 +151,6 @@
         }
     },
     "cache": {
-        "enabled": false
+        "enabled": true
     }
 }
