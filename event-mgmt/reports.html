@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Global Event Reports" />
-        <meta name="author" content="outil83" />
-        <title>VIBGIYOR | Global Event Reports</title>
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>VIBGIYOR | Global Event</title>
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
         <!-- Google fonts-->
@@ -26,20 +26,18 @@
                 <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#memberDetail">Member Detail</a></li>
+                        <li class="nav-item"><a id='navToReports' class="nav-link js-scroll-trigger" href="#reports">Reports</a></li>
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Detail</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <!-- memberDetail section-->
-        <section id="memberDetail" class="page-section bg-info">
+        <!-- Reports section-->
+        <section id="reports" class="page-section bg-info">
             <!-- START Bootstrap-Cookie-Alert -->
-
             <div class="alert text-center cookiealert mt-5" role="alert">
 
                 <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
-
-
 
                 <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
 
@@ -49,18 +47,40 @@
 
             </div>
             <!-- END Bootstrap-Cookie-Alert -->
-            <div class="container">
+            <div id="divLoading" class="container">
+                <p>Please wait while page is loading...</p>
+            </div>
+
+            <div id="divReport" class="container" hidden>
                 <div class="row align-items-center justify-content-center text-center">
                     <div class="col-lg-10 align-self-end">
                         <h5 class="text-white font-weight-bold">Reports</h5>
                         <hr class="divider my-4" />
-                        <div id="reportOverall" hidden></div>
-                        <hr class="divider my-4" hidden />
-                        <div id="report1"></div>
+                        <div class="table-responsive">
+                            <div id="reportOverall">
+                                <!-- Report overall -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Detail section-->
+        <section id="detail" class="page-section bg-warning">
+
+            <div id="divDetail" class="container" hidden>
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h5 class="text-white font-weight-bold">Detail</h5>
+                        <h6 class="table-responsive">
+                            List of members who are yet to attend station <span id="activity"></span>
+                        </h6>
                         <hr class="divider my-4" />
-                        <div id="report2"></div>
-                        <hr class="divider my-4" />
-                        <div id="report3"></div>
+                        <div class="table-responsive">
+                            <div id="memberDrilldown">
+                                <!-- Report drilldown to members -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,27 +133,8 @@
 		<script type="text/javascript">
 
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
-            
-            function loadStaticSetup(callback) {
-                startLog("loadStaticSetup");
-                try {
-                    window.staticSetup = window.localStorage.getItem('staticSetup');
-                    info('Static setup not found in local storage and hence getting default setup');
-                    $.ajax({
-                            async: true,
-                            type: 'GET',
-                            url: 'assets/json/static-setup.json',
-                            success: function(response) {
-                                    info('response: ' + response);
-                                    window.staticSetup = JSON.parse(response);
-                                    callback.call(null);
-                            },
-                            dataType: 'text'
-                    });
-                } finally {
-                    endLog("loadStaticSetup");
-                }
-            }
+            window.CACHE_KEY_STAIC_SETUP = "static-setup";
+            window.cacheEnabled = false;
 			
             // Make sure to load query params
             (window.onpopstate = function () {
@@ -148,183 +149,15 @@
                     window.urlParams[decode(match[1])] = decode(match[2]);
                 }
                 info("URL query parameters => " + JSON.stringify(window.urlParams));
+                if (window.urlParams["clear"]) {
+                    window.localStorage.clear();
+                }
             })();
 
-            function loadSetup() {
-                startLog('loadSetup');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
-                var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
-                info('loadSetup: ' + JSON.stringify(values));
-                window.staticSetup.baseSetup = {};
-                values.values.forEach(function(row, index, array) {
-                    var key = '' + row[0];
-                    if (key !== "null" && key !== "undefined" && key.length > 0) {
-                        window.staticSetup.baseSetup[row[0]] = row[1];
-                    }
-                });
-                endLog('loadSetup');
-            }
-
-            function loadActivities() {
-                startLog('loadActivities');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
-                var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
-                info('loadActivities: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.currentDay = window.staticSetup.baseSetup['CURRENT_DAY'];
-                window.activities = new $.Activities();
-                metaActivities = window.staticSetup.metadata.activities;
-                values.values.forEach(function(row, index, array) {
-                    activity = $.Activity.fromRecord(row, metaActivities);
-                    window.activities.add(activity);
-                });
-                info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
-                endLog('loadActivities');
-            }
-
-            function loadSupervisors() {
-                startLog('loadSupervisors');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
-                var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
-                info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.supervisors = new $.Supervisors();
-                metaSupervisor = window.staticSetup.metadata.supervisor;
-                values.values.forEach(function(row, index, array) {
-                    supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
-                    window.supervisors.add(supervisor);
-                });
-                info('loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
-                endLog('loadSupervisors');
-            }
-
-            function loadMembers() {
-                startLog('loadMembers');
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadMembers: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
-                var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
-                info('loadMembers:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.members = new $.Members();
-                metaMembers = window.staticSetup.metadata.members;
-                values.values.forEach(function(row, index, array) {
-                    var member = new $.Member.fromRecord(row, metaMembers);
-                    window.members.add(member);
-                });
-                info('loadMembers: loaded members - ' + JSON.stringify(window.members));
-                endLog('loadMembers');
-            }
-
-            function loadEntries() {
-                startLog('loadEntries');
-                var memberId = window.urlParams['memberId'];
-                // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
-                var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
-                var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
-                var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
-                info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + values["values"].length);
-                window.entries = new $.Entries();
-                metaEntries = window.staticSetup.metadata.entries;
-                values.values.forEach(function(row, index, array) {
-                    var entry = new $.Entry.fromRecord(row, metaEntries);
-                    window.entries.add(entry);
-                });
-                endLog('loadEntries');
-            }
-
-            function prepareReports() {
-                google.charts.load('current', {packages: ['corechart', 'bar']});
-                google.charts.setOnLoadCallback(drawAxisTickColors);
-            }
-
-            function drawAxisTickColors() {
-                var activities = window.activities.getAll();
-                var data = [];
-                var day1Data = [];
-                var day2Data = [];
-                var day3Data = [];
-                data.push(["Station", "Entries"]);
-                day1Data.push(["Station", "Entries"]);
-                day2Data.push(["Station", "Entries"]);
-                day3Data.push(["Station", "Entries"]);
-                activities.forEach((activity) => {
-                    var entries = window.entries.getByActivityId(activity.getId());
-                    var entryCount = entries ? entries.length : 0;
-                    var record = [activity.getGroup() + " / " + activity.getName(), entryCount];
-                    var record2 = [activity.getName(), entryCount];
-                    if (activity.getGroup() === "DAY1") {
-                        day1Data.push(record2);
-                    }
-                    if (activity.getGroup() === "DAY2") {
-                        day2Data.push(record2);
-                    }
-                    if (activity.getGroup() === "DAY3") {
-                        day3Data.push(record2);
-                    }
-                    data.push(record);
-                });
-
-                var data = google.visualization.arrayToDataTable(data);
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
-                var chart = new google.visualization.BarChart(document.getElementById('reportOverall'));
-                chart.draw(view, prepareChartOptions("Overall"));
-
-                data = google.visualization.arrayToDataTable(day1Data);
-                view = new google.visualization.DataView(data);
-                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
-                chart = new google.visualization.BarChart(document.getElementById('report1'));
-                chart.draw(view, prepareChartOptions("Day 1"));
-
-                data = google.visualization.arrayToDataTable(day2Data);
-                view = new google.visualization.DataView(data);
-                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
-                chart = new google.visualization.BarChart(document.getElementById('report2'));
-                chart.draw(view, prepareChartOptions("Day 2"));
-
-                data = google.visualization.arrayToDataTable(day3Data);
-                view = new google.visualization.DataView(data);
-                view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }]);
-                chart = new google.visualization.BarChart(document.getElementById('report3'));
-                chart.draw(view, prepareChartOptions("Day 3"));
-            }
-
-            /**
-             * @param {string} title
-             * @return {object} chart options
-             */
-            function prepareChartOptions(title) {
-                return {
-                    title: title,
-                    chartArea: {width: '50%'},
-                    bar: {groupWidth: "95%"},
-                    legend: { position: "none" },
-                    vAxis: {
-                        title: 'Stations',
-                        textStyle: {
-                        fontSize: 14,
-                        bold: true,
-                        color: '#848484'
-                        },
-                        titleTextStyle: {
-                        fontSize: 14,
-                        bold: true,
-                        color: '#848484'
-                        }
-                    }
-                };
-            }
-
 			$(document).ready(function() {
+                $("#divLoading").remove();
+                $("#divReport").removeAttr("hidden");
+                $("#divDetail").removeAttr("hidden");
                 $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
                 $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
                 var customWidth = (window.innerWidth / 2) - (300 / 2);
@@ -335,7 +168,12 @@
                     'background-color': "#000",
                     'text-align': "center"
                 });
+                window.setTimeout(initialize, 100);
+			});
+
+            function initialize() {
                 loadStaticSetup(function() {
+                    startLog("loadStaticSetupCallback");
                     try {
                         loadSetup();
                         loadSupervisors();
@@ -345,9 +183,234 @@
                         prepareReports();
                     } finally {
                         $("body").JQLoader({action: "close" });
+                        endLog("loadStaticSetupCallback");
                     }
                 });
-			});
+            }
+            
+            function loadStaticSetup(callback) {
+                startLog("loadStaticSetup");
+                try {
+                    $.cacheManager.register(CACHE_KEY_STAIC_SETUP, new $.Cache(CACHE_KEY_STAIC_SETUP, new $.Cachable(), (1000 * 60 * 60)));
+                    var staticSetupCache = $.cacheManager.get(CACHE_KEY_STAIC_SETUP);
+
+                    window.staticSetup = staticSetupCache.load(function() {
+                        info('Static setup not found in local storage and hence getting default setup');
+                        var result = {};
+                        $.ajax({
+                            async: false,
+                            type: 'GET',
+                            url: 'assets/json/static-setup.json',
+                            success: function(response) {
+                                info('loadStaticSetup - successfully fetched');
+                                result = JSON.parse(response);
+                            },
+                            dataType: 'text'
+                        });
+                        return result;
+                    });
+                    if (!window.staticSetup) {
+                        alert("SYSTEM ERROR: Failed to load static setup!");
+                        return ;
+                    }
+                    if (window.staticSetup.cache && window.staticSetup.cache.enabled === true) {
+                        window.cacheEnabled = true;
+                    }
+                    callback.call(null);
+                } finally {
+                    endLog("loadStaticSetup");
+                }
+            }
+
+            function loadSetup() {
+                startLog('loadSetup');
+                $.cacheManager.register("setup", new $.Cache("setup", new $.Cachable(), (1000 * 60 * 60)));
+
+                var setupCache = $.cacheManager.get("setup");
+                var setupData = setupCache.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
+                    var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
+                    info('loadSetup: ' + JSON.stringify(values));
+                    var arrSetup = [];
+                    values.values.forEach(function(row, index, array) {
+                        var key = '' + row[0];
+                        if (key !== "null" && key !== "undefined" && key.length > 0) {
+                            arrSetup.push({ "key": row[0], "value": row[1]});
+                        }
+                    });
+                    return arrSetup;
+                });
+                window.staticSetup.baseSetup = {};
+                setupData.forEach(setup => {
+                    window.staticSetup.baseSetup[setup["key"]] = setup["value"];
+                });
+                endLog('loadSetup');
+            }
+
+            function loadActivities() {
+                startLog('loadActivities');
+                window.activities = new $.Activities();
+                window.activities.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var activitiesSheetRangeRef = window.staticSetup.googleSheet.activities.split("!");
+                    var values = eventMgmtSheet.getValues(activitiesSheetRangeRef[0], activitiesSheetRangeRef[1]);
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadActivities: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                    if (totalRecords == 0) {
+                        return [];
+                    }
+                    var metaActivities = window.staticSetup.metadata.activities;
+                    var arrActivities = [];
+                    values.values.forEach(function(row, index, array) {
+                        activity = $.Activity.fromRecord(row, metaActivities);
+                        if (activity) {
+                            arrActivities.push(activity);
+                        }
+                    });
+                    return arrActivities;
+                });
+
+                info('loadActivities: loaded activities - ' + JSON.stringify(window.activities));
+                endLog('loadActivities');
+            }
+
+            function loadSupervisors() {
+                startLog('loadSupervisors');
+                window.supervisors = new $.Supervisors();
+                window.supervisors.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
+                    var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+
+                    var metaSupervisor = window.staticSetup.metadata.supervisor;
+                    if (totalRecords == 0) {
+                        return [];
+                    }
+                    var arrSupervisors = [];
+                    values.values.forEach(function(row, index, array) {
+                        var supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
+                        if (supervisor) {
+                            arrSupervisors.push(supervisor);
+                        }
+                    });
+                    return arrSupervisors;
+                });
+
+                endLog('loadSupervisors');
+            }
+
+            function loadMembers() {
+                startLog('loadMembers');
+                try {
+                    window.members = new $.Members();
+                    window.members.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadMembers: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var membersSheetRangeRef = window.staticSetup.googleSheet.members.split("!");
+                        var values = eventMgmtSheet.getValues(membersSheetRangeRef[0], membersSheetRangeRef[1]);
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadMembers:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var arrMembers = [];
+                        var metaMembers = window.staticSetup.metadata.members;
+                        values.values.forEach(function(row, index, array) {
+                            var member = new $.Member.fromRecord(row, metaMembers);
+                            if (member) {
+                                arrMembers.push(member);
+                            }
+                        });
+                        return arrMembers;
+                    });
+
+                } finally {
+                    endLog('loadMembers');
+                }
+            }
+
+            function loadEntries() {
+                startLog('loadEntries');
+                try {
+                    window.entries = new $.Entries();
+                    window.entries.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
+                        var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1]);
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var metaEntries = window.staticSetup.metadata.entries;
+                        var arrEntries = [];
+                        values.values.forEach(function(row, index, array) {
+                            var entry = new $.Entry.fromRecord(row, metaEntries);
+                            if (entry) {
+                                arrEntries.push(entry);
+                            }
+                        });
+                        return arrEntries;
+                    });
+                } finally {
+                    endLog('loadEntries');
+                }
+            }
+
+            function loadSubsequentEntries() {
+                startLog('loadSubsequentEntries');
+                try {
+                    var arrEntries = window.entries.getAll();
+                    var startOfRange = "A" + (arrEntries.length + 2); // +1 header and +1 for range row start from 1
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
+                    var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1].replace("A2", startOfRange));
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                    if (totalRecords == 0) {
+                        return ;
+                    }
+                    var metaEntries = window.staticSetup.metadata.entries;
+                    values.values.forEach(function(row, index, array) {
+                        var entry = new $.Entry.fromRecord(row, metaEntries);
+                        if (entry) {
+                            window.entries.add(entry);
+                        }
+                    });
+                    window.entries.save();
+                } finally {
+                    endLog('loadSubsequentEntries');
+                }
+            }
 
             /**
              * Log as ERROR message along with timestamp
@@ -397,6 +460,143 @@
             function showMessage(message) {
                 $('#message').text(message);
                 $('#messageModel').slideDown();
+            }
+
+            function prepareReports() {
+                google.charts.load('current', {packages: ['table']});
+                google.charts.setOnLoadCallback(renderCharts);
+            }
+
+            function renderCharts() {
+                var data = prepareData();
+                renderReports(data);
+            }
+
+            function prepareData() {
+                var activities = window.activities.getAll();
+                var data = [];
+                activities.forEach((activity) => {
+                    var entries = window.entries.getByActivityId(activity.getId());
+                    var totalEntries = 0;
+                    if (entries) {
+                        totalEntries = entries.length;
+                    }
+                    data.push([activity.getGroup(), activity.getName(), Number(activity.getMaxAllowed()), totalEntries, ((totalEntries / activity.getMaxAllowed()) * 100)]);
+                });
+                return data;
+            }
+
+            function renderReports(data) {
+                var chartTable = new google.visualization.DataTable();
+                chartTable.addColumn('string', 'Day');
+                chartTable.addColumn('string', 'Station');
+                chartTable.addColumn('number', 'Maximum');
+                chartTable.addColumn('number', 'Entries');
+                chartTable.addColumn('number', '% of Max');
+                chartTable.addRows(data);
+
+                var chart = new google.visualization.Table(document.getElementById('reportOverall'));
+
+                var formatter = new google.visualization.BarFormat({width: 100, max: 100, showValue: false});
+                formatter.format(chartTable, 4); // Apply formatter to fourth column
+
+                // Every time the table fires the "select" event, it should call your
+                // selectHandler() function.
+                google.visualization.events.addListener(chart, 'select', function(event){
+                    var selection = chart.getSelection();
+                    var group = chartTable.getValue(selection[0].row, 0);
+                    var activityName = chartTable.getValue(selection[0].row, 1);
+                    handleSelection(group, activityName);
+                });
+                
+                chart.draw(chartTable, {
+                    allowHtml: true,
+                    showRowNumber: true, 
+                    width: '100%', height: '100%',
+                    sortColumn: 0
+                });
+
+                chart.setSelection([{row:0, column: null}]);
+                handleSelection(data[0][0], data[0][1]);
+            }
+
+            function handleSelection(group, activityName) {
+                var activity = window.activities.getByName(group + " / " + activityName);
+                window.selectedActivity = activity;
+                $("#activity").html(group + " / " + activityName);
+                prepareMemberDrilldown();
+            }
+
+            function isAllowed(member, activity) {
+                if (activity.getCustom()) {
+                    var custom = "" + activity.getCustom();
+                    var checks = custom.trim().split(",");
+                    if (checks.length > 0) {
+                        var found = false;
+                        for (var i = 0; i < checks.length; ++i) {
+                            if (member.getRegistration() === checks[i].trim()) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found === false) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            function prepareMemberDrilldown() {
+                $("#memberDrilldown").html("");
+                var data = [];
+                var activity = window.selectedActivity;
+                var members = window.members.getAll();
+                members.forEach((member) => {
+                    if (isAllowed(member, activity)) {
+                        var found = false;
+                        var entries = window.entries.getByMemberId();
+                        if (entries) {
+                            for (var i = 0; i < entries.length; ++i) {
+                                if (entries[i].getActivityId() === activity.getId()) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found === false) {
+                            // $("#delegate").text(member.getName() + " (" + member.getId() + ")");
+                            // $("#representing").text(member.getCountry() + ", " + member.getCommittee());
+                            // $("#registration").text(member.getRegistration() + " (" + member.getAccomodation() + ")");
+                            // $("#school").text(member.getSchool());
+                            data.push([
+                                member.getName() + " (" + member.getId() + ")",
+                                member.getCountry() + ", " + member.getCommittee(),
+                                member.getRegistration() + " (" + member.getAccomodation() + ")",
+                                member.getSchool()
+                            ]);
+                        }
+                    }
+                });
+                renderDrilldown(data);
+            }
+
+            function renderDrilldown(data) {
+                var chartTable = new google.visualization.DataTable();
+                chartTable.addColumn('string', 'Name');
+                chartTable.addColumn('string', 'Representing');
+                chartTable.addColumn('string', 'Registration');
+                chartTable.addColumn('string', 'School');
+                chartTable.addRows(data);
+
+                var chart = new google.visualization.Table(document.getElementById('memberDrilldown'));
+
+                chart.draw(chartTable, {
+                    allowHtml: true,
+                    showRowNumber: true, 
+                    width: '100%', height: '100%',
+                    sortColumn: 0
+                });
             }
 		</script>
     </body>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="QR Codes" />
+        <meta name="author" content="outil83" />
+        <title>OUTIL | QR Codes</title>
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- Third party plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+	</head>
+    <body>
+		<!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+		<!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <script>
+			$(document).ready(function() {
+                loadGeneratedCodesCsv();
+            });
+
+            function loadGeneratedCodesCsv() {
+                var data = "";
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: 'assets/qrcode/_generated_codes.csv',
+                    success: function(response) {
+                        data = response;
+                    },
+                    dataType: 'text'
+                });
+
+                $("#table-qrcodes").html("");
+                var records = data.split('\n');
+                var strHtmlRecords = "<tr><th>data</th><th>filename</th><th>QR code</th></tr>\n";
+                for (var i = 0; i < records.length; ++i) {
+                    if (i > 0) {
+                        var fields = records[i].split(',');
+                        fields[0] = fields[0].slice(1, fields[0].length - 1);
+                        fields[1] = fields[1].slice(1, fields[1].length - 1);
+                        strHtmlRecords += "<tr><td>" + fields[0] + "</td><td>" + fields[1] + "</td><td><img src='assets/qrcode/" + fields[1] + "'></img></td></tr>\n";
+                    }
+                }
+                $("#table-qrcodes").html(strHtmlRecords);
+            }
+        </script>
+        <div class="table-responsive">
+            <table id="table-qrcodes" class="table table-hover border-1">
+            </table>
+        </div>
+    </body>
+</html>

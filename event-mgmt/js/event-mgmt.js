@@ -174,7 +174,7 @@
         add : function(activity) {
             this.activities.push(activity);
             this.activityById.set(activity.getId(), activity);
-            this.activityByName.set(activity.getName(), activity);
+            this.activityByName.set(activity.getGroup() + " / " + activity.getName(), activity);
         },
 
         /**
