@@ -180,6 +180,7 @@
                         loadMembers();
                         loadActivities();
                         loadEntries();
+                        loadSubsequentEntries();
                         prepareReports();
                     } finally {
                         $("body").JQLoader({action: "close" });
@@ -388,14 +389,14 @@
                     var startOfRange = "A" + (arrEntries.length + 2); // +1 header and +1 for range row start from 1
                     // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
                     var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
-                    info('loadEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    info('loadSubsequentEntries: Sheet ID - ' + eventMgmtSheet.getSheetId());
                     var entriesSheetRangeRef = window.staticSetup.googleSheet.entries.split("!");
                     var values = eventMgmtSheet.getValues(entriesSheetRangeRef[0], entriesSheetRangeRef[1].replace("A2", startOfRange));
                     var totalRecords = 0;
                     if (values["values"]) {
                         totalRecords = values["values"].length;
                     }
-                    info('loadEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                    info('loadSubsequentEntries: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
                     if (totalRecords == 0) {
                         return ;
                     }
