@@ -8,10 +8,10 @@
     const CACHE_EVICATION_SUPERVISORS = 1000 * 60 * 60; // 1 hour
 
     const CACHE_KEY_MEMBERS = "members";
-    const CACHE_EVICATION_MEMBERS = 1000 * 60 * 10; // 10 minutes
+    const CACHE_EVICATION_MEMBERS = 1000 * 60 * 60; // 1 hour
 
     const CACHE_KEY_ENTRIES = "entries";
-    const CACHE_EVICATION_ENTRIES = 1000 * 60 * 60 * 2; // 2 hour
+    const CACHE_EVICATION_ENTRIES = 1000 * 60 * 60 * 2; // 2 hours
 
     function Cachable() {
         // DO NOTHING
