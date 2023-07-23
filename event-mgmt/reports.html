@@ -13,17 +13,20 @@
         <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
         <!-- Third party plugin CSS-->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
-		<!-- cookiealert styles -->
-		<link rel="stylesheet" href="css/cookiealert.css">
         <link rel="stylesheet" href="css/JQLoader.css" />
+        <!-- JQuery UI -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        
 	</head>
     <body id="page-top">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
             <div class="container">
-                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
                         <li class="nav-item"><a id='navToReports' class="nav-link js-scroll-trigger" href="#reports">Reports</a></li>
@@ -34,19 +37,6 @@
         </nav>
         <!-- Reports section-->
         <section id="reports" class="page-section bg-info">
-            <!-- START Bootstrap-Cookie-Alert -->
-            <div class="alert text-center cookiealert mt-5" role="alert">
-
-                <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
-
-                <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
-
-                    I agree
-
-                </button>
-
-            </div>
-            <!-- END Bootstrap-Cookie-Alert -->
             <div id="divLoading" class="container">
                 <p>Please wait while page is loading...</p>
             </div>
@@ -71,14 +61,38 @@
             <div id="divDetail" class="container" hidden>
                 <div class="row align-items-center justify-content-center text-center">
                     <div class="col-lg-10 align-self-end">
-                        <h5 class="text-white font-weight-bold">Detail</h5>
-                        <h6 class="table-responsive">
-                            List of members who are yet to attend station <span id="activity"></span>
-                        </h6>
-                        <hr class="divider my-4" />
-                        <div class="table-responsive">
-                            <div id="memberDrilldown">
-                                <!-- Report drilldown to members -->
+                        <div id="tabs">
+                            <ul>
+                              <li><a href="#tabs-pending">Yet To Attend</a></li>
+                              <li><a href="#tabs-attended">Attended</a></li>
+                            </ul>
+                            <div id="tabs-pending">
+                                <div class="table-responsive">
+                                    <table id="tablePending" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Representing</th>
+                                                <th>Registration</th>
+                                                <th>School</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="tabs-attended">
+                                <div class="table-responsive">
+                                    <table id="tableAttended" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Representing</th>
+                                                <th>Registration</th>
+                                                <th>School</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,15 +132,15 @@
 		<!-- Bootstrap core JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="https:cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
         <!-- Third party plugin JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-		<!-- Core theme JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>        
+        <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
 		<!-- Google sheet JS-->
         <script src="js/sheet.js"></script>
-		<!-- Include cookiealert script -->
-		<script src="js/cookiealert.js"></script>
         <script src="js/JQLoader.js"></script>
         <script src="js/event-mgmt.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -155,6 +169,18 @@
             })();
 
 			$(document).ready(function() {
+                // initialize tabs
+                $( "#tabs" ).tabs();
+
+                // initialize tables
+                window.tablePending = new DataTable('#tablePending', {
+                    data: []
+                });
+                window.tableAttended = new DataTable('#tableAttended', {
+                    data: []
+                });
+
+
                 $("#divLoading").remove();
                 $("#divReport").removeAttr("hidden");
                 $("#divDetail").removeAttr("hidden");
@@ -498,7 +524,7 @@
 
                 var chart = new google.visualization.Table(document.getElementById('reportOverall'));
 
-                var formatter = new google.visualization.BarFormat({width: 100, max: 100, showValue: false});
+                var formatter = new google.visualization.BarFormat({width: 50, max: 50, showValue: false});
                 formatter.format(chartTable, 4); // Apply formatter to fourth column
 
                 // Every time the table fires the "select" event, it should call your
@@ -513,7 +539,8 @@
                 chart.draw(chartTable, {
                     allowHtml: true,
                     showRowNumber: true, 
-                    width: '100%', height: '100%',
+                    width: '100%', 
+                    height: '100%',
                     sortColumn: 0
                 });
 
@@ -549,14 +576,14 @@
             }
 
             function prepareMemberDrilldown() {
-                $("#memberDrilldown").html("");
-                var data = [];
+                var dataPending = [];
+                var dataAttended = [];
                 var activity = window.selectedActivity;
                 var members = window.members.getAll();
                 members.forEach((member) => {
                     if (isAllowed(member, activity)) {
                         var found = false;
-                        var entries = window.entries.getByMemberId();
+                        var entries = window.entries.getByMemberId(member.getId());
                         if (entries) {
                             for (var i = 0; i < entries.length; ++i) {
                                 if (entries[i].getActivityId() === activity.getId()) {
@@ -566,11 +593,14 @@
                             }
                         }
                         if (found === false) {
-                            // $("#delegate").text(member.getName() + " (" + member.getId() + ")");
-                            // $("#representing").text(member.getCountry() + ", " + member.getCommittee());
-                            // $("#registration").text(member.getRegistration() + " (" + member.getAccomodation() + ")");
-                            // $("#school").text(member.getSchool());
-                            data.push([
+                            dataPending.push([
+                                member.getName() + " (" + member.getId() + ")",
+                                member.getCountry() + ", " + member.getCommittee(),
+                                member.getRegistration() + " (" + member.getAccomodation() + ")",
+                                member.getSchool()
+                            ]);
+                        } else {
+                            dataAttended.push([
                                 member.getName() + " (" + member.getId() + ")",
                                 member.getCountry() + ", " + member.getCommittee(),
                                 member.getRegistration() + " (" + member.getAccomodation() + ")",
@@ -579,26 +609,12 @@
                         }
                     }
                 });
-                renderDrilldown(data);
+
+                window.tablePending.clear().rows.add(dataPending).draw();
+                window.tableAttended.clear().rows.add(dataAttended).draw();
+
             }
 
-            function renderDrilldown(data) {
-                var chartTable = new google.visualization.DataTable();
-                chartTable.addColumn('string', 'Name');
-                chartTable.addColumn('string', 'Representing');
-                chartTable.addColumn('string', 'Registration');
-                chartTable.addColumn('string', 'School');
-                chartTable.addRows(data);
-
-                var chart = new google.visualization.Table(document.getElementById('memberDrilldown'));
-
-                chart.draw(chartTable, {
-                    allowHtml: true,
-                    showRowNumber: true, 
-                    width: '100%', height: '100%',
-                    sortColumn: 0
-                });
-            }
 		</script>
     </body>
 </html>

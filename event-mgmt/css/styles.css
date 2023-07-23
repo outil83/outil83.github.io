@@ -10126,3 +10126,10 @@ header.masthead h1 {
   font-size: small;
   font-style: normal;
 }
+
+.ui-widget {
+  font-size: 10pt;
+}
+table.dataTable td {
+  font-size: 10pt;
+}
