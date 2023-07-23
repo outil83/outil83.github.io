@@ -63,8 +63,15 @@
                     <div class="col-lg-10 align-self-end">
                         <div id="tabs">
                             <ul>
-                              <li><a href="#tabs-pending">Yet To Attend</a></li>
-                              <li><a href="#tabs-attended">Attended</a></li>
+                                <li><a href="#tabs-pending">Yet To Attend</a></li>
+                                <li><a href="#tabs-attended">Attended</a></li>
+                                <li>
+                                    <select title="Select member type from drop-down" class="form-control" id="memberTypeFilter" name="memberTypeFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="1">Students</option>
+                                        <option value="2">Teachers</option>
+                                    </select>
+                                </li>
                             </ul>
                             <div id="tabs-pending">
                                 <div class="table-responsive">
@@ -170,14 +177,27 @@
 
 			$(document).ready(function() {
                 // initialize tabs
-                $( "#tabs" ).tabs();
+                $( "#tabs" ).tabs({
+                    activate: function(event, ui) { 
+                        $($.fn.dataTable.tables(true)).DataTable()
+                            .columns.adjust()
+                            .responsive.recalc(); 
+                    }
+                });
 
                 // initialize tables
                 window.tablePending = new DataTable('#tablePending', {
-                    data: []
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false,
+                    dom: 'ifrt'
                 });
                 window.tableAttended = new DataTable('#tableAttended', {
-                    data: []
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false
                 });
 
 
@@ -555,6 +575,12 @@
                 prepareMemberDrilldown();
             }
 
+            function isMemberOfType(member, memberType) {
+                return (memberType === "0" 
+                    || (memberType === "1" && member.getRegistration() !== "NA")
+                    || (memberType === "2" && member.getRegistration() === "NA"));
+            }
+
             function isAllowed(member, activity) {
                 if (activity.getCustom()) {
                     var custom = "" + activity.getCustom();
@@ -580,8 +606,9 @@
                 var dataAttended = [];
                 var activity = window.selectedActivity;
                 var members = window.members.getAll();
+                var memberType = $("#memberTypeFilter").find(":selected").val();
                 members.forEach((member) => {
-                    if (isAllowed(member, activity)) {
+                    if (isAllowed(member, activity) && isMemberOfType(member, memberType)) {
                         var found = false;
                         var entries = window.entries.getByMemberId(member.getId());
                         if (entries) {

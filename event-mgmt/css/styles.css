@@ -10133,3 +10133,7 @@ header.masthead h1 {
 table.dataTable td {
   font-size: 10pt;
 }
+
+.ui-tabs .ui-tabs-panel {
+  padding: 0;
+}
