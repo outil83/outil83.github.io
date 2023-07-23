@@ -415,12 +415,12 @@
                     });
                     var memberId = window.urlParams['memberId'];
                     if (!memberId) {
-                        showMessage("Invalid access! The 'memberId' query parameter is missing.");
+                        showMessage("Invalid QR code! The member id is not found.");
                         return ;
                     }
                     window.member = window.members.getById(memberId);
                     if (!window.member) {
-                        showMessage("Invalid member id - " + memberId);
+                        showMessage("Invalid QR code! The member id '" + memberId + "' is invalid.");
                         return ;
                     }
                     $("#delegate").text(member.getName() + " (" + member.getId() + ")");
@@ -509,23 +509,28 @@
                     try {
                         loadSetup();
                         loadSupervisors();
-                        loadMemberDetail();
-                        loadActivities();
-                        loadEntries();
                         var supervisorId = $.getCookie('supervisorId');
                         var supervisorName = $.getCookie('supervisorName');
-                        var activityId = $.getCookie('activityId');
-                        if (activityId && !window.activities.getById(activityId)) {
-                            activityId = undefined; // day has changed
-                        }
-                        $('#selectedSupervisorName').text("");
-                        if (!supervisorId || !activityId) {
+                        if (!supervisorId) {
                             $("#supervisorModel").slideDown();
                         } else {
-                            saveSupervisor(supervisorId, supervisorName, activityId);
-                        }
+                            loadMemberDetail();
+                            loadActivities();
+                            loadEntries();
+                            var activityId = $.getCookie('activityId');
+                            if (activityId && !window.activities.getById(activityId)) {
+                                activityId = undefined; // day has changed
+                            }
+                            if (!supervisorId || !activityId) {
+                                $("#supervisorModel").slideDown();
+                            } else {
+                                $('#selectedSupervisorName').text("");
+                                saveSupervisor(supervisorId, supervisorName, activityId);
+                            }
 
-                        initializeFormSubmit();
+                            initializeFormSubmit();
+
+                        }
 
                     } finally {
                         $("body").JQLoader({action: "close" });
