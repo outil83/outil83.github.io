@@ -415,12 +415,12 @@
                     });
                     var memberId = window.urlParams['memberId'];
                     if (!memberId) {
-                        showMessage("Invalid QR code! The member id is not found.");
+                        showMessage("Invalid QR code! The member id is not found. Please try again.");
                         return ;
                     }
                     window.member = window.members.getById(memberId);
                     if (!window.member) {
-                        showMessage("Invalid QR code! The member id '" + memberId + "' is invalid.");
+                        showMessage("Invalid QR code! The member id '" + memberId + "' is invalid. Please try again.");
                         return ;
                     }
                     $("#delegate").text(member.getName() + " (" + member.getId() + ")");
@@ -509,28 +509,23 @@
                     try {
                         loadSetup();
                         loadSupervisors();
+                        loadMemberDetail();
+                        loadActivities();
+                        loadEntries();
                         var supervisorId = $.getCookie('supervisorId');
                         var supervisorName = $.getCookie('supervisorName');
-                        if (!supervisorId) {
+                        var activityId = $.getCookie('activityId');
+                        if (activityId && !window.activities.getById(activityId)) {
+                            activityId = undefined; // day has changed
+                        }
+                        if (!supervisorId || !activityId) {
                             $("#supervisorModel").slideDown();
                         } else {
-                            loadMemberDetail();
-                            loadActivities();
-                            loadEntries();
-                            var activityId = $.getCookie('activityId');
-                            if (activityId && !window.activities.getById(activityId)) {
-                                activityId = undefined; // day has changed
-                            }
-                            if (!supervisorId || !activityId) {
-                                $("#supervisorModel").slideDown();
-                            } else {
-                                $('#selectedSupervisorName').text("");
-                                saveSupervisor(supervisorId, supervisorName, activityId);
-                            }
-
-                            initializeFormSubmit();
-
+                            $('#selectedSupervisorName').text("");
+                            saveSupervisor(supervisorId, supervisorName, activityId);
                         }
+
+                        initializeFormSubmit();
 
                     } finally {
                         $("body").JQLoader({action: "close" });
