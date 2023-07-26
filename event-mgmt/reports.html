@@ -544,7 +544,7 @@
 
                 var chart = new google.visualization.Table(document.getElementById('reportOverall'));
 
-                var formatter = new google.visualization.BarFormat({width: 50, max: 50, showValue: false});
+                var formatter = new google.visualization.BarFormat({width: 50, max: 100, showValue: false});
                 formatter.format(chartTable, 4); // Apply formatter to fourth column
 
                 // Every time the table fires the "select" event, it should call your
