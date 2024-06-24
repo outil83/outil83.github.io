@@ -269,7 +269,7 @@
                         }
                         var metaEntries = window.staticSetup.metadata.entries;
                         var arrEntries = [];
-                        values.values.forEach(function(row, index, array) {
+                        values.forEach(function(row, index, array) {
                             var entry = new $.Entry.fromRecord(row, metaEntries);
                             if (entry) {
                                 arrEntries.push(entry);
