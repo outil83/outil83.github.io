@@ -52,6 +52,14 @@
          */
         get: function(cacheKey) {
             return this.mapCache.get(cacheKey);
+        },
+
+        clear: function(cacheKey) {
+            if (this.mapCache.has(cacheKey)) {
+                var cache = this.mapCache.get(cacheKey);
+                cache.clear();
+                this.mapCache.delete(cacheKey);
+            }
         }
     });
 
@@ -103,6 +111,11 @@
             var data = callback.call(null);
             this.save(data);
             return data;
+        },
+
+        clear : function() {
+            localStorage.removeItem(this._cacheKey);
+            localStorage.removeItem(this._cacheKey + "_time");    
         }
     });
 
@@ -113,8 +126,6 @@
         this._entries = [];
         this._entriesBySourceId = new Map();
         this._entriesByDate = new Map();
-        this._entriesByMonth = new Map();
-        this._entriesByWeek = new Map();
     }
 
     $.extend(Entries.prototype, {
@@ -157,25 +168,6 @@
          */
         toCache: function(data) {
             return this.cachable.toCache(data);
-        },
-
-        /**
-         * 
-         * @param {Entry} entry
-         * @returns {string} 
-         */
-        getUniqueIdFromEntry : function (entry) {
-            return this.getUniqueId(entry.getMemberId(), entry.getActivityId());
-        },
-
-        /**
-         * 
-         * @param {string} memberId 
-         * @param {string} activityId 
-         * @returns {string}
-         */
-        getUniqueId : function (memberId, activityId) {
-            return memberId + "_" + activityId;
         },
 
         /**
@@ -225,9 +217,15 @@
          */
         getAll : function() {
             return this._entries;
+        },
+
+        clear : function() {
+            $.cacheManager.clear(CACHE_KEY_ENTRIES);
+            this._entries = [];
+            this._entriesBySourceId = new Map();
+            this._entriesByDate = new Map();
         }
     });
-
 
     /**
      * 
@@ -358,12 +356,6 @@
 
     $.Cache = Cache;
     $.Cachable = Cachable;
-    $.Activities = Activities;
-    $.Activity = Activity;
-    $.Supervisors = Supervisors;
-    $.Supervisor = Supervisor;
-    $.Members = Members;
-    $.Member = Member;
     $.Entries = Entries;
     $.Entry = Entry;
     
