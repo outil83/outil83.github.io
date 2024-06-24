@@ -307,6 +307,14 @@
 
         /**
          * 
+         * @returns {[]}
+         */
+        getLabels : function() {
+            return this.labels;
+        },
+
+        /**
+         * 
          * @param {[]} labels 
          */
         setLabels : function(labels) {
