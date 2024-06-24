@@ -16,9 +16,9 @@
                 "name": "sourceId",
                 "displayName": "Source ID"
             },
-            "txnDt": {
+            "txnDate": {
                 "index": 2,
-                "name": "txnDt",
+                "name": "txnDate",
                 "displayName": "Txn Date"
             },
             "narration": {

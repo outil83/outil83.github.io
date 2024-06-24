@@ -183,13 +183,13 @@
             }
             entriesBySourceId.push(entry);
 
-            var entriesByDate = this._entriesByDate.get(entry.getTxnDt());
+            var entriesByDate = this._entriesByDate.get(entry.getTxnDate());
             if (!entriesByDate) {
                 entriesByDate = [];
             }
             entriesByDate.push(entry);
 
-            this._entriesByDate.set(entry.getTxnDt(), entriesByDate);
+            this._entriesByDate.set(entry.getTxnDate(), entriesByDate);
 
         },
 
@@ -204,11 +204,11 @@
 
         /**
          * 
-         * @param {Date} txnDt 
+         * @param {Date} txnDate 
          * @returns {Entry[]}
          */
-        getByDate : function(txnDt) {
-            return this._entriesByDate.get(txnDt);
+        getByDate : function(txnDate) {
+            return this._entriesByDate.get(txnDate);
         },
 
         /**
@@ -231,16 +231,16 @@
      * 
      * @param {string} sourceType 
      * @param {string} sourceId 
-     * @param {Date} txnDt 
+     * @param {Date} txnDate 
      * @param {string} narration 
      * @param {string} reference 
      * @param {number} debit
      * @param {number} credit
      */
-    function Entry(sourceType, sourceId, txnDt, narration, reference, debit, credit) {
+    function Entry(sourceType, sourceId, txnDate, narration, reference, debit, credit) {
         this.sourceType = sourceType;
         this.sourceId = sourceId;
-        this.txnDt = txnDt;
+        this.txnDate = txnDate;
         this.narration = narration;
         this.reference = reference;
         this.debit = debit;
@@ -269,8 +269,8 @@
          * 
          * @returns {Date}
          */
-        getTxnDt : function () {
-            return this.txnDt;
+        getTxnDate : function () {
+            return this.txnDate;
         },
 
         /**
@@ -323,13 +323,13 @@
      * @returns {Entry}
      */
     Entry.fromRecord = function (row, metadata) {
-        if (!row[metadata.txnDt.index] || row[metadata.txnDt.index] === "") {
+        if (!row[metadata.txnDate.index] || row[metadata.txnDate.index] === "") {
             return ;
         }
         var entry = new Entry(
             row[metadata.sourceType.index], 
             row[metadata.sourceId.index], 
-            row[metadata.txnDt.index], 
+            row[metadata.txnDate.index], 
             row[metadata.narration.index], 
             row[metadata.reference.index],
             row[metadata.debit.index],
@@ -350,7 +350,7 @@
         var entry = new Entry(
             data["sourceType"], 
             data["sourceId"], 
-            data["txnDt"], 
+            data["txnDate"], 
             data["narration"], 
             data["reference"],
             data["debit"],
