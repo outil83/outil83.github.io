@@ -305,6 +305,14 @@
             return this.credit;
         },
 
+        /**
+         * 
+         * @param {[]} labels 
+         */
+        setLabels : function(labels) {
+            this.labels = labels;
+        }
+
 
     });
 
