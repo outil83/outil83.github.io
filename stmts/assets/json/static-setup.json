@@ -1,0 +1,59 @@
+{
+    "googleSheet": {
+        "url": "https://docs.google.com/spreadsheets/d/1K2kct9TY8U-61fYWZG04rf3W_a3_9LOKFKOPQEIh660/edit?usp=sharing",
+        "sheetId": "1K2kct9TY8U-61fYWZG04rf3W_a3_9LOKFKOPQEIh660",
+        "entries": "entries!A2:E12000"
+    },
+    "metadata": {
+        "entries": {
+            "sourceType": {
+                "index": 0,
+                "name": "sourceType",
+                "displayName": "Source Type"
+            },
+            "sourceId": {
+                "index": 1,
+                "name": "sourceId",
+                "displayName": "Source ID"
+            },
+            "txnDt": {
+                "index": 2,
+                "name": "txnDt",
+                "displayName": "Txn Date"
+            },
+            "narration": {
+                "index": 3,
+                "name": "narration",
+                "displayName": "Narration"
+            },
+            "reference": {
+                "index": 4,
+                "name": "reference",
+                "displayName": "Reference"
+            },
+            "credit": {
+                "index": 6,
+                "name": "credit",
+                "displayName": "Credit"
+            },
+            "debit": {
+                "index": 7,
+                "name": "debit",
+                "displayName": "Debit"
+            },
+            "amount": {
+                "index": 9,
+                "name": "amount",
+                "displayName": "Amount"
+            },
+            "labels": {
+                "index": 10,
+                "name": "labels",
+                "displayName": "Labels"
+            }
+        }
+    },
+    "cache": {
+        "enabled": true
+    }
+}
