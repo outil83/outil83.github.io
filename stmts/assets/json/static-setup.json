@@ -31,6 +31,11 @@
                 "name": "reference",
                 "displayName": "Reference"
             },
+            "valueDate": {
+                "index": 5,
+                "name": "valueDate",
+                "displayName": "Value Date"
+            },
             "credit": {
                 "index": 6,
                 "name": "credit",
@@ -40,6 +45,11 @@
                 "index": 7,
                 "name": "debit",
                 "displayName": "Debit"
+            },
+            "closingBalance": {
+                "index": 8,
+                "name": "closingBalance",
+                "displayName": "Closing Balance"
             },
             "amount": {
                 "index": 9,

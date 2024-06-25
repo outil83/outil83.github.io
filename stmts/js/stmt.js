@@ -236,8 +236,11 @@
      * @param {string} reference 
      * @param {number} debit
      * @param {number} credit
+     * @param {number} closingBalance 
+     * @param {number} amount 
+     * @param {Date} valueDate 
      */
-    function Entry(sourceType, sourceId, txnDate, narration, reference, debit, credit) {
+    function Entry(sourceType, sourceId, txnDate, narration, reference, debit, credit, closingBalance, amount, valueDate) {
         this.sourceType = sourceType;
         this.sourceId = sourceId;
         this.txnDate = txnDate;
@@ -245,6 +248,9 @@
         this.reference = reference;
         this.debit = debit;
         this.credit = credit;
+        this.closingBalance = closingBalance;
+        this.amount = amount;
+        this.valueDate = valueDate;
         this.labels = [];
     }
 
@@ -307,6 +313,30 @@
 
         /**
          * 
+         * @returns {number}
+         */
+        getClosingBalance : function () {
+            return this.closingBalance;
+        },
+
+        /**
+         * 
+         * @returns {number}
+         */
+        getAmount : function () {
+            return this.amount;
+        },
+
+        /**
+         * 
+         * @returns {Date}
+         */
+        getValueDate : function () {
+            return this.valueDate;
+        },
+
+        /**
+         * 
          * @returns {[]}
          */
         getLabels : function() {
@@ -341,7 +371,10 @@
             row[metadata.narration.index], 
             row[metadata.reference.index],
             row[metadata.debit.index],
-            row[metadata.credit.index]
+            row[metadata.credit.index],
+            row[metadata.closingBalance.index],
+            row[metadata.amount.index],
+            row[metadata.valueDate.index]
         );
         if (row[metadata.labels.index] && row[metadata.labels.index] !== "") {
             entry.setLabels(row[metadata.labels.index].split(","));
@@ -358,11 +391,14 @@
         var entry = new Entry(
             data["sourceType"], 
             data["sourceId"], 
-            data["txnDate"], 
+            data["txnDate"],
             data["narration"], 
             data["reference"],
             data["debit"],
-            data["credit"]
+            data["credit"],
+            data["closingBalance"],
+            data["amount"],
+            data["valueDate"],
         );
         if (data["labels"]) {
             entry.setLabels(data["labels"].split(","));

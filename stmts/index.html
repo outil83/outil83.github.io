@@ -29,8 +29,8 @@
                 <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                        <li class="nav-item"><a id='navToUpload' class="nav-link js-scroll-trigger" href="#upload">Upload Data</a></li>
-                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Loaded Data</a></li>
+                        <li class="nav-item"><a id='navToUpload' class="nav-link js-scroll-trigger" href="#upload">Upload Statement</a></li>
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Statement Data</a></li>
                     </ul>
                 </div>
             </div>
@@ -49,8 +49,8 @@
                         <div class="table-responsive">
                             <div id="divCsvData">
                                 <!-- Report overall -->
-                                <label>Input statement data in CSV format</label>
-                                <textarea id="txtCsvData" rows="10" width="100%"></textarea>
+                                <label>Input statement data in CSV format</label><br/>
+                                <textarea id="txtCsvData" rows="10" width="100%"></textarea><br/>
                                 <button onclick="loadEntries('txtCsvData')">Load Data</button>
                                 <p>NOTE: Each record of statement data must contain these data in the order - Source Type,Source,Txn Date,Narration,Reference,Value Date,Debit,Credit,Closing Balance,Amount,Labels</p>
                             </div>
@@ -79,6 +79,7 @@
                                         <th>Debit</th>
                                         <th>Credit</th>
                                         <th>Labels</th>
+                                        <th>Action(s)</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -299,6 +300,44 @@
 
                 } finally {
                     endLog('loadEntries');
+                }
+            }
+
+            function saveEntries(fileName) {
+                startLog('saveEntries');
+                try {
+
+                    var entries = window.entries.getAll();
+                    var data = [];
+                    entries.forEach(entry => {
+                        data.push([entry.getSourceType(), entry.getSourceId(), entry.getTxnDate(), entry.getNarration(), entry.getReference(), entry.getValueDate(), entry.getDebit(), entry.getCredit(), entry.getClosingBalance(), entry.getAmount(), entry.getLabels()]);
+                    });
+                    var csvData = Papa.unparse({
+                        fields: ['Source Type', 'Source', 'Txn Date', 'Narration', 'Reference', 'Value Date', 'Debit', 'Credit', 'Closing Balance', 'Amount', 'Labels'],
+                        data: data
+                    }, {
+                        quotes: true, 
+                        delimiter: ','
+                    });
+
+                    // Create a Blob with the CSV data and type
+                    const blob = new Blob([csvData], { type: 'text/csv' });
+                    
+                    // Create a URL for the Blob
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Create an anchor tag for downloading
+                    const a = document.createElement('a');
+                    
+                    // Set the URL and download attribute of the anchor tag
+                    a.href = url;
+                    a.download = fileName;
+                    
+                    // Trigger the download by clicking the anchor tag
+                    a.click();
+
+                } finally {
+                    endLog('saveEntries');
                 }
             }
 
