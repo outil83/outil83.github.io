@@ -292,7 +292,8 @@
                             entry.getReference(),
                             entry.getDebit(),
                             entry.getCredit(),
-                            entry.getLabels()
+                            entry.getLabels(),
+                            '<button onclick="addLabels(tableData.length)">Add Label</button>'
                         ]);
 
                     });
@@ -301,6 +302,22 @@
 
                 } finally {
                     endLog('loadEntries');
+                }
+            }
+
+            function addLabels(index) {
+                try {
+                    startLog("addLabels");
+                    var entries = window.entries.getAll();
+                    var entry = entries[index];
+                    info("addLabels - entries[" + index + "] => " + JSON.stringify(entry));
+                    var labels = window.prompt("Enter labels: ");
+                    info("addLabels - labels: " + JSON.stringify(labels));
+                    if (labels && labels.trim() !== "") {
+                        entry.setLabels(labels.split(","));
+                    }
+                } finally {
+                    endLog("addLabels");
                 }
             }
 
