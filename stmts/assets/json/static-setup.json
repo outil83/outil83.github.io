@@ -36,15 +36,15 @@
                 "name": "valueDate",
                 "displayName": "Value Date"
             },
-            "credit": {
-                "index": 6,
-                "name": "credit",
-                "displayName": "Credit"
-            },
             "debit": {
-                "index": 7,
+                "index": 6,
                 "name": "debit",
                 "displayName": "Debit"
+            },
+            "credit": {
+                "index": 7,
+                "name": "credit",
+                "displayName": "Credit"
             },
             "closingBalance": {
                 "index": 8,
