@@ -280,6 +280,17 @@
                         return arrEntries;
                     });
 
+                    reloadData();
+
+                } finally {
+                    endLog('loadEntries');
+                }
+            }
+
+            function reloadData() {
+                try {
+                    startLog("reloadData");
+
                     var arrEntries = window.entries.getAll();
                     var tableData = [];
 
@@ -299,9 +310,8 @@
                     });
 
                     window.tableStmtData.clear().rows.add(tableData).draw();
-
                 } finally {
-                    endLog('loadEntries');
+                    endLog("reloadData");
                 }
             }
 
@@ -316,6 +326,7 @@
                     if (labels && labels.trim() !== "") {
                         entry.setLabels(labels.split(","));
                     }
+                    reloadData();
                 } finally {
                     endLog("addLabels");
                 }
