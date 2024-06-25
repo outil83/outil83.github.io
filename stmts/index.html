@@ -134,6 +134,7 @@
         <script src="js/sheet.js"></script>
         <script src="js/JQLoader.js"></script>
         <script src="js/papaparse.min.js"></script>
+        <script src="js/fuse.js"></script>
         <script src="js/stmt.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 		<script type="text/javascript">
@@ -292,6 +293,14 @@
                         return arrEntries;
                     });
 
+                    const options = {
+                        includeScore: true,
+                        // Search in `author` and in `tags` array
+                        keys: ['narration']
+                    }
+
+                    window.fuse = new Fuse(window.entries.getAll(), options);
+
                     reloadData();
 
                 } finally {
@@ -339,6 +348,8 @@
                     if (labels && labels.trim() !== "") {
                         entry.setLabels(labels.split(","));
                     }
+                    var result = window.fuse.search(entry.getNarration());
+                    info("addLabels - searchResult: " + JSON.stringify(result));
                     reloadData();
                 } finally {
                     endLog("addLabels");
