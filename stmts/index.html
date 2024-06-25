@@ -255,7 +255,8 @@
                         var input = $('#txtCsvData').val()
                         var parseResult = Papa.parse(input, { 
                             header: false,
-                            skipEmptyLines: 'greedy'
+                            skipEmptyLines: 'greedy',
+                            skipFirstNLines: 1
                         })
                         var values = parseResult.data;
                         var errors = parseResult.errors;
