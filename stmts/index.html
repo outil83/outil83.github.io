@@ -71,6 +71,7 @@
                             <table id="tableStmtData" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
+                                        <th>Entry ID</th>
                                         <th>Source Type</th>
                                         <th>Source ID</th>
                                         <th>Txn Date</th>
@@ -163,7 +164,15 @@
                 // initialize tabs
                 $( "#tabs" ).tabs({
                     activate: function(event, ui) { 
-                        $($.fn.dataTable.tables(true)).DataTable()
+                        $($.fn.dataTable.tables(true)).DataTable({
+                            columnDefs: [
+                                {
+                                    target: 0,
+                                    visible: false,
+                                    searchable: false
+                                }
+                            ]
+                        })
                             .columns.adjust()
                             .responsive.recalc(); 
                     }
@@ -272,7 +281,7 @@
                         var metaEntries = window.staticSetup.metadata.entries;
                         var arrEntries = [];
                         values.forEach(function(row, index, array) {
-                            var entry = new $.Entry.fromRecord(row, metaEntries);
+                            var entry = new $.Entry.fromRecord(index, row, metaEntries);
                             if (entry) {
                                 arrEntries.push(entry);
                             }
@@ -296,6 +305,7 @@
 
                     arrEntries.forEach((entry) => {
                         tableData.push([
+                            entry.getEntryId(),
                             entry.getSourceType(),
                             entry.getSourceId(),
                             entry.getTxnDate(),

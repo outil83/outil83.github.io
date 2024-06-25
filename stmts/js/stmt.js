@@ -229,6 +229,7 @@
 
     /**
      * 
+     * @param {number} entryId 
      * @param {string} sourceType 
      * @param {string} sourceId 
      * @param {Date} txnDate 
@@ -240,7 +241,8 @@
      * @param {number} amount 
      * @param {Date} valueDate 
      */
-    function Entry(sourceType, sourceId, txnDate, narration, reference, debit, credit, closingBalance, amount, valueDate) {
+    function Entry(entryId, sourceType, sourceId, txnDate, narration, reference, debit, credit, closingBalance, amount, valueDate) {
+        this.entryId = entryId;
         this.sourceType = sourceType;
         this.sourceId = sourceId;
         this.txnDate = txnDate;
@@ -255,6 +257,14 @@
     }
 
     $.extend(Entry.prototype, {
+        /**
+         * 
+         * @returns {number}
+         */
+        getEntryId : function () {
+            return this.entryId;
+        },
+
         /**
          * 
          * @returns {string}
@@ -356,15 +366,17 @@
 
     /**
      * 
+     * @param {number} entryId
      * @param {string[]} row 
      * @param {object} metadata 
      * @returns {Entry}
      */
-    Entry.fromRecord = function (row, metadata) {
+    Entry.fromRecord = function (entryId, row, metadata) {
         if (!row[metadata.txnDate.index] || row[metadata.txnDate.index] === "") {
             return ;
         }
         var entry = new Entry(
+            entryId,
             row[metadata.sourceType.index], 
             row[metadata.sourceId.index], 
             row[metadata.txnDate.index], 
@@ -389,6 +401,7 @@
      */
     Entry.fromJson = function (data) {
         var entry = new Entry(
+            data["entryId"],
             data["sourceType"], 
             data["sourceId"], 
             data["txnDate"],
