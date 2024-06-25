@@ -346,10 +346,17 @@
                     var labels = window.prompt("Enter labels: ");
                     info("addLabels - labels: " + JSON.stringify(labels));
                     if (labels && labels.trim() !== "") {
-                        entry.setLabels(labels.split(","));
+                        var arrLabels = labels.split(",");
+                        entry.setLabels(arrLabels);
+                        var result = window.fuse.search(entry.getNarration());
+                        info("addLabels - searchResult: " + JSON.stringify(result));
+                        result.forEach(resultItem => {
+                            var entry = entries[resultItem.refIndex];
+                            if (entry && (!entry.getLabels() || entry.getLabels().length === 0)) {
+                                entry.setLabels(arrLabels);
+                            }
+                        });
                     }
-                    var result = window.fuse.search(entry.getNarration());
-                    info("addLabels - searchResult: " + JSON.stringify(result));
                     reloadData();
                 } finally {
                     endLog("addLabels");
