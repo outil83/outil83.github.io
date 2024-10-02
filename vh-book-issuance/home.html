@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Image Example</title>
+
+</head>
+<body>
+
+   <!-- Include the image -->
+    <img src="assets/img/vibgyor_school.jpeg" alt="Description of the image" width="350" height="auto">
+
+    <!-- Label and Text Box -->
+    <h2> <label for="enrollmentNo"><b>Enrollment No.:</b></label>
+    
+    <input type="text" id="enrollmentNo" style="font-size: 20px;" placeholder="Enter your Enrollment No."></b>
+
+    
+    <!-- Button to Trigger JavaScript Function -->
+    <button style="font-size: 20px;" onclick="redirectToEnrollmentLink()">Fetch</button>
+</h2>
+    
+    <!-- JavaScript Section -->
+    <script>
+        // JavaScript function to capture the input value
+       /* function showInput() {
+            // Get the value from the input field
+            let inputText = document.getElementById('enrollemntNo').value;
+            
+            // Display the value in the output paragraph
+            document.getElementById('output').textContent = "You entered: " + inputText;
+        }*/
+
+        function redirectToEnrollmentLink() {
+            let inputText = document.getElementById('enrollmentNo').value;
+            window.location.href = "https://priyankarasane.github.io/vh-Book-Issuance/index.html?enrollmentId="+ inputText;
+        }
+    
+    </script>
+
+</body>
+</html>

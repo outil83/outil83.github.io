@@ -1,0 +1,171 @@
+{
+    "googleForm": {
+        "customFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfHlpBGv94GjJnqvkufxEBKOnyyHlFAdduh3uawo3oI2C9EqQ/formResponse",
+        "prefilledFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfHlpBGv94GjJnqvkufxEBKOnyyHlFAdduh3uawo3oI2C9EqQ/viewform?usp=pp_url",
+        "enrollmentId": "entry.542565564",
+        "status": "entry.84080034",
+        "superviserId": "entry.1983025133",
+        "locationId": "entry.805747511"
+    },
+    "googleSheet": {
+        "url": "https://docs.google.com/spreadsheets/d/16g1K8eb5lva6xfu8batH_pHI9TpH1E8eyxt0BiG0_hA/edit?usp=sharing",
+        "sheetId": "16g1K8eb5lva6xfu8batH_pHI9TpH1E8eyxt0BiG0_hA",
+        "records": "records!A2:E12000",
+        "supervisors": "supervisors!A2:D100",
+        "locations": "locations!A2:F21",
+        "bookKits": "bookKits!A2:C10",
+        "setup": "setup!B2:C6",
+        "students":"students!A2:L1200"
+    },
+    "metadata": {
+        "locations": {
+            "id": {
+                "index": 0,
+                "name": "branchId",
+                "displayName": "Branch Id"
+            },
+            "branch": {
+                "index": 1,
+                "name": "branch",
+                "displayName": "branch"
+            },
+            "city": {
+                "index": 2,
+                "name": "city",
+                "displayName": "city"
+            },
+            "state": {
+                "index": 3,
+                "name": "state",
+                "displayName": "State"
+            },
+            "country": {
+                "index": 4,
+                "name": "country",
+                "displayName": "Country"
+            },
+            "cluster": {
+                "index": 5,
+                "name": "cluster",
+                "displayName": "Cluster"
+            }
+        },
+        "bookKits": {
+            "id": {
+                "index": 0,
+                "name": "kitId",
+                "displayName": "Kit ID"
+            },
+            "kitName": {
+                "index": 1,
+                "name": "kitName",
+                "displayName": "Kit Name"
+            },
+            "subject": {
+                "index": 2,
+                "name": "subject",
+                "displayName": "Subject"
+            }
+        },
+        "supervisor": {
+            "id": {
+                "index": 0,
+                "name": "supervisorId",
+                "displayName": "Supervisor Id"
+            },
+            "name": {
+                "index": 1,
+                "name": "name",
+                "displayName": "Name"
+            },
+            "gender": {
+                "index": 2,
+                "name": "gender",
+                "displayName": "Gender"
+            },
+            "otp": {
+                "index": 3,
+                "name": "otp",
+                "displayName": "OTP"
+            }
+        },
+        "records": {
+            "timestamp": {
+                "index": 0,
+                "name": "timestamp",
+                "displayName": "timestamp"
+            },
+            "enrollmentId": {
+                "index": 1,
+                "name": "enrollmentId",
+                "displayName": "enrollmentId"
+            },
+            "status": {
+                "index": 2,
+                "name": "status",
+                "displayName": "status"
+            },
+            "superviserId": {
+                "index": 3,
+                "name": "superviserId",
+                "displayName": "superviserId"
+            },
+            "locationId": {
+                "index": 4,
+                "name": "location",
+                "displayName": "location"
+            }
+        },
+        "students": {            
+            "id": {
+                "index": 0,
+                "name": "studentId",
+                "displayName": "Enrollment No."
+            },
+            "name": {
+                "index": 1,
+                "name": "name",
+                "displayName": "Student Name"
+            },
+            "board": {
+                "index": 2,
+                "name": "board",
+                "displayName": "Board"
+            },
+            "location": {
+                "index": 3,
+                "name": "location",
+                "displayName": "School Location"
+            },
+            "grade": {
+                "index": 4,
+                "name": "grade",
+                "displayName": "Grade"
+            },
+            "bookKitName": {
+                "index": 5,
+                "name": "bookKitName",
+                "displayName": "Book Kit Name"
+            },
+            "emailId": {
+                "index": 6,
+                "name": "emailId",
+                "displayName": "Email ID"
+            },
+            "mobileNo": {
+                "index": 7,
+                "name": "mobileNo",
+                "displayName": "Mobile No."
+            },
+            "paymentStatus": {
+                "index": 8,
+                "name": "paymentStatus",
+                "displayName": "Payment Status"
+            }
+
+        }
+    },
+    "cache": {
+        "enabled": false
+    }
+}

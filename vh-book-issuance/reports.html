@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>VIBGIYOR | Global Event</title>
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- Third party plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/JQLoader.css" />
+        <!-- JQuery UI -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        
+	</head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                      <!--  <li class="nav-item"><a id='navToReports' class="nav-link js-scroll-trigger" href="#reports">Reports</a></li> -->
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Detail</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Reports section-->
+        <section id="reports" class="page-section bg-info">
+            <div id="divLoading" class="container">
+                <p>Please wait while page is loading...</p>
+            </div>
+
+            <div id="divReport" class="container" hidden>
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h5 class="text-white font-weight-bold">Reports</h5>
+                        <hr class="divider my-4" />
+                        <div class="table-responsive">
+                            <div id="reportOverall">
+                                <!-- Report overall -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Detail section-->
+        <section id="detail" class="page-section bg-warning">
+
+            <div id="divDetail" class="container" hidden>
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <div id="tabs">
+                            <ul>
+                                <li><a href="#tabs-pending">Yet to Handover</a></li>
+                                <li><a href="#tabs-attended">Handed Over </a></li>
+                                <li>
+                                    <select title="Select Cluster from drop-down" class="form-control" id="clusterFilter" name="clusterFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="1">Cluster 1</option>
+                                        <option value="3">Cluster 3</option>
+                                        <option value="4">Cluster 4</option>
+                                        <option value="5">Cluster 5</option>
+                                        <option value="6">Cluster 6</option>
+                                    </select>
+                                </li>
+                                
+                                <li>
+                                    <select titla="Select Branch from drop-down" class="form-control" id="location" name="location" onchange="prepareMemberDrilldown()">/*onchange="if ($('#location').find(':selected')) { $('#locationDescription').text(window.locations.getById($('#location').find(':selected').val()).getDescription());} "*/>
+                                        <!-- options to be added by loadActivities -->
+                                        <option value="0">ALL</option>
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Board from drop-down" class="form-control" id="memberTypeFilter" name="memberTypeFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="1">CBSE</option>
+                                        <option value="2">ICSE</option>
+                                        <option value="3">IGCSE</option>
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select payment Status from drop-down" class="form-control" id="paymentStatusFilter" name="paymentStatusFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="1">Paid</option>
+                                        <option value="2">Pending</option>
+                                    </select>
+                                </li>
+                            </ul>
+                            <div id="tabs-pending">
+                                <div class="table-responsive">
+                                    <table id="tablePending" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Board</th>
+                                                <th>Grade</th>
+                                                <th>Book Kit</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="tabs-attended">
+                                <div class="table-responsive">
+                                    <table id="tableAttended" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Board</th>
+                                                <th>Grade</th>
+                                                <th>Book Kit</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="bg-light py-5">
+            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
+        </footer>
+
+        <!-- The Modal -->
+        <div class="modal" id="messageModel">
+			<div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p id="message"></p>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">Close</button>
+                    </div>
+
+                </div>
+			</div>
+        </div>
+
+		<!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>        
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+		<!-- Google sheet JS-->
+        <script src="js/sheet.js"></script>
+        <script src="js/JQLoader.js"></script>
+        <script src="js/event-mgmt.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript">
+
+            window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
+            window.CACHE_KEY_STAIC_SETUP = "static-setup";
+            window.cacheEnabled = false;
+			
+            // Make sure to load query params
+            (window.onpopstate = function () {
+                var match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+            
+                window.urlParams = {};
+                while (match = search.exec(query)) {
+                    window.urlParams[decode(match[1])] = decode(match[2]);
+                }
+                info("URL query parameters => " + JSON.stringify(window.urlParams));
+                if (window.urlParams["clear"]) {
+                    window.localStorage.clear();
+                }
+            })();
+
+			$(document).ready(function() {
+                // initialize tabs
+                $( "#tabs" ).tabs({
+                    activate: function(event, ui) { 
+                        $($.fn.dataTable.tables(true)).DataTable()
+                            .columns.adjust()
+                            .responsive.recalc(); 
+                    }
+                });
+
+                // initialize tables
+                window.tablePending = new DataTable('#tablePending', {
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false,
+                    dom: 'ifrt'
+                });
+                window.tableAttended = new DataTable('#tableAttended', {
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false
+                });
+
+
+                $("#divLoading").remove();
+                $("#divReport").removeAttr("hidden");
+                $("#divDetail").removeAttr("hidden");
+                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
+                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
+                var customWidth = (window.innerWidth / 2) - (300 / 2);
+                $('.loading_box').css({
+                    'left': (window.innerWidth / 2) - (300 / 2),
+                    'width': 300,
+                    'color': "#fff",
+                    'background-color': "#000",
+                    'text-align': "center"
+                });
+                window.setTimeout(initialize, 100);
+			});
+
+            function initialize() {
+                loadStaticSetup(function() {
+                    startLog("loadStaticSetupCallback");
+                    try {
+                        loadSetup();
+                        loadSupervisors();
+                        loadLocations();
+                        loadStudents();
+                        loadRecords();  
+                        loadSubsequentRecords();                      
+                        prepareReports();
+                    } finally {
+                        $("body").JQLoader({action: "close" });
+                        endLog("loadStaticSetupCallback");
+                    }
+                });
+            }
+            
+            function loadLocations() {
+                startLog('loadLocations');
+                window.locations = new $.Locations();
+                window.locations.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var locationsSheetRangeRef = window.staticSetup.googleSheet.locations.split("!");
+                    var values = eventMgmtSheet.getValues(locationsSheetRangeRef[0], locationsSheetRangeRef[1]);
+                    info('loadLocations: ' + JSON.stringify(values));
+                    var country = window.staticSetup.baseSetup['CURRENT_COUNTRY'];
+                    var metaLocations = window.staticSetup.metadata.locations;
+                    var arrLocations = [];
+                    values.values.forEach(function(row, index, array) {
+                     var location = $.Location.fromRecord(row, metaLocations);
+                        if (location && location.getCountry() === country) {
+                            arrLocations.push(location);
+                        }
+                    });
+                    return arrLocations;
+                });
+                
+/*                let locationOptionsHtml = "<option value='0'>All</option>"; // Initialize with 'All' option
+
+                $('#location').html("");
+                window.locations.getAll().forEach(location => {
+                    locationOptionsHtml = locationOptionsHtml 
+                       +"<option value='" + location.getId() + "'>" + location.getCity() + " / " + location.getBranch() + "</option>";
+                });
+                $('#location').html(locationOptionsHtml);*/
+                populateLocationDropdown('0'); // Show all locations initially
+
+                info('loadLocations: loaded locations - ' + JSON.stringify(window.locations));
+                endLog('loadLocations');
+
+
+            }
+
+            function populateLocationDropdown(filter) {
+                let locationOptionsHtml = "<option value='0'>ALL</option>"; // Always start with 'All' option
+                let locations = Array.from(window.locations.getAll()); // Convert the collection to an array
+
+                // Filter locations based on the filter parameter
+                let filteredLocations = locations.filter((location) => {
+
+                    let clusterName = location.getCluster();  // Assuming getRegion() returns the region
+    
+                    if (filter === "0") {
+                        return true; // If 'All' is selected, return all locations
+                    } else {
+                       let res =  ((filter === "1" && clusterName === "Cluster 1")
+                      || (filter === "3" && clusterName === "Cluster 3")
+                      || (filter === "4" && clusterName === "Cluster 4")
+                      || (filter === "5" && clusterName === "Cluster 5")
+                      || (filter === "6" && clusterName === "Cluster 6"));
+                        return res; // Assuming locations have a 'getRegion' method
+                    }
+                });
+
+            
+            // Generate options for the filtered locations
+            filteredLocations.forEach(location => {
+                locationOptionsHtml += "<option value='" + location.getId() + "'>" 
+                                        + location.getCity() + " / " + location.getBranch() + "</option>";
+            });
+                    // Set the HTML of the location dropdown
+            $('#location').html(locationOptionsHtml);
+
+
+            // Event listener for the filter dropdown
+            document.getElementById('clusterFilter').addEventListener('change', function() {
+                let selectedFilter = this.value; // Get the selected filter value
+                populateLocationDropdown(selectedFilter); // Call the function to populate locations based on filter
+            });   
+            }
+
+
+            function loadStudents() {
+                startLog('loadStudents');
+                try {
+                    window.students = new $.Students();
+                    window.students.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadStudents: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var studentsSheetRangeRef = window.staticSetup.googleSheet.students.split("!");
+                        var values = eventMgmtSheet.getValues(studentsSheetRangeRef[0], studentsSheetRangeRef[1]);
+                        info('loadStudents: ' + JSON.stringify(values));
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadStudents:  API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var arrStudents = [];
+                        var metaStudents = window.staticSetup.metadata.students;
+                        values.values.forEach(function(row, index, array) {
+                            var student = new $.Student.fromRecord(row, metaStudents);
+                            if (student) {
+                                arrStudents.push(student);
+                            }
+                        });
+                        return arrStudents;
+                    });
+                    info('loadStudents: studentDetail - ' + JSON.stringify(window.student));
+                } finally {
+                    endLog('loadStudents');
+                }
+            }
+
+            function loadSubsequentRecords() {
+                startLog('loadSubsequentRecords');
+                try {
+                    var arrRecords = window.records.getAll();
+                    var startOfRange = "A" + (arrRecords.length + 2); // +1 header and +1 for range row start from 1
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadRecords: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var recordsSheetRangeRef = window.staticSetup.googleSheet.records.split("!");
+                    var values = eventMgmtSheet.getValues(recordsSheetRangeRef[0], recordsSheetRangeRef[1].replace("A2", startOfRange));
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadRecords: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                    if (totalRecords == 0) {
+                        return ;
+                    }
+                    var metaRecords = window.staticSetup.metadata.records;
+                    values.values.forEach(function(row, index, array) {
+                        var record = new $.Record.fromRecord(row, metaRecords);
+                        if (record) {
+                            window.records.add(record);
+                        }
+                    });
+                    window.records.save();
+                } finally {
+                    endLog('loadSubsequentRecords');
+                }
+            }
+            // editted till here
+
+
+             // editting from here
+             function loadRecords() {
+                startLog('loadRecords');
+                try {
+                    window.records = new $.Records();
+                    window.records.load(function() {
+                        // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                        var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                        info('loadRecords: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                        var recordsSheetRangeRef = window.staticSetup.googleSheet.records.split("!");
+                        var values = eventMgmtSheet.getValues(recordsSheetRangeRef[0], recordsSheetRangeRef[1]);
+                        var totalRecords = 0;
+                        if (values["values"]) {
+                            totalRecords = values["values"].length;
+                        }
+                        info('loadRecords: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+                        if (totalRecords == 0) {
+                            return [];
+                        }
+                        var metaRecords = window.staticSetup.metadata.records;
+                        var arrRecords = [];
+                        values.values.forEach(function(row, index, array) {
+                            var record = new $.Record.fromRecord(row, metaRecords);
+                            if (record) {
+                                arrRecords.push(record);
+                            }
+                        });
+                        return arrRecords;
+                    });
+                    if (window.student) {
+                        info('loadRecords: student records - ' + JSON.stringify(window.records.getByEnrollmentId(window.student.getId())));
+                    }
+                } finally {
+                    endLog('loadRecords');
+                }
+            }
+
+
+
+            function loadStaticSetup(callback) {
+                startLog("loadStaticSetup");
+                try {
+                    $.cacheManager.register(CACHE_KEY_STAIC_SETUP, new $.Cache(CACHE_KEY_STAIC_SETUP, new $.Cachable(), (1000 * 60 * 60)));
+                    var staticSetupCache = $.cacheManager.get(CACHE_KEY_STAIC_SETUP);
+
+                    window.staticSetup = staticSetupCache.load(function() {
+                        info('Static setup not found in local storage and hence getting default setup');
+                        var result = {};
+                        $.ajax({
+                            async: false,
+                            type: 'GET',
+                            url: 'assets/json/static-setup.json',
+                            success: function(response) {
+                                info('loadStaticSetup - successfully fetched');
+                                result = JSON.parse(response);
+                            },
+                            dataType: 'text'
+                        });
+                        return result;
+                    });
+                    if (!window.staticSetup) {
+                        alert("SYSTEM ERROR: Failed to load static setup!");
+                        return ;
+                    }
+                    if (window.staticSetup.cache && window.staticSetup.cache.enabled === true) {
+                        window.cacheEnabled = true;
+                    }
+                    callback.call(null);
+                } finally {
+                    endLog("loadStaticSetup");
+                }
+            }
+
+            function loadSetup() {
+                startLog('loadSetup');
+                $.cacheManager.register("setup", new $.Cache("setup", new $.Cachable(), (1000 * 60 * 60)));
+
+                var setupCache = $.cacheManager.get("setup");
+                var setupData = setupCache.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var setupSheetRangeRef = window.staticSetup.googleSheet.setup.split("!");
+                    var values = eventMgmtSheet.getValues(setupSheetRangeRef[0], setupSheetRangeRef[1]);
+                    info('loadSetup: ' + JSON.stringify(values));
+                    var arrSetup = [];
+                    values.values.forEach(function(row, index, array) {
+                        var key = '' + row[0];
+                        if (key !== "null" && key !== "undefined" && key.length > 0) {
+                            arrSetup.push({ "key": row[0], "value": row[1]});
+                        }
+                    });
+                    return arrSetup;
+                });
+                window.staticSetup.baseSetup = {};
+                setupData.forEach(setup => {
+                    window.staticSetup.baseSetup[setup["key"]] = setup["value"];
+                });
+                endLog('loadSetup');
+            }
+
+            function loadSupervisors() {
+                startLog('loadSupervisors');
+                window.supervisors = new $.Supervisors();
+                window.supervisors.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('loadSupervisors: Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var supervisorsSheetRangeRef = window.staticSetup.googleSheet.supervisors.split("!");
+                    var values = eventMgmtSheet.getValues(supervisorsSheetRangeRef[0], supervisorsSheetRangeRef[1]);
+                    var totalRecords = 0;
+                    if (values["values"]) {
+                        totalRecords = values["values"].length;
+                    }
+                    info('loadSupervisors: API Response - range: ' + values['range'] + ", majorDimension: " + values['majorDimension'] + ", total: " + totalRecords);
+
+                    var metaSupervisor = window.staticSetup.metadata.supervisor;
+                    if (totalRecords == 0) {
+                        return [];
+                    }
+                    var arrSupervisors = [];
+                    values.values.forEach(function(row, index, array) {
+                        var supervisor = $.Supervisor.fromRecord(row, metaSupervisor);
+                        if (supervisor) {
+                            arrSupervisors.push(supervisor);
+                        }
+                    });
+                    return arrSupervisors;
+                });
+
+                endLog('loadSupervisors');
+            }
+
+            /**
+             * Log as ERROR message along with timestamp
+             * @param {string} message
+             */
+             function error(message) {
+                console.log("ERROR: " + message);
+            }
+
+            /**
+             * Log as INFO message along with timestamp
+             * @param {string} message
+             */
+            function info(message) {
+                console.log("INFO: " + message);
+            }
+
+            /**
+             * Start log entry with message
+             * @param {string} key
+             * @param {string} message
+             */
+             function startLog(key, message) {
+                console.time("INFO: " + key);
+                if (message) {
+                    info(key + " START : " + message);
+                } else {
+                    info(key + " START");
+                }
+            }
+
+            /**
+             * End log entry with message
+             * 
+             * @param {string} key
+             * @param {string} message
+             */
+             function endLog(key, message) {
+                if (message) {
+                    info(key + " END : " + message);
+                } else {
+                    info(key + " END");
+                }
+                console.timeEnd("INFO: " + key);
+            }
+
+            function showMessage(message) {
+                $('#message').text(message);
+                $('#messageModel').slideDown();
+            }
+
+            function prepareReports() {
+                google.charts.load('current', {packages: ['table']});
+                google.charts.setOnLoadCallback(renderCharts);
+            }
+
+            function renderCharts() {
+                var data = prepareData();
+                renderReports(data);
+            }
+
+            function prepareData() {
+                var students = window.students.getAll();
+                var data = [];
+                students.forEach((student) => {
+                    var records = window.records.getByEnrollmentId(student.getId());
+                    var totalEntries = 0;
+                    if (records) {
+                        totalEntries = records.length;
+                    }
+                    data.push([student.getName(), student.getBoard(),student.getGrade(),student.getBookKitName(),student.getLocation(),student.getPaymentStatus()]);//, Number(activity.getMaxAllowed()), totalEntries, ((totalEntries / activity.getMaxAllowed()) * 100)]);
+                });
+                return data;
+            }
+
+            function renderReports(data) {
+                var chartTable = new google.visualization.DataTable();
+                chartTable.addColumn('string', 'Name');
+                chartTable.addColumn('string', 'Board');
+                chartTable.addColumn('string', 'Grade');
+                chartTable.addColumn('string', 'Book Kit');
+                chartTable.addColumn('string', 'Location');
+                chartTable.addColumn('string', 'Payment Status');
+                chartTable.addRows(data);
+
+                var chart = new google.visualization.Table(document.getElementById('reportOverall'));
+
+                var formatter = new google.visualization.BarFormat({width: 50, max: 100, showValue: false});
+                formatter.format(chartTable, 4); // Apply formatter to fourth column
+
+                // Every time the table fires the "select" event, it should call your
+                // selectHandler() function.
+                google.visualization.events.addListener(chart, 'select', function(event){
+                    var selection = chart.getSelection();
+                    var group = chartTable.getValue(selection[0].row, 0);
+                    var activityName = chartTable.getValue(selection[0].row, 1);
+                    handleSelection(group, activityName);
+                });
+                
+                /*chart.draw(chartTable, {
+                    allowHtml: true,
+                    showRowNumber: true, 
+                    width: '100%', 
+                    height: '100%',
+                    sortColumn: 0
+                });*/
+
+                chart.setSelection([{row:0, column: null}]);
+                handleSelection(data[0][0], data[0][1]);
+            }
+
+            function handleSelection(group, activityName) {
+                var student = window.students.getByName(group + " / " + activityName);
+                window.selectedActivity = student;
+                $("#activity").html(group + " / " + activityName);
+                prepareMemberDrilldown();
+            }
+
+            function isBoardType(student, memberType) {
+                return (memberType === "0" 
+                    || (memberType === "1" && student.getBoard() === "CBSE")
+                    || (memberType === "2" && student.getBoard() === "ICSE")
+                    || (memberType === "3" && student.getBoard() === "IGCSE"));
+            }
+
+            function ispaymentStatusType(student, paymentStatus) {
+                return (paymentStatus === "0" 
+                    || (paymentStatus === "1" && student.getPaymentStatus() === "Paid")
+                    || (paymentStatus === "2" && student.getPaymentStatus() === "Pending"));
+            }
+
+            function isClusterType(location, clusterSelected) {
+                return (clusterSelected === "0" 
+                    || (clusterSelected === "1" && location.getCluster() === "Cluster 1")
+                    || (clusterSelected === "3" && location.getCluster() === "Cluster 3")
+                    || (clusterSelected === "4" && location.getCluster() === "Cluster 4")
+                    || (clusterSelected === "5" && location.getCluster() === "Cluster 5")
+                    || (clusterSelected === "6" && location.getCluster() === "Cluster 6"));
+            }
+
+            function isBranch(location, branchSelected) {
+                return (branchSelected === '0' 
+                    || ( branchSelected === location.getId()));
+            }
+
+            function prepareMemberDrilldown() {
+                var dataPending = [];
+                var dataHandedOver = [];
+                //var activity = window.selectedActivity;
+                var students = window.students.getAll();
+                var boardType = $("#memberTypeFilter").find(":selected").val();
+                var paymentStatusType = $("#paymentStatusFilter").find(":selected").val();
+                var clusterSelected = $("#clusterFilter").find(":selected").val();
+                var branchSelected = $("#location").find(":selected").val();
+
+                students.forEach((student) => {
+                    var location = window.locations.getById(student.getLocation());
+                   // console.log('branchSelected',branchSelected,' location.get',location.getId());
+
+                    if ((isBoardType(student, boardType)) && (ispaymentStatusType(student,paymentStatusType))
+                         && (isClusterType(location,clusterSelected))  && isBranch(location, branchSelected)  ) {
+
+                        var found = false;
+                        var records = window.records.getByEnrollmentId(student.getId());
+                        if (records) {
+                            for (var i = 0; i < records.length; ++i) {
+                                if (records[i].getEnrollmentId() === student.getId()) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found === false) {
+                            dataPending.push([
+                                student.getName() + " (" + student.getId() + ")",
+                                student.getBoard(),
+                                student.getGrade() + " (" + student.getLocation() + ")" ,
+                                student.getBookKitName()
+                            ]);
+                        } else {
+                            dataHandedOver.push([
+                                student.getName() + " (" + student.getId() + ")",
+                                student.getBoard() ,
+                                student.getGrade() + " (" + student.getLocation() + ")" ,
+                                student.getBookKitName() 
+                            ]);
+                        }
+                    }
+                });
+                
+            
+                window.tablePending.clear().rows.add(dataPending).draw();
+                window.tableAttended.clear().rows.add(dataHandedOver).draw();
+
+            }
+
+		</script>
+    </body>
+</html>
