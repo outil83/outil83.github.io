@@ -222,12 +222,12 @@
 
             //added by priyanka
             //localhots
-            const CLIENT_ID = '714373430959-1g5n383omb42l3h5tj5016cvqpq3ktui.apps.googleusercontent.com';
+            const CLIENT_ID = '177634263117-f4eto36s2su5pp0nepv0nckv6jpmeb9o.apps.googleusercontent.com';
 
             //const CLIENT_ID='468136229605-60n0gnuitqds37p6o3eg978rhrc60b83.apps.googleusercontent.com';
 
            //localhost
-            const API_KEY = 'AIzaSyAHfAKSNJ8kcK_66CEItnmg8NXavrXbEm0';
+            const API_KEY = 'AIzaSyAtaFgDKxHFR0zyPxoSWVo-chOkqlZ9oQM';
            // const API_KEY = 'AIzaSyBrrSoj2TJvycU8Ur-ujTiZoCaHFbbbsCg';
             const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'];
             const SCOPES = 'https://www.googleapis.com/auth/gmail.send';
@@ -246,8 +246,8 @@
                 clientId: CLIENT_ID,
                 discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES,
-                plugin_name: 'StudentKitDistribution'
-               //plugin_name: 'vh-Book-Issuance'
+               // plugin_name: 'StudentKitDistribution'
+               plugin_name: 'vh-Book-Issuance'
             }).then(() => {
                 gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
                 updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
