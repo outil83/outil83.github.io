@@ -1,9 +1,6 @@
 (function($) {
     "use strict"; // Start of use strict
 
-    const CACHE_KEY_ACTIVITIES = "activities";
-    const CACHE_EVICATION_ACTIVITIES = 1000 * 60 * 60; // 1 hour
-
     const CACHE_KEY_LOCATIONS = "locations";
     const CACHE_EVICATION_LOCATIONS = 1000 * 60 * 60; // 1 hour
 
@@ -24,6 +21,10 @@
 
     const CACHE_KEY_BOOKKITS = "bookKitInfo";
     const CACHE_EVICATION_BOOKKITS = 1000 * 60 * 60; // 1 hour
+
+    
+    const CACHE_KEY_FILTERS = "filters";
+    const CACHE_EVICATION_FILTERS = 1000 * 60 * 60; // 1 hour
 
     function Cachable() {
         // DO NOTHING
@@ -328,8 +329,7 @@
     //editted till here
 
 
-    //varad
-
+    
     function BookKits() {
         this.cachable = new Cachable();
         $.cacheManager.register(CACHE_KEY_BOOKKITS, new Cache(CACHE_KEY_BOOKKITS, this, CACHE_EVICATION_BOOKKITS)); // 1 minute
@@ -490,7 +490,7 @@
     };
 
     
-    //varad
+    
 
     function Supervisors() {
         this.cachable = new Cachable();
@@ -587,12 +587,14 @@
      * @param {string} name 
      * @param {string} gender
      * @param {string} otp 
+     * @param {string} locationId 
      */
-    function Supervisor(id, name, gender, otp) {
+    function Supervisor(id, name, gender, otp , locationId)  {
         this.id = id;
         this.name = name;
         this.gender = gender;
         this.otp = otp;
+        this.locationId = locationId;
     }
 
     $.extend(Supervisor.prototype, {
@@ -627,6 +629,14 @@
         getOtp : function() {
             return this.otp;
         },
+        
+        /**
+         * 
+         * @returns {string}
+         */
+        getLocationId : function() {
+            return this.locationId;
+        }
 
     });
 
@@ -644,7 +654,8 @@
             row[metadata.id.index], 
             row[metadata.name.index], 
             row[metadata.gender.index], 
-            row[metadata.otp.index]
+            row[metadata.otp.index],
+            row[metadata.locationId.index],
         );
     };
 
@@ -658,7 +669,8 @@
             data["id"], 
             data["name"], 
             data["gender"], 
-            data["otp"]
+            data["otp"],
+            data["locationId"]
         );
     };
     
@@ -996,6 +1008,7 @@
      * 
      * @param {string} id 
      * @param {string} name 
+     * @param {string} schoolName
      * @param {string} board 
      * @param {string} location 
      * @param {string} grade 
@@ -1004,12 +1017,14 @@
      * @param {string} mobileNo
      * @param {string} paymentStatus
      */
-    function Student(id, name, board, location, grade, bookKitName, emailId, mobileNo,paymentStatus) {
+    function Student(id, name, schoolName ,board, location, grade, division , bookKitName, emailId, mobileNo,paymentStatus) {
         this.id = id;
         this.name = name;
+        this.schoolName = schoolName;
         this.board = board;
         this.location = location;
         this.grade = grade;
+        this.division = division;
         this.bookKitName = bookKitName;
         this.emailId = emailId;
         this.mobileNo = mobileNo;
@@ -1032,6 +1047,13 @@
          */
         getName : function () {
             return this.name;
+        },
+        /**
+         * 
+         * @returns {string}
+         */
+        getSchoolName : function () {
+            return this.schoolName;
         },
 
         /**
@@ -1058,6 +1080,13 @@
             return this.grade;
         },
 
+        /**
+         * 
+         * @returns {string}
+         */
+        getDivision : function() {
+            return this.division;
+        },
         /**
          * 
          * @returns {string}
@@ -1103,10 +1132,12 @@
         }
         return new Student(
             row[metadata.id.index], 
-            row[metadata.name.index], 
+            row[metadata.name.index],
+            row[metadata.schoolName.index],  
             row[metadata.board.index], 
             row[metadata.location.index],
             row[metadata.grade.index],
+            row[metadata.division.index],
             row[metadata.bookKitName.index],
             row[metadata.emailId.index],
             row[metadata.mobileNo.index],
@@ -1123,243 +1154,15 @@
         return new Student(
             data["id"], 
             data["name"], 
+            data["schoolName"], 
             data["board"], 
             data["location"],
             data["grade"],
+            data["division"],
             data["bookKitName"],
             data["emailId"],
             data["mobileNo"],
             data["paymentStatus"],
-        );
-    };
-
-    // editted till here
-    
-    function Entries() {
-        this.cachable = new Cachable();
-        $.cacheManager.register(CACHE_KEY_ENTRIES, new Cache(CACHE_KEY_ENTRIES, this, CACHE_EVICATION_ENTRIES));
-
-        this._entries = [];
-        this._entriesByActivityId = new Map();
-        this._entriesByUniqueId = new Map();
-        this._entriesByMemberId = new Map();
-    }
-
-    $.extend(Entries.prototype, {
-
-        /**
-         * 
-         * @param {function} callback 
-         * @returns {Entry[]}
-         */
-        load: function(callback) {
-            var arrEntries = $.cacheManager.get(CACHE_KEY_ENTRIES).load(callback);
-            arrEntries.forEach(entry => {
-                this.add(entry);
-            });
-            return this.getAll();
-        },
-
-        save: function() {
-            $.cacheManager.get(CACHE_KEY_ENTRIES).save(this._entries);
-        },
-
-        /**
-         * 
-         * @param {string} content 
-         * @returns {Entry[]}
-         */
-        fromCache: function(content) {
-            var arrEntries = this.cachable.fromCache(content);
-            var arrResult = [];
-            arrEntries.forEach(jsonEntry => {
-                arrResult.push(Entry.fromJson(jsonEntry));
-            });
-            return arrResult;
-        },
-
-        /**
-         * 
-         * @param {Entry[]} data 
-         * @returns {string} content to be cached
-         */
-        toCache: function(data) {
-            return this.cachable.toCache(data);
-        },
-
-        /**
-         * 
-         * @param {Entry} entry
-         * @returns {string} 
-         */
-        getUniqueIdFromEntry : function (entry) {
-            return this.getUniqueId(entry.getMemberId(), entry.getActivityId());
-        },
-
-        /**
-         * 
-         * @param {string} memberId 
-         * @param {string} activityId 
-         * @returns {string}
-         */
-        getUniqueId : function (memberId, activityId) {
-            return memberId + "_" + activityId;
-        },
-
-        /**
-         * 
-         * @param {Entry} entry 
-         */
-        add : function(entry) {
-            this._entries.push(entry);
-
-            var entryUniqueId = this.getUniqueIdFromEntry(entry);
-            this._entriesByUniqueId.set(entryUniqueId, entry);
-
-            var entriesByMemberId = this._entriesByMemberId.get(entry.getMemberId());
-            if (!entriesByMemberId) {
-                entriesByMemberId = [];
-            }
-            entriesByMemberId.push(entry);
-            this._entriesByMemberId.set(entry.getMemberId(), entriesByMemberId);
-
-            var entriesByActivityId = this._entriesByActivityId.get(entry.getActivityId());
-            if (!entriesByActivityId) {
-                entriesByActivityId = [];
-            }
-            entriesByActivityId.push(entry);
-            this._entriesByActivityId.set(entry.getActivityId(), entriesByActivityId);
-        },
-
-        /**
-         * 
-         * @param {string} uniqueId 
-         * @returns {Entry}
-         * @see getUniqueId
-         * @see getUniqueIdFromEntry
-         */
-        getByUniqueId : function(uniqueId) {
-            return this._entriesByUniqueId.get(uniqueId);
-        },
-
-        /**
-         * 
-         * @param {string} memberId 
-         * @returns {Entry[]}
-         */
-        getByMemberId : function(memberId) {
-            return this._entriesByMemberId.get(memberId);
-        },
-
-        /**
-         * 
-         * @param {string} activityId 
-         * @returns {Entry[]}
-         */
-        getByActivityId : function(activityId) {
-            return this._entriesByActivityId.get(activityId);
-        },
-
-        /**
-         * 
-         * @returns {Entry[]}
-         */
-        getAll : function() {
-            return this._entries;
-        }
-    });
-
-
-    /**
-     * 
-     * @param {string} timestamp 
-     * @param {string} supervisorId 
-     * @param {string} activityId 
-     * @param {string} memberId 
-     * @param {string} remarks 
-     */
-    function Entry(timestamp, supervisorId, activityId, memberId, remarks) {
-        this.timestamp = timestamp;
-        this.supervisorId = supervisorId;
-        this.activityId = activityId;
-        this.memberId = memberId;
-        this.remarks = remarks;
-    }
-
-    $.extend(Entry.prototype, {
-        /**
-         * 
-         * @returns {string}
-         */
-        getTimestamp : function () {
-            return this.timestamp;
-        },
-
-        /**
-         * 
-         * @returns {string}
-         */
-        getSupervisorId : function () {
-            return this.supervisorId;
-        },
-
-        /**
-         * 
-         * @returns {string}
-         */
-        getActivityId : function () {
-            return this.activityId;
-        },
-
-        /**
-         * 
-         * @returns {string}
-         */
-        getMemberId : function () {
-            return this.memberId;
-        },
-
-        /**
-         * 
-         * @returns {string}
-         */
-        getRemarks : function () {
-            return this.remarks;
-        }
-
-    });
-
-    /**
-     * 
-     * @param {string[]} row 
-     * @param {object} metadata 
-     * @returns {Entry}
-     */
-    Entry.fromRecord = function (row, metadata) {
-        if (!row[metadata.timestamp.index] || row[metadata.timestamp.index] === "") {
-            return ;
-        }
-        return new Entry(
-            row[metadata.timestamp.index], 
-            row[metadata.supervisorId.index], 
-            row[metadata.activityId.index], 
-            row[metadata.memberId.index], 
-            row[metadata.remarks.index]
-        );
-    };
-
-    /**
-     * 
-     * @param {object} data 
-     * @returns {Entry}
-     */
-    Entry.fromJson = function (data) {
-        return new Entry(
-            data["timestamp"], 
-            data["supervisorId"], 
-            data["activityId"], 
-            data["memberId"], 
-            data["remarks"]
         );
     };
 
@@ -1497,8 +1300,6 @@
             return this._records;
         }
     });
-
-
     /**
      * 
      * @param {string} timestamp 
@@ -1507,12 +1308,13 @@
      * @param {string} superviserId 
      * @param {string} locationId 
      */
-    function Record(timestamp, enrollmentId, status, superviserId, locationId) {
+    function Record(timestamp, enrollmentId, status, superviserId, locationId,collectedBy) {
         this.timestamp = timestamp;
         this.enrollmentId = enrollmentId;
         this.status = status;
         this.superviserId = superviserId;
         this.locationId = locationId;
+        this.collectedBy = collectedBy;
     }
 
     $.extend(Record.prototype, {
@@ -1554,8 +1356,16 @@
          */
         getLocationId : function () {
             return this.locationId;
-        }
+        },
 
+        
+        /**
+         * 
+         * @returns {string}
+         */
+        getCollectedBy : function () {
+            return this.collectedBy;
+        }
     });
 
     /**
@@ -1573,7 +1383,8 @@
             row[metadata.enrollmentId.index], 
             row[metadata.status.index], 
             row[metadata.superviserId.index], 
-            row[metadata.locationId.index]
+            row[metadata.locationId.index],
+            row[metadata.collectedBy.index]
         );
     };
 
@@ -1588,11 +1399,199 @@
             data["enrollmentId"], 
             data["status"], 
             data["superviserId"], 
-            data["locationId"]
+            data["locationId"],
+            data["collectedBy"]
         );
     };
     //Editted till here
 
+    //priyanka added
+
+      //priyanka
+
+      function Filters() {
+        this.cachable = new Cachable();
+        $.cacheManager.register(CACHE_KEY_FILTERS, new Cache(CACHE_KEY_FILTERS, this, CACHE_EVICATION_RECORDS));
+
+        this._filters = [];
+        this._filtersByGrade = new Map();
+        this._filtersByBoard = new Map();
+        this._filtersByDivision = new Map();
+    }
+
+    $.extend(Filters.prototype, {
+
+        /**
+         * 
+         * @param {function} callback 
+         * @returns {Filter[]}
+         */
+        load: function(callback) {
+            var arrFilters = $.cacheManager.get(CACHE_KEY_FILTERS).load(callback);
+            arrFilters.forEach(filter => {
+                this.add(filter);
+            });
+            return this.getAll();
+        },
+
+        save: function() {
+            $.cacheManager.get(CACHE_KEY_FILTERS).save(this._records);
+        },
+
+        /**
+         * 
+         * @param {string} content 
+         * @returns {Filter[]}
+         */
+        fromCache: function(content) {
+            var arrFilters = this.cachable.fromCache(content);
+            var arrFilter = [];
+            arrFilters.forEach(jsonRecord => {
+                arrFilter.push(Filter.fromJson(jsonRecord));
+            });
+            return arrFilter;
+        },
+
+        /**
+         * 
+         * @param {Filter[]} data 
+         * @returns {string} content to be cached
+         */
+        toCache: function(data) {
+            return this.cachable.toCache(data);
+        },
+
+        
+        /**
+         * 
+         * @param {Filter} record 
+         */
+        add : function(filter) {
+            this._filters.push(filter);
+
+        },
+
+        
+        /**
+         * 
+         * @returns {Filter[]}
+         */
+        getAll : function() {
+            return this._filters;
+        }
+    });
+
+
+    /**
+     * 
+     * @param {string} board 
+     * @param {string} grade 
+     * @param {string} division 
+     * @param {string} paymentStatus 
+     * @param {string} handoverStatus 
+     * @param {string} schoolName
+     */
+    function Filter(grade,board ,division, paymentStatus, handoverStatus,schoolName) {
+        this.grade = grade;
+        this.board = board;
+        this.division = division;
+        this.paymentStatus = paymentStatus;
+        this.handoverStatus = handoverStatus;
+        this.schoolName = schoolName;
+    }
+
+    $.extend(Filter.prototype, {
+        /**
+         * 
+         * @returns {string}
+         */
+        getGrade : function () {
+            return this.grade;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getBoard : function () {
+            return this.board;
+        },
+
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getDivision : function () {
+            return this.division;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getPaymentStatus : function () {
+            return this.paymentStatus;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getHandoverStatus : function () {
+            return this.handoverStatus;
+        },
+
+        /**
+         * 
+         * @returns {string}
+         */
+        getSchoolName : function () {
+            return this.schoolName;
+        },
+        
+    });
+
+    /**
+     * 
+     * @param {string[]} row 
+     * @param {object} metadata 
+     * @returns {Record}
+     */
+    Filter.fromRecord = function (row, metadata) {
+        if (!row[metadata.grade.index] || row[metadata.grade.index] === "") {
+            return ;
+        }
+        return new Filter(
+            row[metadata.grade.index], 
+            row[metadata.board.index], 
+            row[metadata.division.index], 
+            row[metadata.paymentStatus.index], 
+            row[metadata.handoverStatus.index],
+            row[metadata.schoolName.index]
+        );
+    };
+
+    /**
+     * 
+     * @param {object} data 
+     * @returns {Record}
+     */
+    Filter.fromJson = function (data) {
+        return new Filter(
+            data["grade"], 
+            data["board"], 
+            data["division"], 
+            data["paymentStatus"], 
+            data["handoverStatus"],
+            data["schoolName"]
+        );
+    };
+
+  
+    //priyanka ended
+
+    //priyanka
 
     $.Cache = Cache;
     $.Cachable = Cachable;
@@ -1606,5 +1605,7 @@
     $.Record = Record;       
     $.BookKits = BookKits;
     $.BookKit = BookKit; 
-
+    $.Filters = Filters;
+    $.Filter = Filter;  
+   
 })(jQuery);
