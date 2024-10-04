@@ -655,7 +655,7 @@
             row[metadata.name.index], 
             row[metadata.gender.index], 
             row[metadata.otp.index],
-            row[metadata.locationId.index],
+            row[metadata.locationId.index]
         );
     };
 
