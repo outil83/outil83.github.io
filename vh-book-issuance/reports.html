@@ -60,11 +60,21 @@
 
             <div id="divDetail" class="container" hidden>
                 <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-lg-10 align-self-end">
+                    <div class="col-lg-12 align-self-end">
                         <div id="tabs">
                             <ul>
-                                <li><a href="#tabs-pending">Yet to Handover</a></li>
-                                <li><a href="#tabs-attended">Handed Over </a></li>
+                                <li>
+                                    <select title="Select Handover Status from drop-down" class="form-control" id="handOverFilter" name="handOverFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="1">Handed Over</option>
+                                        <option value="2">Yet to Handover</option>
+                                    </select>
+                                </li>
+                                
+                                <li>
+                                    <select title="Select School Name from drop-down" class="form-control" id="schoolNameFilter" name="schoolNameFilter" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
                                 <li>
                                     <select title="Select Cluster from drop-down" class="form-control" id="clusterFilter" name="clusterFilter" onchange="prepareMemberDrilldown()">
                                         <option value="0" selected>ALL</option>
@@ -75,44 +85,47 @@
                                         <option value="6">Cluster 6</option>
                                     </select>
                                 </li>
-                                
                                 <li>
-                                    <select titla="Select Branch from drop-down" class="form-control" id="location" name="location" onchange="prepareMemberDrilldown()">/*onchange="if ($('#location').find(':selected')) { $('#locationDescription').text(window.locations.getById($('#location').find(':selected').val()).getDescription());} "*/>
-                                        <!-- options to be added by loadActivities -->
-                                        <option value="0">ALL</option>
+                                    <select title="Select Branch from drop-down" class="form-control" id="location" name="location" onchange="prepareMemberDrilldown()">/*onchange="if ($('#location').find(':selected')) { $('#locationDescription').text(window.locations.getById($('#location').find(':selected').val()).getDescription());} "*/>
                                     </select>
                                 </li>
                                 <li>
                                     <select title="Select Board from drop-down" class="form-control" id="memberTypeFilter" name="memberTypeFilter" onchange="prepareMemberDrilldown()">
-                                        <option value="0" selected>ALL</option>
-                                        <option value="1">CBSE</option>
-                                        <option value="2">ICSE</option>
-                                        <option value="3">IGCSE</option>
+                                     </select>
+                                </li>
+                                <li>
+                                    <select title="Select Grade from drop-down" class="form-control" id="grade" name="grade" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Division from drop-down" class="form-control" id="division" name="division" onchange="prepareMemberDrilldown()">
                                     </select>
                                 </li>
                                 <li>
                                     <select title="Select payment Status from drop-down" class="form-control" id="paymentStatusFilter" name="paymentStatusFilter" onchange="prepareMemberDrilldown()">
-                                        <option value="0" selected>ALL</option>
-                                        <option value="1">Paid</option>
-                                        <option value="2">Pending</option>
                                     </select>
                                 </li>
+                                
                             </ul>
                             <div id="tabs-pending">
                                 <div class="table-responsive">
-                                    <table id="tablePending" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
+                                    <table id="tableReport" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
+                                                <th>School Name</th>
+                                                <th>Student Name</th>
                                                 <th>Board</th>
                                                 <th>Grade</th>
+                                                <th>Division</th>
                                                 <th>Book Kit</th>
+                                                <th>Collected by</th>
+                                                <th>Kit Issued on</th>
                                             </tr>
                                         </thead>
                                     </table>
                                 </div>
                             </div>
-                            <div id="tabs-attended">
+                            <!--<div id="tabs-attended">
                                 <div class="table-responsive">
                                     <table id="tableAttended" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
                                         <thead>
@@ -125,7 +138,7 @@
                                         </thead>
                                     </table>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -211,20 +224,14 @@
                 });
 
                 // initialize tables
-                window.tablePending = new DataTable('#tablePending', {
+                window.tableReport = new DataTable('#tableReport', {
                     data: [],
                     scrollX: true,
                     scrollY: 300,
                     paging: false,
                     dom: 'ifrt'
                 });
-                window.tableAttended = new DataTable('#tableAttended', {
-                    data: [],
-                    scrollX: true,
-                    scrollY: 300,
-                    paging: false
-                });
-
+               
 
                 $("#divLoading").remove();
                 $("#divReport").removeAttr("hidden");
@@ -249,6 +256,7 @@
                         loadSetup();
                         loadSupervisors();
                         loadLocations();
+                        loadFilters();
                         loadStudents();
                         loadRecords();  
                         loadSubsequentRecords();                      
@@ -656,16 +664,24 @@
             }
 
             function isBoardType(student, memberType) {
-                return (memberType === "0" 
-                    || (memberType === "1" && student.getBoard() === "CBSE")
-                    || (memberType === "2" && student.getBoard() === "ICSE")
-                    || (memberType === "3" && student.getBoard() === "IGCSE"));
+                return (memberType === "0" ||
+                       ( memberType === student.getBoard()));
             }
 
             function ispaymentStatusType(student, paymentStatus) {
                 return (paymentStatus === "0" 
-                    || (paymentStatus === "1" && student.getPaymentStatus() === "Paid")
-                    || (paymentStatus === "2" && student.getPaymentStatus() === "Pending"));
+                    || (paymentStatus === student.getPaymentStatus()));
+            }
+
+            
+            function isGradeType(student, gradeSelected) {
+                return (gradeSelected === "0" 
+                    || (gradeSelected === student.getGrade()));
+            }
+
+            function isDivisionType(student, divisionSelected) {
+                return (divisionSelected === "0" 
+                    || (divisionSelected === student.getDivision()));
             }
 
             function isClusterType(location, clusterSelected) {
@@ -682,54 +698,154 @@
                     || ( branchSelected === location.getId()));
             }
 
+            
+            function isSchoolName(student, schoolNameSelected) {
+                return (schoolNameSelected === '0' 
+                    || ( schoolNameSelected === student.getSchoolName()));
+            }
+
             function prepareMemberDrilldown() {
-                var dataPending = [];
-                var dataHandedOver = [];
-                //var activity = window.selectedActivity;
+                var dataReport = [];
                 var students = window.students.getAll();
                 var boardType = $("#memberTypeFilter").find(":selected").val();
                 var paymentStatusType = $("#paymentStatusFilter").find(":selected").val();
                 var clusterSelected = $("#clusterFilter").find(":selected").val();
                 var branchSelected = $("#location").find(":selected").val();
+                var handOverSelected = $("#handOverFilter").find(":selected").val();
+                var gradeSelected = $("#grade").find(":selected").val();
+                var divisionSelected = $("#division").find(":selected").val();
+                var schoolNameSelected = $("#schoolNameFilter").find(":selected").val();
+ 
 
                 students.forEach((student) => {
                     var location = window.locations.getById(student.getLocation());
-                   // console.log('branchSelected',branchSelected,' location.get',location.getId());
 
                     if ((isBoardType(student, boardType)) && (ispaymentStatusType(student,paymentStatusType))
-                         && (isClusterType(location,clusterSelected))  && isBranch(location, branchSelected)  ) {
+                         && (isClusterType(location,clusterSelected))  && isBranch(location, branchSelected) 
+                        && isGradeType(student,gradeSelected) && isDivisionType(student,divisionSelected)
+                        && isSchoolName(student,schoolNameSelected)) 
+                         {
 
                         var found = false;
+                        var collectedBy = null;
+                        var collectedDateTime = null;
                         var records = window.records.getByEnrollmentId(student.getId());
                         if (records) {
                             for (var i = 0; i < records.length; ++i) {
                                 if (records[i].getEnrollmentId() === student.getId()) {
-                                    found = true;
+                                     collectedBy = records[i].getCollectedBy();
+                                     collectedDateTime = records[i].getTimestamp();
+                                     found = true;                                    
                                     break;
                                 }
                             }
                         }
-                        if (found === false) {
-                            dataPending.push([
+                        if ((handOverSelected === '0') || ((found === false && handOverSelected === '2') || (found === true && handOverSelected === '1')))
+                        {
+                            dataReport.push([
+                                student.getSchoolName(),
                                 student.getName() + " (" + student.getId() + ")",
                                 student.getBoard(),
-                                student.getGrade() + " (" + student.getLocation() + ")" ,
-                                student.getBookKitName()
-                            ]);
-                        } else {
-                            dataHandedOver.push([
-                                student.getName() + " (" + student.getId() + ")",
-                                student.getBoard() ,
-                                student.getGrade() + " (" + student.getLocation() + ")" ,
-                                student.getBookKitName() 
+                                student.getGrade() + " (" + location.getCity() +"-"+location.getBranch() + ")" ,
+                                student.getDivision(),
+                                student.getBookKitName(),
+                                collectedBy,
+                                collectedDateTime
                             ]);
                         }
-                    }
+                      }
                 });
                 
             
-                window.tablePending.clear().rows.add(dataPending).draw();
-                window.tableAttended.clear().rows.add(dataHandedOver).draw();
+                window.tableReport.clear().rows.add(dataReport).draw();
+
+            }
+
+            
+            function loadFilters() {
+                startLog('loadFilters');
+                window.filters = new $.Filters();
+                window.filters.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var filtersSheetRangeRef = window.staticSetup.googleSheet.filters.split("!");
+                    var values = eventMgmtSheet.getValues(filtersSheetRangeRef[0], filtersSheetRangeRef[1]);
+                    info('loadFilters: ' + JSON.stringify(values));
+                    var metaFilters = window.staticSetup.metadata.filters;
+                    var arrFilters = [];
+                    values.values.forEach(function(row, index, array) {
+                     var filter = $.Filter.fromRecord(row, metaFilters);
+                            arrFilters.push(filter);
+                    });
+                    return arrFilters;
+                });
+                
+                let gradeOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#grade').html("");
+                window.filters.getAll().forEach(filter => {
+                    gradeOptionsHtml = gradeOptionsHtml 
+                       +"<option value='" + filter.getGrade() + "'>" + filter.getGrade() + "</option>";
+                });
+                $('#grade').html(gradeOptionsHtml);
+             
+                let boardOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#memberTypeFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const board = filter.getBoard();
+                    if (board)
+                    {
+                        boardOptionsHtml = boardOptionsHtml 
+                        +"<option value='" + filter.getBoard() + "'>" + filter.getBoard() + "</option>";
+                    }
+                });
+                $('#memberTypeFilter').html(boardOptionsHtml);
+
+                let divisionOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#division').html("");
+                window.filters.getAll().forEach(filter => {
+                    const division = filter.getDivision();
+                    if (division)
+                    {
+                        divisionOptionsHtml = divisionOptionsHtml 
+                        +"<option value='" + filter.getDivision() + "'>" + filter.getDivision() + "</option>";
+                    }
+                });
+                $('#division').html(divisionOptionsHtml);
+
+                let paymentStatusOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#paymentStatusFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const paymentStatus = filter.getPaymentStatus();
+                    if (paymentStatus)
+                    {
+                        paymentStatusOptionsHtml = paymentStatusOptionsHtml 
+                        +"<option value='" + filter.getPaymentStatus() + "'>" + filter.getPaymentStatus() + "</option>";
+                    }
+                });
+                $('#paymentStatusFilter').html(paymentStatusOptionsHtml);
+               
+               let schoolNameOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#schoolNameFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const schoolName = filter.getSchoolName();
+                    if (schoolName)
+                    {
+                        schoolNameOptionsHtml = schoolNameOptionsHtml 
+                        +"<option value='" + filter.getSchoolName() + "'>" + filter.getSchoolName() + "</option>";
+                    }
+                });
+                $('#schoolNameFilter').html(schoolNameOptionsHtml);
+
+                info('loadFilters: loaded filters - ' + JSON.stringify(window.filters));
+                endLog('loadFilters');
+
+                
 
             }
 
