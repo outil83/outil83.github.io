@@ -5,17 +5,19 @@
         "enrollmentId": "entry.542565564",
         "status": "entry.84080034",
         "superviserId": "entry.1983025133",
-        "locationId": "entry.805747511"
+        "locationId": "entry.805747511",
+        "collectedBy": "entry.400313894"
     },
     "googleSheet": {
         "url": "https://docs.google.com/spreadsheets/d/16g1K8eb5lva6xfu8batH_pHI9TpH1E8eyxt0BiG0_hA/edit?usp=sharing",
         "sheetId": "16g1K8eb5lva6xfu8batH_pHI9TpH1E8eyxt0BiG0_hA",
-        "records": "records!A2:E12000",
-        "supervisors": "supervisors!A2:D100",
+        "records": "records!A2:F12000",
+        "supervisors": "supervisors!A2:E100",
         "locations": "locations!A2:F21",
         "bookKits": "bookKits!A2:C10",
         "setup": "setup!B2:C6",
-        "students":"students!A2:L1200"
+        "students":"students!A2:N1200",
+        "filters":"filters!A2:F16"
     },
     "metadata": {
         "locations": {
@@ -87,6 +89,11 @@
                 "index": 3,
                 "name": "otp",
                 "displayName": "OTP"
+            },
+            "locationId": {
+                "index": 4,
+                "name": "locationId",
+                "displayName": "locationId"
             }
         },
         "records": {
@@ -114,6 +121,11 @@
                 "index": 4,
                 "name": "location",
                 "displayName": "location"
+            },
+            "collectedBy": {
+                "index": 5,
+                "name": "collectedBy",
+                "displayName": "collected By"
             }
         },
         "students": {            
@@ -127,43 +139,85 @@
                 "name": "name",
                 "displayName": "Student Name"
             },
-            "board": {
+            "schoolName": {
                 "index": 2,
+                "name": "schoolName",
+                "displayName": "School Name"
+            },
+            "board": {
+                "index": 3,
                 "name": "board",
                 "displayName": "Board"
             },
             "location": {
-                "index": 3,
+                "index": 4,
                 "name": "location",
                 "displayName": "School Location"
             },
             "grade": {
-                "index": 4,
+                "index": 5,
                 "name": "grade",
                 "displayName": "Grade"
             },
+            "division": {
+                "index": 6,
+                "name": "division",
+                "displayName": "division"
+            },
             "bookKitName": {
-                "index": 5,
+                "index": 7,
                 "name": "bookKitName",
                 "displayName": "Book Kit Name"
             },
             "emailId": {
-                "index": 6,
+                "index": 8,
                 "name": "emailId",
                 "displayName": "Email ID"
             },
             "mobileNo": {
-                "index": 7,
+                "index": 9,
                 "name": "mobileNo",
                 "displayName": "Mobile No."
             },
             "paymentStatus": {
-                "index": 8,
+                "index": 10,
                 "name": "paymentStatus",
                 "displayName": "Payment Status"
             }
 
-        }
+        },
+        "filters": {
+            "grade": {
+                "index": 0,
+                "name": "grade",
+                "displayName": "Grade"
+            },
+            "board": {
+                "index": 1,
+                "name": "board",
+                "displayName": "Board"
+                },
+                "division": {
+                    "index": 2,
+                    "name": "division",
+                    "displayName": "Division"
+                },
+                "paymentStatus": {
+                    "index": 3,
+                    "name": "paymentStatus",
+                    "displayName": "paymentStatus"
+                },
+                "handoverStatus": {
+                    "index": 4,
+                    "name": "status",
+                    "displayName": "status"
+                },
+                "schoolName": {
+                    "index": 5,
+                    "name": "schoolName",
+                    "displayName": "School Name"
+                }
+        }        
     },
     "cache": {
         "enabled": false
