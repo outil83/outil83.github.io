@@ -20,7 +20,12 @@
         <link href="css/styles.css" rel="stylesheet" />
         <title>Send Email with Gmail API</title>
         <script src="https://apis.google.com/js/api.js"></script>
-    
+        <style>
+            .warning-text {
+                color: red;   /* Sets the text color to red */
+                font-weight: bold; /* Makes the text bold */
+            }
+        </style>
         
         <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
             <div class="container">
@@ -117,8 +122,10 @@
                     <!-- Modal body -->
                     <div class="modal-body">
                         <p>Select Supervisor</p>
-                        <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName">
-                            <!-- options to be added by loadSupervisors -->
+                       <!-- <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName" onchange= "if ($('#supervisorName').find(':selected')) { $('#locationDescription').text(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId());}"> -->
+                        <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName" onchange= "if ($('#supervisorName').find(':selected')) { $('#locationDescription').text(populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId()));}"> 
+
+                        <!-- options to be added by loadSupervisors -->
                             <option value="VIBSUP002">Radha Khade</option>
                             <option value="VIBSUP001">Pallavi Khade</option>
                         </select>
@@ -159,6 +166,10 @@
                     <!-- Modal body -->
                     <div class="modal-body">
                         <input title="Enter emailOTP" class="form-control" id="emailOTP" name="emailOTP" type="text" placeholder="emailOTP">
+                        </input>
+                        <p></p>
+                    
+                        <input title="Collected By" class="form-control" id="collectedBy" name="collectedBy" type="text" placeholder="collectedBy">
                         </input>
                         <p></p>
                         
@@ -222,13 +233,13 @@
 
             //added by priyanka
             //localhots
-            const CLIENT_ID = '177634263117-f4eto36s2su5pp0nepv0nckv6jpmeb9o.apps.googleusercontent.com';
+            //const CLIENT_ID = '714373430959-1g5n383omb42l3h5tj5016cvqpq3ktui.apps.googleusercontent.com';
 
-            //const CLIENT_ID='468136229605-60n0gnuitqds37p6o3eg978rhrc60b83.apps.googleusercontent.com';
+            const CLIENT_ID='177634263117-f4eto36s2su5pp0nepv0nckv6jpmeb9o.apps.googleusercontent.com';
 
            //localhost
+            //const API_KEY = 'AIzaSyAHfAKSNJ8kcK_66CEItnmg8NXavrXbEm0';
             const API_KEY = 'AIzaSyAtaFgDKxHFR0zyPxoSWVo-chOkqlZ9oQM';
-           // const API_KEY = 'AIzaSyBrrSoj2TJvycU8Ur-ujTiZoCaHFbbbsCg';
             const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'];
             const SCOPES = 'https://www.googleapis.com/auth/gmail.send';
 
@@ -246,8 +257,8 @@
                 clientId: CLIENT_ID,
                 discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES,
-               // plugin_name: 'StudentKitDistribution'
-               plugin_name: 'vh-Book-Issuance'
+                //plugin_name: 'StudentKitDistribution'
+               plugin_name: 'vh-book-issuance'
             }).then(() => {
                 gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
                 updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
@@ -503,13 +514,16 @@
                     return arrLocations;
                 });
 
-                var locationOptionsHtml = "";
+           /*     var locationOptionsHtml = "";
                 $('#location').html("");
                 window.locations.getAll().forEach(location => {
                     locationOptionsHtml = locationOptionsHtml 
                         + "<option value='" + location.getId() + "'>" + location.getCity() + " / " + location.getBranch() + "</option>";
                 });
-                $('#location').html(locationOptionsHtml);
+                
+                $('#location').html(locationOptionsHtml);*/
+                populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId());
+
                 info('loadLocations: loaded locations - ' + JSON.stringify(window.locations));
                 endLog('loadLocations');
             }
@@ -581,12 +595,16 @@
 
                 var supervisorOptionsHtml = "";
                 $('#supervisorName').html("");
+           
                 window.supervisors.getAll().forEach(supervisor => {
                     supervisorOptionsHtml = supervisorOptionsHtml 
                         + "<option value='" + supervisor.getId() + "'>" + supervisor.getName() + "</option>";
+           
                 });
+
                 info('loadSupervisors: loaded supervisors - ' + JSON.stringify(window.supervisors));
                 $('#supervisorName').html(supervisorOptionsHtml);
+
                 endLog('loadSupervisors');
             }
 
@@ -701,13 +719,24 @@
                    
                     var location = window.locations.getById(student.getLocation());
                     var bookKit = window.bookKits.getById(student.getBookKitName());
-
-                    $("#studentName").text(student.getName() + " (" + student.getId() + ")");
-                    $("#board").text(student.getBoard() );
-                    $("#grade").text(student.getGrade() + " (" + location.getCity() + "-" + location.getBranch() + ")" );
-                    $("#bookKit").text(bookKit.getKitName() + " ( " + bookKit.getSubject() + ")");
-                    var flag = chkRecordSubmitted();
+                    var locationId = $.getCookie('locationId');
                     const button = document.querySelector("#btnSubmit");
+
+                    if (student.getLocation() === locationId)
+                    {   
+                        $("#studentName").text(student.getName() + " (" + student.getId() + ")");
+                        $("#board").text(student.getBoard() );
+                        $("#grade").text(student.getGrade() + " (" + location.getCity() + "-" + location.getBranch() + ")" );
+                        $("#bookKit").text(bookKit.getKitName() + " ( " + bookKit.getSubject() + ")");
+                    }
+                    else
+                    {
+                        showMessage(" You are not allowed to see students records for other branch !");
+                        button.disabled=true;
+                        return ;
+                    }
+
+                    var flag = chkRecordSubmitted();
 
                     if (student.getPaymentStatus()=="Paid" & (flag))
                         button.disabled=false;
@@ -717,6 +746,7 @@
                         if (student.getPaymentStatus()=="Pending")
                         {
                             $("#remark").text("payment is yet to be received for " + window.student.getName() + " !");
+                            $("#remark").addClass("warning-text");  // Using CSS class
                             return false;
                         }
                     }
@@ -842,8 +872,9 @@
                     if (record) {
                         var recLocation = window.locations.getById(record.locationId);
                         var recSupervisor = window.supervisors.getById(record.superviserId);
-                        $("#remark").text("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
-
+                       // $("#remark").text("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
+                       $("#remark").text("Kit is handed over to " + record.getCollectedBy() + " on Date " + record.getTimestamp() + " !"); 
+                       $("#remark").addClass("warning-text");  // Using CSS class
                        // showMessage("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
                         return false;
                     }
@@ -974,6 +1005,7 @@
             const enteredOtp = document.getElementById('emailOTP').value;
             const storedOtp = localStorage.getItem('otp');
             const storedOtpExpiry = localStorage.getItem('otpExpiry');
+            const collectedBy = document.getElementById('collectedBy').value;
 
             const currentTime = new Date().getTime();
 
@@ -1002,7 +1034,7 @@
                 localStorage.removeItem('otpExpiry');
         
                 $('#OTPVerifyModel').slideUp();
-                formUpdate();
+                formUpdate(collectedBy);
 //                document.getElementById('otpSection').style.display = 'none'; // Hide OTP section
             } else {
                 alert( 'Invalid OTP. Please try again.');
@@ -1014,7 +1046,7 @@
             $('#OTPVerifyModel').slideDown();
         }
 
-        async function formUpdate()
+        async function formUpdate(collectedBy)
         {
             const button = document.querySelector("#btnSubmit");
             const form = document.querySelector("#submitActivity");
@@ -1033,6 +1065,7 @@
                         formData[window.staticSetup.googleForm.enrollmentId] = window.student.getId();
                         formData[window.staticSetup.googleForm.locationId] = window.staticSetup.selectedLocationId;
                         formData[window.staticSetup.googleForm.status] = "Handed Over";
+                        formData[window.staticSetup.googleForm.collectedBy] = collectedBy;
 
                         info("handleSubmit : formData = " + JSON.stringify(formData));
 
@@ -1061,6 +1094,38 @@
                             button.textContent = "Submit";
                         }
         }
+
+        function populateLocationDropdown(filter) {
+                let locationOptionsHtml = ""; // Always start with 'All' option
+                let locations = Array.from(window.locations.getAll()); // Convert the collection to an array
+
+                // Filter locations based on the filter parameter
+                let filteredLocations = locations.filter((location) => {
+
+                    let branchId = location.getId();  // Assuming getRegion() returns the region
+    
+                    if (branchId === filter) {
+                        return true; // If 'All' is selected, return all locations
+                    } 
+                });
+
+            
+            // Generate options for the filtered locations
+            filteredLocations.forEach(location => {
+                locationOptionsHtml += "<option value='" + location.getId() + "'>" 
+                                        + location.getCity() + " / " + location.getBranch() + "</option>";
+            });
+                    // Set the HTML of the location dropdown
+            $('#location').html(locationOptionsHtml);
+
+
+            // Event listener for the filter dropdown
+            /*document.getElementById('supervisorName').addEventListener('change', function() {
+                let selectedFilter = this.value; // Get the selected filter value
+                populateLocationDropdown(selectedFilter); // Call the function to populate locations based on filter
+            });*/   
+            }
+
             //ended by priyanka 
 		</script>
     </body>
