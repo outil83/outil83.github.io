@@ -169,9 +169,24 @@
                         </input>
                         <p></p>
                     
-                        <input title="Collected By" class="form-control" id="collectedBy" name="collectedBy" type="text" placeholder="collectedBy">
+                       
+                       <!-- <input title="Collected By" class="form-control" id="collectedBy" name="collectedBy" type="text" placeholder="collectedBy">
                         </input>
+                        <p></p> -->
+
+                        
+                        <!-- Row for Mr./Ms. and Collected By in a single line -->
+                        <div class="form-row" style="display: flex; align-items: center; flex-wrap: nowrap;">
+                            <select title="Title" class="form-control" id="title" name="title" style="width: 80px; margin-right: 10px;">
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Miss">Miss</option>
+                            </select>
+
+                            <input title="Collected By" class="form-control" id="collectedBy" name="collectedBy" type="text" placeholder="Enter name" style="flex-grow: 1; min-width: 0;">
+                        </div>
                         <p></p>
+
                         
                     </div>
 
@@ -1005,7 +1020,7 @@
             const enteredOtp = document.getElementById('emailOTP').value;
             const storedOtp = localStorage.getItem('otp');
             const storedOtpExpiry = localStorage.getItem('otpExpiry');
-            const collectedBy = document.getElementById('collectedBy').value;
+            const collectedBy = document.getElementById('title').value +" " + document.getElementById('collectedBy').value;
 
             const currentTime = new Date().getTime();
 
