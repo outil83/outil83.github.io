@@ -835,20 +835,6 @@
                     try {
                         info("handleSubmit : event = " + JSON.stringify(event));
                         event.preventDefault();
-                        // ensure to load sub-sequent entries
-                      /*  loadSubsequentRecords();
-                        // duplicate submission check
-                        var location = window.locations.getById(window.staticSetup.selectedLocationId);
-                        var uniqueId = window.records.getUniqueId(window.student.getId());
-                        var record = window.records.getByUniqueId(uniqueId);
-
-                        if (record) {
-                            var recLocation = window.locations.getById(record.locationId);
-                            var recSupervisor = window.supervisors.getById(record.superviserId);
-                            showMessage("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
-                            return false;
-                        }
-                        */
 
                         var flag = chkRecordSubmitted();
                         if (flag)
@@ -888,11 +874,12 @@
                     if (record) {
                         var recLocation = window.locations.getById(record.locationId);
                         var recSupervisor = window.supervisors.getById(record.superviserId);
+
                        // $("#remark").text("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
                        $("#remark").text("Kit is handed over to " + record.getCollectedBy() + " on Date " + record.getTimestamp() + " !"); 
                        $("#remark").addClass("warning-text");  // Using CSS class
                        // showMessage("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
-                        return false;
+                       return false;
                     }
                     return true;
             }
@@ -1059,6 +1046,8 @@
 
         async function callOTPForm()
         {
+           // $('#OTPVerifyModel').emailOTP.clear();
+               document.getElementById('emailOTP').value = '';
             $('#OTPVerifyModel').slideDown();
         }
 
@@ -1101,12 +1090,12 @@
                             info("handleSubmit : Form submitted and response : " + JSON.stringify(response));
                             showMessage("Record submit is successful.");
                             sendEmail(getHandedOverSubject(student.getEmailId(),window.student.getId()));
-                            loadRecords();
+                            loadStudents();
                         } catch (error) {
                             showMessage("Something went wrong, please try again.");
                             error("Form submission failed with error - " + JSON.stringify(error));
                         } finally {
-                            button.disabled = false;
+                           // button.disabled = false;
                             button.textContent = "Submit";
                         }
         }
