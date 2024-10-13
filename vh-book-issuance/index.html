@@ -113,6 +113,16 @@
                             <table class="table table-hover border-1">
                                 <tbody id="member-detail">
                                     <!-- filled by loadStudents() function from google sheet -->
+                                    <tr><td class="label">Enrollment No</td><td id="enrollmentNo">
+                                        <div class="row" style="width: 100%">
+                                            <div class="col-lg-8">
+                                                <input type="text" class="form-control" id="txtEnrollmentId" placeholder="Enter student enrollment number here"></input>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <button type="button" id="btnFetch" class="btn btn-primary">Fetch</button>
+                                            </div>
+                                        </div>
+                                    </td></tr>
                                     <tr><td class="label">Student Name</td><td id="studentName"></td></tr>
                                     <tr><td class="label">Board</td><td id="board"></td></tr>
                                     <tr><td class="label">Grade</td><td id="grade1"></td></tr>
@@ -941,9 +951,11 @@
                     });
                     var enrollmentId = window.urlParams['enrollmentId'];
                     if (!enrollmentId) {
-                        showMessage("Invalid QR code! The enrollment id is not found. Please try again.");
+                        //showMessage("Invalid QR code! The enrollment id is not found. Please try again.");
+                        document.getElementById("txtEnrollmentId").focus();
                         return ;
                     }
+                    document.getElementById("txtEnrollmentId").value = enrollmentId;
                     window.student = window.students.getById(enrollmentId);
                     if (!window.student) {
                         showMessage("Invalid QR code! The enrollment id '" + enrollmentId + "' is invalid. Please try again.");
@@ -1070,7 +1082,32 @@
             function initializeFormSubmit() {
                 startLog("initializeFormSubmit");
                 const button = document.querySelector("#btnSubmit");
+                const btnFetch = document.querySelector("#btnFetch");
                 const form = document.querySelector("#submitActivity");
+
+                const handleFetch = async (event) => {
+                    startLog("handleFetch");
+                    try {
+                        info("handleFetch : event = " + JSON.stringify(event));
+                        event.preventDefault();
+
+                        var enrollmentId = document.getElementById("txtEnrollmentId").value;
+                        if (!enrollmentId) {
+                            showMessage("Please enter a valid enrollment id to get detail!");
+                            return ;
+                        }
+
+                        var url = new URL(window.location.href);
+                        var searchParams = url.searchParams;
+                        searchParams.set('enrollmentId', enrollmentId);
+                        info("handleFetch : new URL is " + url.toString());
+                        window.location.href = url.toString();
+                    } finally {
+                        endLog("handleSubmit");
+                    }
+                };
+
+                btnFetch.addEventListener("click", handleFetch);
 
                 const handleSubmit = async (event) => {
                     startLog("handleSubmit");
