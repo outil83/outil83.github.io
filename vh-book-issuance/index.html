@@ -424,11 +424,13 @@
             //localhots
             //const CLIENT_ID = '714373430959-1g5n383omb42l3h5tj5016cvqpq3ktui.apps.googleusercontent.com';
 
-            const CLIENT_ID='177634263117-f4eto36s2su5pp0nepv0nckv6jpmeb9o.apps.googleusercontent.com';
+            // const CLIENT_ID='177634263117-f4eto36s2su5pp0nepv0nckv6jpmeb9o.apps.googleusercontent.com'; // priyanka's' project
+            const CLIENT_ID='61753521437-m0oe0sqm2hdujgkq18lb82qe6sbv6l3q.apps.googleusercontent.com'; // vhmun project
 
            //localhost
             //const API_KEY = 'AIzaSyAHfAKSNJ8kcK_66CEItnmg8NXavrXbEm0';
-            const API_KEY = 'AIzaSyAtaFgDKxHFR0zyPxoSWVo-chOkqlZ9oQM';
+            // const API_KEY = 'AIzaSyAtaFgDKxHFR0zyPxoSWVo-chOkqlZ9oQM'; // priyanka's project
+            const API_KEY = 'AIzaSyA4puebyLGKN45wRW30FQiO7_JICnQAmAI';
             const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'];
             const SCOPES = 'https://www.googleapis.com/auth/gmail.send';
 
@@ -488,7 +490,8 @@
                 discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES,
                 //plugin_name: 'StudentKitDistribution'
-               plugin_name: 'vh-book-issuance'
+               // plugin_name: 'vh-book-issuance'
+               plugin_name: 'My First Project'
             }).then(() => {
                 gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
                 updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
