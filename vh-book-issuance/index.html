@@ -16,23 +16,66 @@
 		<!-- cookiealert styles -->
 		<link rel="stylesheet" href="css/cookiealert.css">
         <link rel="stylesheet" href="css/JQLoader.css" />
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
         <title>Send Email with Gmail API</title>
         <script src="https://apis.google.com/js/api.js"></script>
+        
+       <!-- added for report -->
+       
+		<!-- Bootstrap core JS-->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script> -->
+
+                <!-- Third party plugin JS-->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script> -->
+        <!-- Core theme JS-->
+        <!-- <script src="js/scripts.js"></script> -->
+		<!-- Google sheet JS-->
+        <!-- <script src="js/sheet.js"></script> 
+        <script src="js/JQLoader.js"></script>
+        <script src="js/event-mgmt.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  -->
+    
+        <!-- JQuery UI -->
+        <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" /> -->
+
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- Third party plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/JQLoader.css" />
+        <!-- JQuery UI -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <!-- ended for report -->
         <style>
             .warning-text {
                 color: red;   /* Sets the text color to red */
                 font-weight: bold; /* Makes the text bold */
             }
         </style>
-        
+    <head>
+
+    <body id="page-top">
         <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
             <div class="container">
                 <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#memberDetail">Member Detail</a></li>
+                        <li class="nav-item"><a id='navToDetail1' class="nav-link js-scroll-trigger" href="#memberDetail">Student Detail</a></li>
+                       <!-- <li class="nav-item"><a id='navToSummary' class="nav-link js-scroll-trigger" href="#summary">Summary</a></li>-->
+                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Report</a></li>
                     </ul>
                 </div>
             </div>
@@ -72,7 +115,7 @@
                                     <!-- filled by loadStudents() function from google sheet -->
                                     <tr><td class="label">Student Name</td><td id="studentName"></td></tr>
                                     <tr><td class="label">Board</td><td id="board"></td></tr>
-                                    <tr><td class="label">Grade</td><td id="grade"></td></tr>
+                                    <tr><td class="label">Grade</td><td id="grade1"></td></tr>
                                     <tr><td class="label">Book Kit</td><td id="bookKit"></td></tr>
                                     <tr><td class="label">Remark</td><td id="remark"></td></tr>
                                     <tr><td colspan='2' id="schedule"></td></tr>
@@ -101,13 +144,123 @@
                 </div>
             </div>
         </section>
+        
+        <!-- Navigation-->
+       <!-- <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                      <li class="nav-item"><a id='navToSummary' class="nav-link js-scroll-trigger" href="#summary">Summary</a></li>
+                      <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Detail</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>-->
+        
+        <!-- Reports section-->
+        <section id="reports" class="page-section bg-info">
+       
+
+            <div id="divReport" class="container" hidden>
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-10 align-self-end">
+                        <h5 class="text-white font-weight-bold">Reports</h5>
+                        <hr class="divider my-4" />
+                        <div id="reportOverall">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> 
+        
         <button id="authorize_button">Authorize</button>
         <button hidden id="send_email_button" style="display: none;">Send Email</button>
-        
+      
+       
+        <!-- Detail section-->
+        <section id="detail" class="page-section bg-light">
+
+            <div id="divDetail" class="container"  hidden>
+                <div class="row align-items-center justify-content-center text-center">
+                    <div class="col-lg-12 align-self-end">
+                        <h5 class="text-black font-weight-bold">Reports</h5>
+                        <hr class="divider my-4" />
+                        <div id="tabs">
+                            <ul>
+                                <li>
+                                    <select title="Select Handover Status from drop-down" class="form-control" id="handOverFilter" name="handOverFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0">ALL</option>
+                                        <option value="1" selected>Handed Over</option>
+                                        <option value="2">Yet To Handover</option>
+                                    </select>
+                                </li>
+                                
+                                <li>
+                                    <select title="Select School Name from drop-down" class="form-control" id="schoolNameFilter" name="schoolNameFilter" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Cluster from drop-down" class="form-control" id="clusterFilter" name="clusterFilter" onchange="prepareMemberDrilldown()">
+                                        <option value="0" selected>ALL</option>
+                                        <option value="Cluster 1">Cluster 1</option>
+                                        <option value="Cluster 3">Cluster 3</option>
+                                        <option value="Cluster 4">Cluster 4</option>
+                                        <option value="Cluster 5">Cluster 5</option>
+                                        <option value="Cluster 6">Cluster 6</option>
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Branch from drop-down" class="form-control" id="branch" name="branch" onchange="prepareMemberDrilldown()">/*onchange="if ($('#location').find(':selected')) { $('#locationDescription').text(window.locations.getById($('#location').find(':selected').val()).getDescription());} "*/>
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Board from drop-down" class="form-control" id="memberTypeFilter" name="memberTypeFilter" onchange="prepareMemberDrilldown()">
+                                     </select>
+                                </li>
+                                <li>
+                                    <select title="Select Grade from drop-down" class="form-control" id="grade" name="grade" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select Division from drop-down" class="form-control" id="division" name="division" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
+                                <li>
+                                    <select title="Select payment Status from drop-down" class="form-control" id="paymentStatusFilter" name="paymentStatusFilter" onchange="prepareMemberDrilldown()">
+                                    </select>
+                                </li>
+                                
+                            </ul>
+                            <div id="tabs-pending">
+                                <div class="table-responsive">
+                                    <table id="tableReport" class="table table-striped table-bordered" cellspacing="0" width="100%"  >
+                                        <thead>
+                                            <tr>
+                                                <th>School Name</th>
+                                                <th>Student Name</th>
+                                                <th>Board</th>
+                                                <th>Grade</th>
+                                                <th>Division</th>
+                                                <th>Book Kit</th>
+                                                <th>Collected by</th>
+                                                <th>Kit Issued on</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <!-- Footer-->
         <footer class="bg-light py-5">
-            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
+            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2024. All rights reserved.<br/>Powered By Outil.co.in</div></div>
         </footer>
+ 
+  
 
         <!-- The Modal -->
         <div class="modal" id="supervisorModel">
@@ -124,7 +277,7 @@
                     <div class="modal-body">
                         <p>Select Supervisor</p>
                        <!-- <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName" onchange= "if ($('#supervisorName').find(':selected')) { $('#locationDescription').text(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId());}"> -->
-                        <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName" onchange= "if ($('#supervisorName').find(':selected')) { $('#locationDescription').text(populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId()));}"> 
+                        <select titla="Select supervisor from drop-down" class="form-control" id="supervisorName" name="supervisorName" onchange= "if ($('#supervisorName').find(':selected')) { $('#locationDescription').text(populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId(),'Screen'));}"> 
 
                         <!-- options to be added by loadSupervisors -->
                             <option value="VIBSUP002">Radha Khade</option>
@@ -241,6 +394,26 @@
 		<script src="js/cookiealert.js"></script>
         <script src="js/JQLoader.js"></script>
         <script src="js/event-mgmt.js"></script>
+
+<!--    added for reports-->
+<!-- Bootstrap core JS-->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<!-- Third party plugin JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>        
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
+<!-- Google sheet JS-->
+<script src="js/sheet.js"></script>
+<script src="js/JQLoader.js"></script>
+<script src="js/event-mgmt.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!-- for reports end-->
+
 		<script type="text/javascript">
 
             window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
@@ -261,9 +434,50 @@
 
             let authorizeButton = document.getElementById('authorize_button');
             let sendEmailButton = document.getElementById('send_email_button');
-
             
-        function handleClientLoad() {
+            
+            $(document).ready(function() {
+                
+                
+                $("#divLoading").remove();
+                $("#content").removeAttr("hidden");
+                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
+                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
+                var customWidth = (window.innerWidth / 2) - (300 / 2);
+                $('.loading_box').css({
+                    'left': (window.innerWidth / 2) - (300 / 2),
+                    'width': 300,
+                    'color': "#fff",
+                    'background-color': "#000",
+                    'text-align': "center"
+                });               
+                window.setTimeout(initialize, 100);
+                // initialize tabs
+                $( "#tabs" ).tabs({
+                    activate: function(event, ui) { 
+                        $($.fn.dataTable.tables(true)).DataTable()
+                            .columns.adjust()
+                            .responsive.recalc(); 
+                    }
+                });
+                // initialize tables
+                window.tableReport = new DataTable('#tableReport', {
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false,
+                    dom: 'ifrt',
+                    order: [[7, 'desc']], // Default sorting on the last column (index 7),
+                    columnDefs: [
+                    { type: 'date', targets: 7 } ]
+                });
+         
+               // $("#divReport").removeAttr("hidden");
+                $("#divDetail").removeAttr("hidden");
+                
+			});
+
+         function handleClientLoad() {
             gapi.load('client:auth2', initClient);
         }
 
@@ -538,7 +752,7 @@
                 });
                 
                 $('#location').html(locationOptionsHtml);*/
-                populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId());
+                populateLocationDropdown(window.supervisors.getById($('#supervisorName').find(':selected').val()).getLocationId(),"Screen");
 
                 info('loadLocations: loaded locations - ' + JSON.stringify(window.locations));
                 endLog('loadLocations');
@@ -654,7 +868,7 @@
                         return arrRecords;
                     });
                     if (window.student) {
-                        info('loadRecords: student records - ' + JSON.stringify(window.records.getByEnrollmentId(window.student.getId())));
+                          info('loadRecords: student records - ' + JSON.stringify(window.records.getByEnrollmentId(window.student.getId())));
                     }
                 } finally {
                     endLog('loadRecords');
@@ -742,7 +956,7 @@
                     {   
                         $("#studentName").text(student.getName() + " (" + student.getId() + ")");
                         $("#board").text(student.getBoard() );
-                        $("#grade").text(student.getGrade() + " (" + location.getCity() + "-" + location.getBranch() + ")" );
+                        $("#grade1").text(student.getGrade() + " (" + location.getCity() + "-" + location.getBranch() + ")" );
                         $("#bookKit").text(bookKit.getKitName() + " ( " + bookKit.getSubject() + ")");
                     }
                     else
@@ -777,6 +991,8 @@
                 }
             }
 
+            
+			
 
             function initialize() {
                 loadStaticSetup(function() {
@@ -788,6 +1004,7 @@
                         loadBookKits();
                         loadRecords();
                         loadStudents();
+
                         var supervisorId = $.getCookie('supervisorId');
                         var supervisorName = $.getCookie('supervisorName');
                         var locationId = $.getCookie('locationId');
@@ -799,7 +1016,10 @@
                         }
 
                         initializeFormSubmit();
+                        loadFilters();
+                        prepareReports();
 
+                        
                     } finally {
                         $("body").JQLoader({action: "close" });
                         endLog("loadStaticSetupCallback");
@@ -807,9 +1027,29 @@
                 });
             }
 
-			$(document).ready(function() {
+		    /*$(document).ready(function() {
+                // initialize tabs
+                $( "#tabs" ).tabs({
+                    activate: function(event, ui) { 
+                        $($.fn.dataTable.tables(true)).DataTable()
+                            .columns.adjust()
+                            .responsive.recalc(); 
+                    }
+                });
+
+                // initialize tables
+                window.tableReport = new DataTable('#tableReport', {
+                    data: [],
+                    scrollX: true,
+                    scrollY: 300,
+                    paging: false,
+                    dom: 'ifrt'
+                });
+               
+
                 $("#divLoading").remove();
-                $("#content").removeAttr("hidden");
+                $("#divReport").removeAttr("hidden");
+                $("#divDetail").removeAttr("hidden");
                 $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
                 $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
                 var customWidth = (window.innerWidth / 2) - (300 / 2);
@@ -821,9 +1061,8 @@
                     'text-align': "center"
                 });
                 window.setTimeout(initialize, 100);
-			});
+			});*/
 
-            
 
             function initializeFormSubmit() {
                 startLog("initializeFormSubmit");
@@ -835,6 +1074,20 @@
                     try {
                         info("handleSubmit : event = " + JSON.stringify(event));
                         event.preventDefault();
+                        // ensure to load sub-sequent entries
+                      /*  loadSubsequentRecords();
+                        // duplicate submission check
+                        var location = window.locations.getById(window.staticSetup.selectedLocationId);
+                        var uniqueId = window.records.getUniqueId(window.student.getId());
+                        var record = window.records.getByUniqueId(uniqueId);
+
+                        if (record) {
+                            var recLocation = window.locations.getById(record.locationId);
+                            var recSupervisor = window.supervisors.getById(record.superviserId);
+                            showMessage("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
+                            return false;
+                        }
+                        */
 
                         var flag = chkRecordSubmitted();
                         if (flag)
@@ -874,11 +1127,11 @@
                     if (record) {
                         var recLocation = window.locations.getById(record.locationId);
                         var recSupervisor = window.supervisors.getById(record.superviserId);
-
                        // $("#remark").text("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
                        $("#remark").text("Kit is handed over to " + record.getCollectedBy() + " on Date " + record.getTimestamp() + " !"); 
                        $("#remark").addClass("warning-text");  // Using CSS class
                        // showMessage("Submission was already done for " + window.student.getName() + " at station " + recLocation.getCity() + "/" +recLocation.getBranch() + " by " + recSupervisor.getName() + " !");
+
                        return false;
                     }
                     return true;
@@ -1046,8 +1299,7 @@
 
         async function callOTPForm()
         {
-           // $('#OTPVerifyModel').emailOTP.clear();
-               document.getElementById('emailOTP').value = '';
+            document.getElementById('emailOTP').value = '';
             $('#OTPVerifyModel').slideDown();
         }
 
@@ -1091,17 +1343,19 @@
                             showMessage("Record submit is successful.");
                             sendEmail(getHandedOverSubject(student.getEmailId(),window.student.getId()));
                             loadStudents();
+                            prepareMemberDrilldown();
                         } catch (error) {
                             showMessage("Something went wrong, please try again.");
                             error("Form submission failed with error - " + JSON.stringify(error));
                         } finally {
-                           // button.disabled = false;
+                        //    button.disabled = false;
                             button.textContent = "Submit";
                         }
         }
 
-        function populateLocationDropdown(filter) {
+        function populateLocationDropdown(filter,type) {
                 let locationOptionsHtml = ""; // Always start with 'All' option
+                let clusterOptionsHtml = "";
                 let locations = Array.from(window.locations.getAll()); // Convert the collection to an array
 
                 // Filter locations based on the filter parameter
@@ -1119,10 +1373,19 @@
             filteredLocations.forEach(location => {
                 locationOptionsHtml += "<option value='" + location.getId() + "'>" 
                                         + location.getCity() + " / " + location.getBranch() + "</option>";
+                clusterOptionsHtml += "<option value='" + location.getCluster() + "'>" 
+                                        + location.getCluster() + "</option>";                        
             });
                     // Set the HTML of the location dropdown
+            if (type === "Report")
+            {
+            $('#branch').html(locationOptionsHtml);
+            $('#clusterFilter').html(clusterOptionsHtml);
+            }
+            else
+            {
             $('#location').html(locationOptionsHtml);
-
+            }
 
             // Event listener for the filter dropdown
             /*document.getElementById('supervisorName').addEventListener('change', function() {
@@ -1131,7 +1394,265 @@
             });*/   
             }
 
-            //ended by priyanka 
+            //ended by priyanka
+            
+            //Report Changes 
+      
+            function renderDetail() {
+                var data = prepareData();
+                renderReports(data);
+            }
+
+            function prepareData() {
+                var students = window.students.getAll();
+                var data = [];
+                students.forEach((student) => {
+                    var records = window.records.getByEnrollmentId(student.getId());
+                    var totalEntries = 0;
+                    if (records) {
+                        totalEntries = records.length;
+                    }
+                    data.push([student.getName(), student.getBoard(),student.getGrade(),student.getBookKitName(),student.getLocation(),student.getPaymentStatus()]);//, Number(activity.getMaxAllowed()), totalEntries, ((totalEntries / activity.getMaxAllowed()) * 100)]);
+                });
+                return data;
+            }
+
+            function renderReports(data) {
+                var chartTable = new google.visualization.DataTable();
+                chartTable.addColumn('string', 'Name');
+                chartTable.addColumn('string', 'Board');
+                chartTable.addColumn('string', 'Grade');
+                chartTable.addColumn('string', 'Book Kit');
+                chartTable.addColumn('string', 'Location');
+                chartTable.addColumn('string', 'Payment Status');
+                chartTable.addRows(data);
+
+                var chart = new google.visualization.Table(document.getElementById('reportOverall'));
+
+                var formatter = new google.visualization.BarFormat({width: 50, max: 100, showValue: false});
+                formatter.format(chartTable, 4); // Apply formatter to fourth column
+
+                // Every time the table fires the "select" event, it should call your
+                // selectHandler() function.
+                google.visualization.events.addListener(chart, 'select', function(event){
+                    var selection = chart.getSelection();
+                    var group = chartTable.getValue(selection[0].row, 0);
+                    var activityName = chartTable.getValue(selection[0].row, 1);
+                    handleSelection(group, activityName);
+                });
+                
+              /*  chart.draw(chartTable, {
+                    allowHtml: true,
+                    showRowNumber: true, 
+                    width: '100%', 
+                    height: '100%',
+                    sortColumn: 0
+                }); */
+
+                chart.setSelection([{row:0, column: null}]);
+                handleSelection(data[0][0], data[0][1]);
+            }
+
+            function handleSelection(group, activityName) {
+                var student = window.students.getByName(group + " / " + activityName);
+                window.selectedActivity = student;
+                $("#activity").html(group + " / " + activityName);
+                prepareMemberDrilldown();
+            }
+
+            function renderCharts() {
+                populateLocationDropdown(window.staticSetup.selectedLocationId,"Report");
+
+                renderDetail();
+                //prepareMemberDrilldown();
+            }
+
+            function isBoardType(student, memberType) {
+                return (memberType === "0" ||
+                       ( memberType === student.getBoard()));
+            }
+
+            function ispaymentStatusType(student, paymentStatus) {
+                return (paymentStatus === "0" 
+                    || (paymentStatus === student.getPaymentStatus()));
+            }
+
+            
+            function isGradeType(student, gradeSelected) {
+                return (gradeSelected === "0" 
+                    || (gradeSelected === student.getGrade()));
+            }
+
+            function isDivisionType(student, divisionSelected) {
+                return (divisionSelected === "0" 
+                    || (divisionSelected === student.getDivision()));
+            }
+
+            function isClusterType(location, clusterSelected) {
+                return (clusterSelected === "0" 
+                    || (clusterSelected === location.getCluster() ));
+            }
+
+            function isBranch(location, branchSelected) {
+                return (branchSelected === '0' 
+                    || ( branchSelected === location.getId()));
+            }
+
+            
+            function isSchoolName(student, schoolNameSelected) {
+                return (schoolNameSelected === '0' 
+                    || ( schoolNameSelected === student.getSchoolName()));
+            }
+
+            function prepareMemberDrilldown() {
+                var dataReport = [];
+                var students = window.students.getAll();
+                var boardType = $("#memberTypeFilter").find(":selected").val();
+                var paymentStatusType = $("#paymentStatusFilter").find(":selected").val();
+                var clusterSelected = $("#clusterFilter").find(":selected").val();
+                var branchSelected =  window.staticSetup.selectedLocationId;
+                var handOverSelected = $("#handOverFilter").find(":selected").val();
+                var gradeSelected = $("#grade").find(":selected").val();
+                var divisionSelected = $("#division").find(":selected").val();
+                var schoolNameSelected = $("#schoolNameFilter").find(":selected").val();
+ 
+
+                students.forEach((student) => {
+                    var location = window.locations.getById(student.getLocation());
+
+                    if ((isBoardType(student, boardType)) && (ispaymentStatusType(student,paymentStatusType))
+                         && (isClusterType(location,clusterSelected))  && isBranch(location, branchSelected) 
+                        && isGradeType(student,gradeSelected) && isDivisionType(student,divisionSelected)
+                        && isSchoolName(student,schoolNameSelected)) 
+                         {
+
+                        var found = false;
+                        var collectedBy = null;
+                        var collectedDateTime = null;
+                        var records = window.records.getByEnrollmentId(student.getId());
+                        if (records) {
+                            for (var i = 0; i < records.length; ++i) {
+                                if (records[i].getEnrollmentId() === student.getId()) {
+                                     collectedBy = records[i].getCollectedBy();
+                                     collectedDateTime = records[i].getTimestamp();
+                                     found = true;                                    
+                                    break;
+                                }
+                            }
+                        }
+                        if ((handOverSelected === '0') || ((found === false && handOverSelected === '2') || (found === true && handOverSelected === '1')))
+                        {
+                            dataReport.push([
+                                student.getSchoolName(),
+                                student.getName() + " (" + student.getId() + ")",
+                                student.getBoard(),
+                                student.getGrade() + " (" + location.getCity() +"-"+location.getBranch() + ")" ,
+                                student.getDivision(),
+                                student.getBookKitName(),
+                                collectedBy,
+                                collectedDateTime
+                            ]);
+                        }
+                      }
+                });
+                
+                window.tableReport.clear().rows.add(dataReport).draw();
+
+            }
+
+            function prepareReports() {
+                google.charts.load('current', {packages: ['table', 'corechart', 'controls']});
+                google.charts.setOnLoadCallback(renderCharts);
+            }
+
+            
+            function loadFilters() {
+                startLog('loadFilters');
+                window.filters = new $.Filters();
+                window.filters.load(function() {
+                    // https://docs.google.com/spreadsheets/d/1Os_t3wqu7c02DhO4yaOKHHOSmihoKfs_jCDzvHQaCiU/edit?usp=sharing
+                    var eventMgmtSheet = new $.Sheet({sheetId: window.staticSetup.googleSheet.sheetId, apiKey: window.CONST_GSHEET_API_KEY});
+                    info('Sheet ID - ' + eventMgmtSheet.getSheetId());
+                    var filtersSheetRangeRef = window.staticSetup.googleSheet.filters.split("!");
+                    var values = eventMgmtSheet.getValues(filtersSheetRangeRef[0], filtersSheetRangeRef[1]);
+                    info('loadFilters: ' + JSON.stringify(values));
+                    var metaFilters = window.staticSetup.metadata.filters;
+                    var arrFilters = [];
+                    values.values.forEach(function(row, index, array) {
+                     var filter = $.Filter.fromRecord(row, metaFilters);
+                            arrFilters.push(filter);
+                    });
+                    return arrFilters;
+                });
+                
+                let gradeOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#grade').html("");
+                window.filters.getAll().forEach(filter => {
+                    gradeOptionsHtml = gradeOptionsHtml 
+                       +"<option value='" + filter.getGrade() + "'>" + filter.getGrade() + "</option>";
+                });
+                $('#grade').html(gradeOptionsHtml);
+             
+                let boardOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#memberTypeFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const board = filter.getBoard();
+                    if (board)
+                    {
+                        boardOptionsHtml = boardOptionsHtml 
+                        +"<option value='" + filter.getBoard() + "'>" + filter.getBoard() + "</option>";
+                    }
+                });
+                $('#memberTypeFilter').html(boardOptionsHtml);
+
+                let divisionOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#division').html("");
+                window.filters.getAll().forEach(filter => {
+                    const division = filter.getDivision();
+                    if (division)
+                    {
+                        divisionOptionsHtml = divisionOptionsHtml 
+                        +"<option value='" + filter.getDivision() + "'>" + filter.getDivision() + "</option>";
+                    }
+                });
+                $('#division').html(divisionOptionsHtml);
+
+                let paymentStatusOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#paymentStatusFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const paymentStatus = filter.getPaymentStatus();
+                    if (paymentStatus)
+                    {
+                        paymentStatusOptionsHtml = paymentStatusOptionsHtml 
+                        +"<option value='" + filter.getPaymentStatus() + "'>" + filter.getPaymentStatus() + "</option>";
+                    }
+                });
+                $('#paymentStatusFilter').html(paymentStatusOptionsHtml);
+               
+               let schoolNameOptionsHtml = "<option value='0'>ALL</option>"; // Initialize with 'All' option
+
+                $('#schoolNameFilter').html("");
+                window.filters.getAll().forEach(filter => {
+                    const schoolName = filter.getSchoolName();
+                    if (schoolName)
+                    {
+                        schoolNameOptionsHtml = schoolNameOptionsHtml 
+                        +"<option value='" + filter.getSchoolName() + "'>" + filter.getSchoolName() + "</option>";
+                    }
+                });
+                $('#schoolNameFilter').html(schoolNameOptionsHtml);
+
+                info('loadFilters: loaded filters - ' + JSON.stringify(window.filters));
+                endLog('loadFilters');
+
+                
+
+            }
+
 		</script>
     </body>
 </html>
