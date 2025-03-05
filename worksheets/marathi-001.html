@@ -1,0 +1,43 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Marathi 
+    Alphabets</title> <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; margin: 20px;
+        }
+        .alphabet-container { display: flex; flex-wrap: wrap; justify-content: center; max-width: 600px; margin: auto;
+        }
+        .letter { width: 50px; height: 50px; margin: 5px; font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+            border: 1px solid black; cursor: pointer; background-color: #f0f0f0;
+        }
+        .hidden { background-color: #ccc; color: #ccc; border: 1px solid #aaa;
+        }
+    </style> </head> <body> <h1>Marathi Alphabets</h1> <div class="alphabet-container" id="alphabetContainer"></div> <script> const marathiAlphabets = [
+                                  'क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
+                                  'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह', 'ळ', 'क्ष', 'ज्ञ'];
+        const totalLetters = marathiAlphabets.length; const hiddenCount = Math.floor(totalLetters * 0.4); // Hide 40% of the letters
+        // Randomly select indices to hide
+        let hiddenIndices = new Set();
+	let reservedIndices = new Set();
+	while (hiddenIndices.size < hiddenCount) {
+		let randomIndex = Math.floor(Math.random() * totalLetters);
+		if (!reservedIndices.has(randomIndex)) {
+			hiddenIndices.add(randomIndex);
+			reservedIndices.add(randomIndex);
+			reservedIndices.add(randomIndex+1);
+		}
+        }
+	console.log("hidden indices: " + JSON.stringify([...hiddenIndices]));
+	console.log("reserved indices: " + JSON.stringify([...reservedIndices]));
+        const container = document.getElementById("alphabetContainer"); marathiAlphabets.forEach((letter, index) => { 
+		const letterElement = document.createElement("div");
+		letterElement.classList.add("letter");
+		letterElement.textContent = letter; 
+		if (hiddenIndices.has(index)) {
+                	letterElement.classList.add("hidden"); 
+			letterElement.addEventListener("click", function () { 
+				this.classList.remove("hidden"); 
+				this.style.color = "black";
+                });
+            }
+            container.appendChild(letterElement);
+        });
+    </script> </body>
+</html>
