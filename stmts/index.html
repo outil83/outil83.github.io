@@ -1,459 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Outil | Statements</title>
-        <!-- Font Awesome icons (free version)-->
-        <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
-        <!-- Google fonts-->
-        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
-        <!-- Third party plugin CSS-->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="css/JQLoader.css" />
-        <!-- JQuery UI -->
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Accounts Dashboard</title>
+	<meta name="description" content="The accounts dashboard application is an intuitive dashboard with interactive widgets and excellent drill down capabilities that gives critical insight of cashflow.">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Material Design Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- noUiSlider CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet">
+	<!-- Google API JS -->
+	<script src="https://apis.google.com/js/api.js"></script>
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<style>
+		body { background: #f5f5f5; }
+		.dashboard-header { background: #1976d2; color: #fff; padding: 1rem; }
+		.widget { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 0.5rem; padding: 0.5rem; min-height: 100%;}
+		.slicer-range { padding-left: 1rem; padding-right: 1rem; }
 
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
-        
-	</head>
-    <body id="page-top">
-        <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-            <div class="container">
-                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="assets/img/logo.svg" width="150px" alt="VIBGIYOR Global School Logo" width="250"/></a><button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                        <li class="nav-item"><a id='navToUpload' class="nav-link js-scroll-trigger" href="#upload">Upload Statement</a></li>
-                        <li class="nav-item"><a id='navToDetail' class="nav-link js-scroll-trigger" href="#detail">Statement Data</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Upload section-->
-        <section id="upload" class="page-section bg-info">
-            <div id="divLoading" class="container">
-                <p>Please wait while page is loading...</p>
-            </div>
+		/* Responsive adjustments */
+		@media (max-width: 576px) {
+			.dashboard-header h1 { font-size: 1rem; }
+			/* reduce header vertical padding on small phones */
+			.dashboard-header { padding: .5rem; }
+			.widget { padding: 1rem; margin-bottom: 1rem; }
+			/* ensure row has vertical gap between stacked columns */
+			.row { row-gap: 1rem; }
+			#timeseries-slicer .d-flex { flex-direction: column; align-items: stretch; gap: .5rem; }
+			#slicer-granularity { width: 100% !important; }
+			#slicer-apply { width: 100%; }
+			#slicer-slider { margin-top: .25rem; }
+			#investment-content div, #income-content div, #expenses-content div { font-size: 0.95rem; }
+			/* Reduce widget content height on small screens */
+			#investment-content > div, #income-content > div, #expenses-content > div { max-height: 180px !important; }
 
-            <div id="divUpload" class="container" hidden>
-                <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-lg-10 align-self-end">
-                        <h5 class="text-white font-weight-bold">Upload Statement</h5>
-                        <hr class="divider my-4" />
-                        <div class="table-responsive">
-                            <div id="divCsvData">
-                                <!-- Report overall -->
-                                <label>Input statement data in CSV format</label><br/>
-                                <textarea id="txtCsvData" rows="10" width="100%"></textarea><br/>
-                                <button onclick="loadEntries('txtCsvData')">Load Data</button>
-                                <p>NOTE: Each record of statement data must contain these data in the order - Source Type,Source,Txn Date,Narration,Reference,Value Date,Debit,Credit,Closing Balance,Amount,Labels</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Detail section-->
-        <section id="detail" class="page-section bg-warning">
-            <div id="divDetail" class="container" hidden>
-                <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-lg-10 align-self-end">
-                        <h5 class="text-white font-weight-bold">Statements Data</h5>
-                        <button onclick="saveEntries('statement.csv')">Download</button>
-                        <hr class="divider my-4" />
-                        <div class="table-responsive">
-                            <table id="tableStmtData" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Entry ID</th>
-                                        <th>Source Type</th>
-                                        <th>Source ID</th>
-                                        <th>Txn Date</th>
-                                        <th>Narration</th>
-                                        <th>Reference</th>
-                                        <th>Debit</th>
-                                        <th>Credit</th>
-                                        <th>Labels</th>
-                                        <th>Action(s)</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer-->
-        <footer class="bg-light py-5">
-            <div class="container"><div class="small text-center text-muted">© VIBGYOR Group of Schools 2023. All rights reserved.<br/>Powered By Outil.co.in</div></div>
-        </footer>
-
-        <!-- The Modal -->
-        <div class="modal" id="messageModel">
-			<div class="modal-dialog">
-                <div class="modal-content">
-
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                    <h4 class="modal-title">Information</h4>
-                    <button type="button" class="close" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">&times;</button>
-                    </div>
-
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <p id="message"></p>
-                    </div>
-
-                    <!-- Modal footer -->
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="$('#messageModel').slideUp(); return true;">Close</button>
-                    </div>
-
-                </div>
+			/* Compact mobile widget card */
+			.widget.compact .widget-title { display: none; }
+			.widget.compact .compact-card { display: block; padding: .5rem; }
+			.widget .compact-card { display: none; }
+			.compact-spark { font-family: monospace; font-size: 0.85rem; color: #666; }
+			/* Make load-more links bigger for touch */
+			.text-end a { padding: .5rem .75rem; display: inline-block; }
+		}
+	</style>
+</head>
+<body>
+	<header class="dashboard-header d-flex align-items-center justify-content-between">
+		<h1 class="h3 mb-0"><span class="material-icons">dashboard</span> Accounts Dashboard</h1>
+		<!-- desktop: show inline user info on sm+; mobile: show a dropdown menu -->
+		<div id="user-info" class="d-none d-sm-flex align-items-center"></div>
+		<div id="user-menu" class="dropdown d-flex d-sm-none align-items-center">
+			<button class="btn btn-light btn-sm" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+				<span class="material-icons">account_circle</span>
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn" id="user-menu-body">
+				<!-- mobile user content populated by JS -->
+			</ul>
+		</div>
+	</header>
+	<main class="container py-4">
+		<div id="auth-section" class="mb-4 text-center">
+			<button id="login-btn" class="btn btn-primary"><span class="material-icons">login</span> Sign in with Google</button>
+		</div>
+		<div id="dashboard" style="display:none;">
+			<!-- Time-series slicer -->
+			<div id="timeseries-slicer" class="widget mb-4">
+				<div class="d-flex align-items-left gap-3">
+					<label class="mb-0">Granularity:</label>
+					<select id="slicer-granularity" class="form-select form-select-sm" style="width:160px;">
+						<option value="year">Yearly</option>
+						<option value="quarter">Quarterly</option>
+						<option value="month">Monthly</option>
+					</select>
+					<div id="slicer-range" class="flex-grow-1 mt-4 ps-3 pe-3">
+						<div class="small text-muted d-none" id="slicer-range-label">Range: </div>
+						<div class="d-flex align-items-center gap-2 mt-1" style="width:100%;">
+							<div id="slicer-slider" style="width:100%;"></div>
+						</div>
+					</div>
+					<button id="slicer-apply" class="btn btn-primary btn-sm">Apply</button>
+				</div>
 			</div>
-        </div>
-
-		<!-- Bootstrap core JS-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-        <!-- Third party plugin JS-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>        
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-		<!-- Google sheet JS-->
-        <script src="js/sheet.js"></script>
-        <script src="js/JQLoader.js"></script>
-        <script src="js/papaparse.min.js"></script>
-        <script src="js/fuse.js"></script>
-        <script src="js/stmt.js"></script>
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<script type="text/javascript">
-
-            window.CONST_GSHEET_API_KEY = 'AIzaSyAaTlJ_c1EFYDHNjcC4fqK6KwsEbZ51waI';
-            window.CACHE_KEY_STAIC_SETUP = "static-setup";
-            window.cacheEnabled = false;
-			
-            // Make sure to load query params
-            (window.onpopstate = function () {
-                var match,
-                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
-                    search = /([^&=]+)=?([^&]*)/g,
-                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-                    query  = window.location.search.substring(1);
-            
-                window.urlParams = {};
-                while (match = search.exec(query)) {
-                    window.urlParams[decode(match[1])] = decode(match[2]);
-                }
-                info("URL query parameters => " + JSON.stringify(window.urlParams));
-                if (window.urlParams["clear"]) {
-                    window.localStorage.clear();
-                }
-            })();
-
-			$(document).ready(function() {
-                // initialize tabs
-                $( "#tabs" ).tabs({
-                    activate: function(event, ui) { 
-                        $($.fn.dataTable.tables(true)).DataTable({
-                            columnDefs: [
-                                {
-                                    target: 0,
-                                    visible: false,
-                                    searchable: false
-                                }
-                            ]
-                        })
-                            .columns.adjust()
-                            .responsive.recalc(); 
-                    }
-                });
-
-                // initialize tables
-                window.tableStmtData = new DataTable('#tableStmtData', {
-                    data: [],
-                    scrollX: true,
-                    scrollY: 300,
-                    paging: false,
-                    dom: 'ifrt'
-                });
-
-
-                $("#divLoading").remove();
-                $("#divUpload").removeAttr("hidden");
-                $("#divDetail").removeAttr("hidden");
-                $("body").JQLoader({mask: true, background:"#000", color:"#fff" });
-                $('.loading_box').html("<h1>" + $('.loading_box').text() + "</h1>");
-                var customWidth = (window.innerWidth / 2) - (300 / 2);
-                $('.loading_box').css({
-                    'left': (window.innerWidth / 2) - (300 / 2),
-                    'width': 300,
-                    'color': "#fff",
-                    'background-color': "#000",
-                    'text-align': "center"
-                });
-                window.setTimeout(initialize, 100);
-			});
-
-            function initialize() {
-                loadStaticSetup(function() {
-                    startLog("loadStaticSetupCallback");
-                    try {
-                        //loadEntries();
-                        //prepareReports();
-                        console.log("DO NOTHING!");
-                    } finally {
-                        $("body").JQLoader({action: "close" });
-                        endLog("loadStaticSetupCallback");
-                    }
-                });
-            }
-            
-            function loadStaticSetup(callback) {
-                startLog("loadStaticSetup");
-                try {
-                    $.cacheManager.register(CACHE_KEY_STAIC_SETUP, new $.Cache(CACHE_KEY_STAIC_SETUP, new $.Cachable(), (1000 * 60 * 60)));
-                    var staticSetupCache = $.cacheManager.get(CACHE_KEY_STAIC_SETUP);
-
-                    window.staticSetup = staticSetupCache.load(function() {
-                        info('Static setup not found in local storage and hence getting default setup');
-                        var result = {};
-                        $.ajax({
-                            async: false,
-                            type: 'GET',
-                            url: 'assets/json/static-setup.json',
-                            success: function(response) {
-                                info('loadStaticSetup - successfully fetched');
-                                result = JSON.parse(response);
-                            },
-                            dataType: 'text'
-                        });
-                        return result;
-                    });
-                    if (!window.staticSetup) {
-                        alert("SYSTEM ERROR: Failed to load static setup!");
-                        return ;
-                    }
-                    if (window.staticSetup.cache && window.staticSetup.cache.enabled === true) {
-                        window.cacheEnabled = true;
-                    }
-                    callback.call(null);
-                } finally {
-                    endLog("loadStaticSetup");
-                }
-            }
-
-            function loadEntries() {
-                startLog('loadEntries');
-                try {
-                    if (window.entries) {
-                        window.entries.clear();
-                    }
-
-                    window.entries = new $.Entries();
-                    window.entries.load(function() {
-                        var input = $('#txtCsvData').val()
-                        var parseResult = Papa.parse(input, { 
-                            header: false,
-                            skipEmptyLines: 'greedy',
-                            skipFirstNLines: 1
-                        })
-                        var values = parseResult.data;
-                        var errors = parseResult.errors;
-                        console.log("loadEntries: Errors - ", errors);
-                        var totalRecords = 0;
-                        if (values) {
-                            totalRecords = values.length;
-                        }
-                        info('loadEntries: CSV data: total: ' + totalRecords);
-                        if (totalRecords == 0) {
-                            return [];
-                        }
-                        var metaEntries = window.staticSetup.metadata.entries;
-                        var arrEntries = [];
-                        values.forEach(function(row, index, array) {
-                            if (index === 0) {
-                                return ;
-                            }
-                            var entry = new $.Entry.fromRecord(index, row, metaEntries);
-                            if (entry) {
-                                arrEntries.push(entry);
-                            }
-                        });
-                        return arrEntries;
-                    });
-
-                    const options = {
-                        includeScore: true,
-                        // Search in `author` and in `tags` array
-                        keys: ['narration']
-                    }
-
-                    window.fuse = new Fuse(window.entries.getAll(), options);
-
-                    reloadData();
-
-                } finally {
-                    endLog('loadEntries');
-                }
-            }
-
-            function reloadData() {
-                try {
-                    startLog("reloadData");
-
-                    var arrEntries = window.entries.getAll();
-                    var tableData = [];
-
-                    arrEntries.forEach((entry) => {
-                        tableData.push([
-                            entry.getEntryId(),
-                            entry.getSourceType(),
-                            entry.getSourceId(),
-                            entry.getTxnDate(),
-                            entry.getNarration(),
-                            entry.getReference(),
-                            entry.getDebit(),
-                            entry.getCredit(),
-                            entry.getLabels(),
-                            '<button onclick="addLabels(' + tableData.length + ')">Add Label</button>'
-                        ]);
-
-                    });
-
-                    window.tableStmtData.clear().rows.add(tableData).draw();
-                } finally {
-                    endLog("reloadData");
-                }
-            }
-
-            function addLabels(index) {
-                try {
-                    startLog("addLabels");
-                    var entries = window.entries.getAll();
-                    var entry = entries[index];
-                    info("addLabels - entries[" + index + "] => " + JSON.stringify(entry));
-                    var labels = window.prompt("Enter labels: ");
-                    info("addLabels - labels: " + JSON.stringify(labels));
-                    if (labels && labels.trim() !== "") {
-                        var arrLabels = labels.split(",");
-                        entry.setLabels(arrLabels);
-                        var result = window.fuse.search(entry.getNarration());
-                        info("addLabels - searchResult: " + JSON.stringify(result));
-                        result.forEach(resultItem => {
-                            var entry = entries[resultItem.refIndex];
-                            if (entry && (!entry.getLabels() || entry.getLabels().length === 0)) {
-                                entry.setLabels(arrLabels);
-                            }
-                        });
-                    }
-                    reloadData();
-                } finally {
-                    endLog("addLabels");
-                }
-            }
-
-            function saveEntries(fileName) {
-                startLog('saveEntries');
-                try {
-
-                    var entries = window.entries.getAll();
-                    var data = [];
-                    entries.forEach(entry => {
-                        data.push([entry.getSourceType(), entry.getSourceId(), entry.getTxnDate(), entry.getNarration(), entry.getReference(), entry.getValueDate(), entry.getDebit(), entry.getCredit(), entry.getClosingBalance(), entry.getAmount(), entry.getLabels()]);
-                    });
-                    var csvData = Papa.unparse({
-                        fields: ['Source Type', 'Source', 'Txn Date', 'Narration', 'Reference', 'Value Date', 'Debit', 'Credit', 'Closing Balance', 'Amount', 'Labels'],
-                        data: data
-                    }, {
-                        quotes: true, 
-                        delimiter: ','
-                    });
-
-                    // Create a Blob with the CSV data and type
-                    const blob = new Blob([csvData], { type: 'text/csv' });
-                    
-                    // Create a URL for the Blob
-                    const url = URL.createObjectURL(blob);
-                    
-                    // Create an anchor tag for downloading
-                    const a = document.createElement('a');
-                    
-                    // Set the URL and download attribute of the anchor tag
-                    a.href = url;
-                    a.download = fileName;
-                    
-                    // Trigger the download by clicking the anchor tag
-                    a.click();
-
-                } finally {
-                    endLog('saveEntries');
-                }
-            }
-
-            /**
-             * Log as ERROR message along with timestamp
-             * @param {string} message
-             */
-             function error(message) {
-                console.log("ERROR: " + message);
-            }
-
-            /**
-             * Log as INFO message along with timestamp
-             * @param {string} message
-             */
-            function info(message) {
-                console.log("INFO: " + message);
-            }
-
-            /**
-             * Start log entry with message
-             * @param {string} key
-             * @param {string} message
-             */
-             function startLog(key, message) {
-                console.time("INFO: " + key);
-                if (message) {
-                    info(key + " START : " + message);
-                } else {
-                    info(key + " START");
-                }
-            }
-
-            /**
-             * End log entry with message
-             * 
-             * @param {string} key
-             * @param {string} message
-             */
-             function endLog(key, message) {
-                if (message) {
-                    info(key + " END : " + message);
-                } else {
-                    info(key + " END");
-                }
-                console.timeEnd("INFO: " + key);
-            }
-
-            function showMessage(message) {
-                $('#message').text(message);
-                $('#messageModel').slideDown();
-            }
-
-            function prepareReports() {
-            }
-
-		</script>
-    </body>
+			<div class="row">
+				<div class="col-md-6 col-lg-3">
+					<div class="widget" id="cashflow-widget">
+						<h5><span class="material-icons">account_balance_wallet</span> Cashflow <span class="badge bg-secondary ms-2" id="badge-Cashflow" style="display:none">0</span></h5>
+						<div id="cashflow-content"></div>
+					</div>
+				</div>
+				<div class="col-md-6 col-lg-3">
+					<div class="widget" id="investment-widget">
+						<h5><span class="material-icons">trending_up</span> Investment <span class="badge bg-secondary ms-2" id="badge-Investment" style="display:none">0</span></h5>
+						<div id="investment-content"></div>
+					</div>
+				</div>
+				<div class="col-md-6 col-lg-3">
+					<div class="widget" id="income-widget">
+						<h5><span class="material-icons">attach_money</span> Income <span class="badge bg-secondary ms-2" id="badge-Income" style="display:none">0</span></h5>
+						<div id="income-content"></div>
+					</div>
+				</div>
+				<div class="col-md-6 col-lg-3">
+					<div class="widget" id="expenses-widget">
+						<h5><span class="material-icons">money_off</span> Expenses <span class="badge bg-secondary ms-2" id="badge-Expenses" style="display:none">0</span></h5>
+						<div id="expenses-content"></div>
+					</div>
+				</div>
+			</div>
+			<div id="drilldown-section" class="mt-4"></div>
+		</div>
+	</main>
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- App JS -->
+	<script src="dashboard.js"></script>
+</body>
 </html>
