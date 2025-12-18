@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPMM Pune Engagement Timeline</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+    .stats {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+    .stat {
+      flex: 1 1 45%;
+      min-width: 120px;
+      background: #eaf6fb;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      text-align: center;
+      color: #2980b9;
+      font-weight: 700;
+    }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      border-left: 5px solid #2980b9;
+      transition: box-shadow 0.2s;
+    }
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(41,128,185,0.12);
+    }
+    .card .date {
+      font-size: 0.95em;
+      color: #888;
+      font-weight: 500;
+    }
+    .card .topic {
+      font-size: 1.1em;
+      color: #2980b9;
+      font-weight: 700;
+    }
+    .card .summary {
+      color: #333;
+      font-size: 1em;
+    }
+    .card .tags {
+      font-size: 0.9em;
+      color: #888;
+      margin-top: 0.25em;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 0.5rem;
+      }
+      .stats {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .stat {
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SPMM Pune Engagement Timeline</h1>
+    <div id="stats" class="stats"></div>
+    <div id="timeline" class="timeline"></div>
+  </div>
+  <script>
+    async function fetchJSON(path) {
+      const res = await fetch(path);
+      return res.json();
+    }
+    function statBlock(label, value) {
+      return `<div class="stat"><div>${label}</div><div style='font-size:1.3em;'>${value}</div></div>`;
+    }
+    function card(event) {
+      return `<div class="card">
+        <div class="date">${event.date}</div>
+        <div class="topic">${event.topic}</div>
+        <div class="summary">${event.summary}</div>
+        <div class="tags">${event.tags.map(t=>`#${t}`).join(' ')}</div>
+      </div>`;
+    }
+    async function render() {
+      const [events, analysis] = await Promise.all([
+        fetchJSON('data/events.json'),
+        fetchJSON('data/analysis.json')
+      ]);
+      // Stats
+      const statsEl = document.getElementById('stats');
+      statsEl.innerHTML =
+        statBlock('Job Postings', analysis.total_job_postings) +
+        statBlock('Job Seekers', analysis.total_job_seekers) +
+        statBlock('Internship Requests', analysis.total_internship_requests) +
+        statBlock('Events Organized', analysis.total_events_organized) +
+        statBlock('Registered Families', analysis.total_registered_families) +
+        statBlock('Registered Persons', analysis.total_registered_persons);
+      // Timeline
+      const timelineEl = document.getElementById('timeline');
+      events.sort((a,b)=>new Date(a.date)-new Date(b.date));
+      timelineEl.innerHTML = events.map(card).join('');
+    }
+    render();
+  </script>
+</body>
+</html>
