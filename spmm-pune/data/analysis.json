@@ -1,24 +1,24 @@
 {
-  "total_job_postings": 4,
-  "total_job_seekers": 0,
-  "total_internship_requests": 0,
+  "total_job_postings": 24,
+  "total_job_seekers": 6,
+  "total_internship_requests": 2,
   "total_events_organized": 7,
   "spmm_pune_started": "2025-07-08",
   "total_polls": 3,
-  "total_active_engagements": 7,
+  "total_active_engagements": 9,
   "total_meetings": 2,
   "total_scholarship_announcements": 0,
   "total_registered_families": 102,
   "total_registered_persons": 300,
   "total_groups": 4,
-  "distinct_topics": 12,
+  "distinct_topics": 15,
   "notable_observations": [
     "Rapid expansion from localized meets (Wakad, Baner) to city-wide events.",
     "Formation of specialized sub-groups (Ladies Group, Jobs Group) to declutter the main chat.",
     "Strong focus on verification: New members are vetted via Google Forms before adding.",
     "High engagement in social events like the Picnic (60+ pax) and Annual Dinner (50+ pax).",
-    "Community acts as a support system for housing (rental leads) and travel (road condition updates).",
-    "Strict 'No Forward' policy enforced to maintain group quality.",
-    "Transition from 'Shree Prajapati Mitra Mandal - Wakad Zone' to 'SPMM Pune' identity."
+    "Dedicated 'SPMM Jobs' group created on Dec 3, 2025, triggering an immediate influx of 20+ job opportunities.",
+    "Active peer-to-peer career support: Members reviewing resumes, warning against scam institutes, and providing direct referrals.",
+    "Strict 'No Forward' policy enforced to maintain group quality."
   ]
 }
