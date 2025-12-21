@@ -443,7 +443,7 @@ async function readSheetData(sheetId) {
     txn_source: row[0] || '',
     txn_date: row[1] || '',
     narration: row[2] || '',
-    txn_amount: parseFloat(row[3]) || 0,
+    txn_amount: parseFloat(removeThousandsSeparators(row[3])) || 0,
     credit_indicator: row[4] || '',
     txn_type: row[5] || '',
     category: row[6] || '',
@@ -451,6 +451,10 @@ async function readSheetData(sheetId) {
     raw_data: row[8] || '',
     state: row[9] || ''
   }));
+}
+
+function removeThousandsSeparators(numStr) {
+  return numStr.replace(/,/g, '');
 }
 
 // Render dashboard widgets
