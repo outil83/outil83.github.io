@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Exercise Activities</title>
+    <style>
+        /* Basic Reset and Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Container and Grid Layout */
+        main {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .activity-grid {
+            display: grid;
+            /* Creates a responsive grid that fits as many 300px cards as possible */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card Styling */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none; /* Removes underline from links */
+            color: inherit;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            background-color: #e8f4f8;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #2980b9;
+        }
+
+        .card-content p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-btn {
+            background-color: #2980b9;
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .card:hover .card-btn {
+            background-color: #1c5980;
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #fff;
+            color: #777;
+            margin-top: auto;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Student Activity Hub</h1>
+        <p>Explore our collection of interactive school exercises</p>
+    </header>
+
+    <main>
+        <div class="activity-grid">
+            
+            <a href="marathi-alphabets.html" class="card">
+                <div class="card-icon">🧮</div>
+                <div class="card-content">
+                    <h2>Missing Marathi Alphabets</h2>
+                    <p>Test your skills with interactive missing marathi alphabets exercise.</p>
+                    <div class="card-btn">Start Activity</div>
+                </div>
+            </a>
+            
+            <a href="math-quiz.html" class="card">
+                <div class="card-icon">🧮</div>
+                <div class="card-content">
+                    <h2>Math Quiz Builder</h2>
+                    <p>Test your skills with interactive algebra and geometry problems. Track your high score!</p>
+                    <div class="card-btn">Start Activity</div>
+                </div>
+            </a>
+
+            <a href="science-lab.html" class="card">
+                <div class="card-icon">🔬</div>
+                <div class="card-content">
+                    <h2>Virtual Science Lab</h2>
+                    <p>Explore the periodic table and simulate basic chemical reactions safely from your browser.</p>
+                    <div class="card-btn">Start Activity</div>
+                </div>
+            </a>
+
+            <a href="vocab-hero.html" class="card">
+                <div class="card-icon">📖</div>
+                <div class="card-content">
+                    <h2>Vocabulary Hero</h2>
+                    <p>Match words to their definitions and learn new synonyms in this fast-paced reading game.</p>
+                    <div class="card-btn">Start Activity</div>
+                </div>
+            </a>
+
+            <a href="map-explorer.html" class="card">
+                <div class="card-icon">🌍</div>
+                <div class="card-content">
+                    <h2>Map Explorer</h2>
+                    <p>Identify countries, capitals, and major physical landmarks on an interactive world map.</p>
+                    <div class="card-btn">Start Activity</div>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Student Activity Hub. Built for GitHub Pages.</p>
+    </footer>
+
+</body>
+</html>

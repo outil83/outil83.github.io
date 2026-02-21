@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marathi Alphabet Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .scoreboard {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .score-correct { color: #27ae60; }
+        .score-wrong { color: #e74c3c; }
+
+        /* 5x5 Grid Styling */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .block {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: #2980b9;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        /* Empty Block State */
+        .block.empty {
+            background-color: #e0e0e0;
+            border: 3px dashed #bdc3c7;
+            box-shadow: none;
+            cursor: pointer;
+            color: transparent;
+        }
+
+        .block.empty:hover {
+            background-color: #d5d5d5;
+            transform: scale(1.05);
+        }
+
+        .block.solved {
+            background-color: #d5f5e3;
+            color: #27ae60;
+            border: 2px solid #27ae60;
+            animation: popIn 0.3s ease;
+        }
+
+        /* Modal / Options Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 90%;
+        }
+
+        .modal h2 { margin-bottom: 1rem; color: #2c3e50; }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: #f1c40f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .option-btn:hover { transform: scale(1.1); background: #f39c12; }
+        
+        .close-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Game Over Screen */
+        .game-over { display: none; text-align: center; margin-top: 2rem; }
+        .restart-btn {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background 0.3s;
+        }
+        .restart-btn:hover { background: #1c5980; }
+
+        /* Animations */
+        @keyframes popIn {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .shake { animation: shake 0.4s; border: 2px solid #e74c3c !important; }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .block { width: 80px; height: 80px; font-size: 2.5rem; }
+            .option-btn { width: 60px; height: 60px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>मुळाक्षरे ओळखा (Identify the Alphabets)</h1>
+    
+    <div class="scoreboard">
+        <div class="score-correct">Correct: <span id="correctScore">0</span></div>
+        <div class="score-wrong">Wrong: <span id="wrongScore">0</span></div>
+    </div>
+
+    <div class="grid-container" id="grid">
+        </div>
+
+    <div class="game-over" id="gameOverScreen">
+        <h2>Great Job! / खूप छान! 🎉</h2>
+        <p style="margin: 1rem 0; font-size: 1.2rem;" id="finalMessage"></p>
+        <button class="restart-btn" onclick="initGame()">Try Again 🔄</button>
+    </div>
+
+    <div class="modal-overlay" id="optionsModal">
+        <div class="modal">
+            <h2>Select the missing letter</h2>
+            <div class="options-container" id="optionsList">
+                </div>
+            <button class="close-btn" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Standard 5x5 Marathi Consonant grouping (Sparsh Vyanjan)
+        const alphabets = [
+            'क', 'ख', 'ग', 'घ', 'ङ',
+            'च', 'छ', 'ज', 'झ', 'ञ',
+            'ट', 'ठ', 'ड', 'ढ', 'ण',
+            'त', 'थ', 'द', 'ध', 'न',
+            'प', 'फ', 'ब', 'भ', 'म'
+        ];
+
+        const NUM_MISSING = 5; // How many blocks to hide
+        let unsolvedIndices = [];
+        let currentTargetIndex = null;
+        
+        let correctAttempts = 0;
+        let wrongAttempts = 0;
+
+        // DOM Elements
+        const gridEl = document.getElementById('grid');
+        const correctScoreEl = document.getElementById('correctScore');
+        const wrongScoreEl = document.getElementById('wrongScore');
+        const modalEl = document.getElementById('optionsModal');
+        const optionsListEl = document.getElementById('optionsList');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalMessage = document.getElementById('finalMessage');
+
+        function initGame() {
+            // Reset state
+            correctAttempts = 0;
+            wrongAttempts = 0;
+            updateScore();
+            gameOverScreen.style.display = 'none';
+            gridEl.style.display = 'grid';
+
+            // Pick random indices to hide
+            unsolvedIndices = [];
+            while (unsolvedIndices.length < NUM_MISSING) {
+                let randomIdx = Math.floor(Math.random() * alphabets.length);
+                if (!unsolvedIndices.includes(randomIdx)) {
+                    unsolvedIndices.push(randomIdx);
+                }
+            }
+
+            renderGrid();
+        }
+
+        function renderGrid() {
+            gridEl.innerHTML = ''; // Clear existing grid
+
+            alphabets.forEach((letter, index) => {
+                const block = document.createElement('div');
+                block.classList.add('block');
+                block.id = `block-${index}`;
+
+                if (unsolvedIndices.includes(index)) {
+                    block.classList.add('empty');
+                    block.innerText = '?';
+                    block.onclick = () => openOptions(index);
+                } else {
+                    block.innerText = letter;
+                }
+
+                gridEl.appendChild(block);
+            });
+        }
+
+        function openOptions(index) {
+            currentTargetIndex = index;
+            
+            // Get all letters that are currently missing to show as options
+            const missingLetters = unsolvedIndices.map(idx => alphabets[idx]);
+            
+            // Shuffle the options so they aren't in predictable order
+            const shuffledOptions = missingLetters.sort(() => Math.random() - 0.5);
+
+            optionsListEl.innerHTML = '';
+            shuffledOptions.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                btn.innerText = letter;
+                btn.onclick = () => checkAnswer(letter);
+                optionsListEl.appendChild(btn);
+            });
+
+            modalEl.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+            currentTargetIndex = null;
+        }
+
+        function checkAnswer(selectedLetter) {
+            const correctLetter = alphabets[currentTargetIndex];
+            const targetBlock = document.getElementById(`block-${currentTargetIndex}`);
+
+            if (selectedLetter === correctLetter) {
+                // Correct Answer
+                correctAttempts++;
+                
+                // Remove from unsolved list
+                unsolvedIndices = unsolvedIndices.filter(idx => idx !== currentTargetIndex);
+                
+                // Update UI for the block
+                targetBlock.classList.remove('empty');
+                targetBlock.classList.add('solved');
+                targetBlock.innerText = correctLetter;
+                targetBlock.onclick = null; // Remove click event
+
+                closeModal();
+                updateScore();
+                checkGameOver();
+            } else {
+                // Wrong Answer
+                wrongAttempts++;
+                updateScore();
+                closeModal();
+                
+                // Visual feedback for wrong answer
+                targetBlock.classList.add('shake');
+                setTimeout(() => {
+                    targetBlock.classList.remove('shake');
+                }, 400);
+            }
+        }
+
+        function updateScore() {
+            correctScoreEl.innerText = correctAttempts;
+            wrongScoreEl.innerText = wrongAttempts;
+        }
+
+        function checkGameOver() {
+            if (unsolvedIndices.length === 0) {
+                setTimeout(() => {
+                    gridEl.style.display = 'none';
+                    gameOverScreen.style.display = 'block';
+                    finalMessage.innerText = `You finished with ${correctAttempts} correct and ${wrongAttempts} wrong attempts!`;
+                }, 500);
+            }
+        }
+
+        // Start game on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>
