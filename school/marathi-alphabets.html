@@ -209,11 +209,20 @@
     <script>
         // Standard 5x5 Marathi Consonant grouping (Sparsh Vyanjan)
         const alphabets = [
+            // Group 1: K-वर्ग
             'क', 'ख', 'ग', 'घ', 'ङ',
+            // Group 2: Ch-वर्ग
             'च', 'छ', 'ज', 'झ', 'ञ',
+            // Group 3: T-वर्ग (Retroflex)
             'ट', 'ठ', 'ड', 'ढ', 'ण',
+            // Group 4: T-वर्ग (Dental)
             'त', 'थ', 'द', 'ध', 'न',
-            'प', 'फ', 'ब', 'भ', 'म'
+            // Group 5: P-वर्ग
+            'प', 'फ', 'ब', 'भ', 'म',
+            // Group 6: Semi-vowels & Sibilants
+            'य', 'र', 'ल', 'व', 'श',
+            'ष', 'स', 'ह', 'ळ', 'क्ष',
+            'ज्ञ'
         ];
 
         const NUM_MISSING = 5; // How many blocks to hide

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Times Master</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --bg: #f0f4f8;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 1rem; }
+
+        /* Setup Screens */
+        .setup-section { margin-bottom: 2rem; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .num-btn { background: #eee; font-size: 1.2rem; }
+        .num-btn.active { background: var(--primary); color: white; }
+
+        .mode-btn { background: #eee; margin: 5px; flex: 1; }
+        .mode-btn.active { background: var(--secondary); color: white; }
+
+        .start-btn { 
+            background: var(--success); color: white; 
+            font-size: 1.2rem; padding: 15px 40px; margin-top: 20px;
+        }
+
+        /* Game Area */
+        #game-area { display: none; margin-top: 2rem; }
+        
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        input {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input.wrong { border-color: var(--danger); background: #fee; }
+        input.correct { border-color: var(--success); background: #efe; }
+
+        .correct-ans { color: var(--success); font-weight: bold; margin-left: 10px; display: none; }
+
+        /* Mode C: Drag/Drop visual */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .answer-chip {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .answer-chip.selected { outline: 3px solid #333; transform: scale(1.1); }
+        .drop-zone {
+            width: 70px; height: 40px; border: 2px dashed #bbb;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 5px; cursor: pointer; background: #fff;
+        }
+
+        /* Mode D: Flashcard */
+        .flashcard { font-size: 3rem; margin: 2rem 0; color: var(--primary); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="setup">
+            <h1>Table Times Practice</h1>
+            
+            <div class="setup-section">
+                <p>Choose a Table:</p>
+                <div class="btn-grid" id="number-selector"></div>
+            </div>
+
+            <div class="setup-section">
+                <p>Choose Practice Mode:</p>
+                <div style="display: flex; flex-wrap: wrap;">
+                    <button class="mode-btn" onclick="setMode('a', this)">A: Sequential</button>
+                    <button class="mode-btn" onclick="setMode('b', this)">B: Random List</button>
+                    <button class="mode-btn" onclick="setMode('c', this)">C: Pick & Place</button>
+                    <button class="mode-btn" onclick="setMode('d', this)">D: Quick Fire</button>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">Start Learning! 🚀</button>
+        </div>
+
+        <div id="game-area">
+            <h2 id="game-title">Table of 2</h2>
+            <div id="task-container"></div>
+            
+            <div id="controls" style="margin-top: 20px;">
+                <button id="check-btn" class="start-btn" style="background: var(--primary);">Check Answers</button>
+                <button onclick="location.reload()" class="mode-btn">Menu / Restart</button>
+            </div>
+
+            <div id="score-display" class="hidden" style="margin-top: 20px; font-size: 1.5rem; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTable = 2;
+        let selectedMode = 'a';
+        let currentAnswers = {};
+        let selectedChipValue = null;
+
+        // Initialize Number Selector
+        const numSelector = document.getElementById('number-selector');
+        for (let i = 2; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            btn.className = 'num-btn' + (i === 2 ? ' active' : '');
+            btn.onclick = () => {
+                document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedTable = i;
+            };
+            numSelector.appendChild(btn);
+        }
+
+        function setMode(mode, btn) {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedMode = mode;
+        }
+
+        function startGame() {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+            document.getElementById('game-title').innerText = `Table of ${selectedTable}`;
+            renderMode();
+        }
+
+        function renderMode() {
+            const container = document.getElementById('task-container');
+            container.innerHTML = '';
+            let indices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            if (selectedMode === 'b' || selectedMode === 'c') {
+                indices.sort(() => Math.random() - 0.5);
+            }
+
+            if (selectedMode === 'a' || selectedMode === 'b') {
+                indices.forEach(i => {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    row.innerHTML = `
+                        ${selectedTable} x ${i} = 
+                        <input type="number" id="input-${i}" data-ans="${selectedTable * i}">
+                        <span id="correct-${i}" class="correct-ans">Correct: ${selectedTable * i}</span>
+                    `;
+                    container.appendChild(row);
+                });
+                document.getElementById('check-btn').onclick = checkListAnswers;
+            } 
+            else if (selectedMode === 'c') {
+                const chipContainer = document.createElement('div');
+                chipContainer.className = 'chip-container';
+                
+                indices.forEach(i => {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    row.innerHTML = `${selectedTable} x ${i} = <div class="drop-zone" id="drop-${i}" onclick="placeValue(${i})">?</div>`;
+                    container.appendChild(row);
+
+                    const chip = document.createElement('div');
+                    chip.className = 'answer-chip';
+                    chip.innerText = selectedTable * i;
+                    chip.onclick = () => selectChip(chip, selectedTable * i);
+                    chipContainer.appendChild(chip);
+                });
+                // Shuffle chips
+                for (let i = chipContainer.children.length; i >= 0; i--) {
+                    chipContainer.appendChild(chipContainer.children[Math.random() * i | 0]);
+                }
+                container.appendChild(chipContainer);
+                document.getElementById('check-btn').onclick = checkDropAnswers;
+            }
+            else if (selectedMode === 'd') {
+                renderFlashcard();
+            }
+        }
+
+        // --- Logic for Modes A & B ---
+        function checkListAnswers() {
+            let correctCount = 0;
+            for (let i = 1; i <= 10; i++) {
+                const input = document.getElementById(`input-${i}`);
+                const display = document.getElementById(`correct-${i}`);
+                if (parseInt(input.value) === parseInt(input.dataset.ans)) {
+                    input.className = 'correct';
+                    correctCount++;
+                } else {
+                    input.className = 'wrong';
+                    display.style.display = 'inline';
+                }
+            }
+            showFinalScore(correctCount, 10);
+        }
+
+        // --- Logic for Mode C (Pick & Place) ---
+        function selectChip(el, val) {
+            document.querySelectorAll('.answer-chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedChipValue = val;
+        }
+
+        function placeValue(index) {
+            if (selectedChipValue !== null) {
+                const zone = document.getElementById(`drop-${index}`);
+                zone.innerText = selectedChipValue;
+                zone.dataset.placed = selectedChipValue;
+                selectedChipValue = null;
+                document.querySelectorAll('.answer-chip').forEach(c => c.classList.remove('selected'));
+            }
+        }
+
+        function checkDropAnswers() {
+            let correctCount = 0;
+            for (let i = 1; i <= 10; i++) {
+                const zone = document.getElementById(`drop-${i}`);
+                if (parseInt(zone.dataset.placed) === (selectedTable * i)) {
+                    zone.style.borderColor = 'var(--success)';
+                    correctCount++;
+                } else {
+                    zone.style.borderColor = 'var(--danger)';
+                    zone.innerHTML = `${zone.innerText || '?'} <span style="color:red; font-size:0.8rem">(${selectedTable * i})</span>`;
+                }
+            }
+            showFinalScore(correctCount, 10);
+        }
+
+        // --- Logic for Mode D (Flashcards) ---
+        let currentFlashIdx = 0;
+        let flashOrder = [];
+        let flashCorrect = 0;
+
+        function renderFlashcard() {
+            if (flashOrder.length === 0) {
+                flashOrder = [1,2,3,4,5,6,7,8,9,10].sort(() => Math.random() - 0.5);
+            }
+            const i = flashOrder[currentFlashIdx];
+            const container = document.getElementById('task-container');
+            container.innerHTML = `
+                <div class="flashcard">${selectedTable} x ${i} = ?</div>
+                <input type="number" id="flash-input" autofocus>
+                <div id="flash-feedback" style="margin-top:10px; height:20px;"></div>
+            `;
+            document.getElementById('check-btn').innerText = "Submit Answer";
+            document.getElementById('check-btn').onclick = checkFlashAnswer;
+        }
+
+        function checkFlashAnswer() {
+            const i = flashOrder[currentFlashIdx];
+            const input = document.getElementById('flash-input');
+            const feedback = document.getElementById('flash-feedback');
+            const val = parseInt(input.value);
+            const correct = selectedTable * i;
+
+            if (val === correct) {
+                flashCorrect++;
+                feedback.innerHTML = `<span style="color:green">Correct! 🌟</span>`;
+            } else {
+                feedback.innerHTML = `<span style="color:red">Wrong! It was ${correct}</span>`;
+            }
+
+            currentFlashIdx++;
+            if (currentFlashIdx < 10) {
+                setTimeout(renderFlashcard, 1500);
+            } else {
+                showFinalScore(flashCorrect, 10);
+            }
+        }
+
+        function showFinalScore(score, total) {
+            const display = document.getElementById('score-display');
+            display.classList.remove('hidden');
+            display.innerHTML = `Score: ${score} / ${total} <br> ${score === total ? 'Perfect! 🏆' : 'Keep practicing!'}`;
+            document.getElementById('check-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
