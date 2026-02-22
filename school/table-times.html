@@ -56,7 +56,7 @@
         .num-btn { background: #eee; font-size: 1.2rem; }
         .num-btn.active { background: var(--primary); color: white; }
 
-        .mode-btn { background: #eee; margin: 5px; flex: 1; }
+        .mode-btn { background: var(--success); color: white; margin: 5px; flex: 1; font-size: 1.2rem; padding: 15px 40px; }
         .mode-btn.active { background: var(--secondary); color: white; }
 
         .start-btn { 
@@ -150,7 +150,6 @@
                 </div>
             </div>
 
-            <button class="start-btn" onclick="startGame()">Start Learning! 🚀</button>
             <button class="home-btn" onclick="history.back()">🏠 Home </button>
         </div>
 
@@ -191,6 +190,7 @@
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedMode = mode;
+            startGame();
         }
 
         function startGame() {
