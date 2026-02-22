@@ -615,7 +615,13 @@
                 <input type="number" id="flash-input" autofocus>
                 <div id="flash-feedback" style="margin-top:10px; height:20px;"></div>
             `;
-            document.getElementById('flash-input').focus();
+            const flashInput = document.getElementById('flash-input');
+            flashInput.focus();
+            flashInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && currentFlashIdx < flashOrder.length) {
+                    checkFlashAnswer();
+                }
+            });
             document.getElementById('check-btn').innerText = "✅ Submit Answer";
             document.getElementById('check-btn').onclick = checkFlashAnswer;
         }
@@ -724,16 +730,33 @@
             const scores = [];
             
             allStudents.forEach(student => {
-                const totalScore = student.history.reduce((sum, record) => sum + record.percentage, 0);
-                const avgScore = student.history.length > 0 ? Math.round(totalScore / student.history.length) : 0;
+                // Calculate total correct answers and total attempted
+                const totalCorrect = student.history.reduce((sum, record) => sum + record.score, 0);
+                const totalAttempted = student.history.reduce((sum, record) => sum + record.total, 0);
+                const overallPercentage = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
+                
+                // Calculate per-table scores
+                const tableScores = {};
+                for (let table = 2; table <= 10; table++) {
+                    const tableHistory = student.history.filter(h => h.table === table);
+                    if (tableHistory.length > 0) {
+                        const tableTotal = tableHistory.reduce((sum, record) => sum + record.percentage, 0);
+                        tableScores[table] = Math.round(tableTotal / tableHistory.length);
+                    }
+                }
+                
                 scores.push({
                     name: student.name,
-                    avgScore: avgScore,
-                    attempts: student.history.length
+                    totalCorrect: totalCorrect,
+                    totalAttempted: totalAttempted,
+                    overallPercentage: overallPercentage,
+                    attempts: student.history.length,
+                    tableScores: tableScores
                 });
             });
             
-            scores.sort((a, b) => b.avgScore - a.avgScore);
+            // Sort by total correct answers (descending)
+            scores.sort((a, b) => b.totalCorrect - a.totalCorrect);
             
             let html = '<div class="leaderboard">';
             scores.forEach((entry, idx) => {
@@ -742,9 +765,19 @@
                         <span class="leaderboard-rank">#${idx + 1}</span>
                         <span class="leaderboard-name">${entry.name}</span>
                         <span style="font-size: 0.9rem; color: #666;">${entry.attempts} attempts</span>
-                        <span class="leaderboard-score">${entry.avgScore}%</span>
+                        <span class="leaderboard-score">${entry.totalCorrect}/${entry.totalAttempted} (${entry.overallPercentage}%)</span>
                     </div>
-                `;
+                    <div style="padding: 8px 20px; background: #f9f9f9; font-size: 0.85rem; color: #666;">
+                        <strong>By Table:</strong> `;
+                
+                let tableDisplay = [];
+                for (let table = 2; table <= 10; table++) {
+                    if (entry.tableScores[table] !== undefined) {
+                        tableDisplay.push(`Table ${table}: <strong>${entry.tableScores[table]}%</strong>`);
+                    }
+                }
+                html += tableDisplay.join(' | ');
+                html += '</div>';
             });
             html += '</div>';
             
