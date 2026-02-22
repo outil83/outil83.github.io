@@ -306,9 +306,9 @@
             </div>
             <div id="task-container"></div>
             
-            <div id="controls" style="margin-top: 20px;">
-                <button id="check-btn" class="start-btn" style="background: var(--primary);">✅ Check Answers</button>
-                <button onclick="goToSetup()" class="mode-btn">🔄 Back to Setup</button>
+            <div id="controls" style="margin-top: 20px; display: flex; justify-content: space-between; gap: 10px;">
+                <button id="check-btn" class="start-btn" style="background: var(--success); flex: 1; max-width: 300px;">✅ Check Answers</button>
+                <button onclick="confirmGoToSetup()" class="start-btn" style="background: var(--primary);">🔄 Back to Setup</button>
             </div>
 
             <div id="score-display" class="hidden" style="margin-top: 20px; font-size: 1.5rem; font-weight: bold;"></div>
@@ -464,6 +464,19 @@
 
         function goToSetup() {
             showSetup();
+        }
+
+        function confirmGoToSetup() {
+            const scoreDisplay = document.getElementById('score-display');
+            const isAnswersChecked = !scoreDisplay.classList.contains('hidden');
+            
+            if (!isAnswersChecked) {
+                if (confirm('Are you sure you want to go back to setup without checking your answers?')) {
+                    goToSetup();
+                }
+            } else {
+                goToSetup();
+            }
         }
 
         // ========== GAME LOGIC ==========
