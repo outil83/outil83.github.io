@@ -129,6 +129,20 @@
         }
 
         .option-btn:hover { transform: scale(1.1); background: #f39c12; }
+
+        .home-btn {
+            width: auto;
+            height: 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: #f1c40f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
         
         .close-btn {
             background: #95a5a6;
@@ -184,12 +198,13 @@
     <h1>मुळाक्षरे ओळखा (Identify the Alphabets)</h1>
     
     <div class="scoreboard">
+        <div class="score-correct"><a href="javascript:history.back()">Home</a></div>
         <div class="score-correct">Correct: <span id="correctScore">0</span></div>
-        <div class="score-wrong">Wrong: <span id="wrongScore">0</span></div>
+        <div class="score-wrong">Wrong: <span id="wrongScore">0</span></div>        
     </div>
 
     <div class="grid-container" id="grid">
-        </div>
+    </div>
 
     <div class="game-over" id="gameOverScreen">
         <h2>Great Job! / खूप छान! 🎉</h2>
@@ -198,7 +213,6 @@
     </div>
 
     <div>
-        <button class="home-btn" onclick="history.back()">School Exercise Activities</button>
     </div>
 
     <div class="modal-overlay" id="optionsModal">

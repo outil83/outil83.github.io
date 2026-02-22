@@ -64,6 +64,11 @@
             font-size: 1.2rem; padding: 15px 40px; margin-top: 20px;
         }
 
+        .home-btn { 
+            background: var(--success); color: white; 
+            font-size: 1.2rem; padding: 15px 40px; margin-top: 20px;
+        }
+
         /* Game Area */
         #game-area { display: none; margin-top: 2rem; }
         
@@ -146,7 +151,7 @@
             </div>
 
             <button class="start-btn" onclick="startGame()">Start Learning! 🚀</button>
-            <button class="home-btn" onclick="history.back()">School Exercise Activities</button>
+            <button class="home-btn" onclick="history.back()">🏠 Home </button>
         </div>
 
         <div id="game-area">
@@ -154,8 +159,8 @@
             <div id="task-container"></div>
             
             <div id="controls" style="margin-top: 20px;">
-                <button id="check-btn" class="start-btn" style="background: var(--primary);">Check Answers</button>
-                <button onclick="location.reload()" class="mode-btn">Menu / Restart</button>
+                <button id="check-btn" class="start-btn" style="background: var(--primary);">✅ Check Answers</button>
+                <button onclick="location.reload()" class="mode-btn">🔄 Menu / Restart</button>
             </div>
 
             <div id="score-display" class="hidden" style="margin-top: 20px; font-size: 1.5rem; font-weight: bold;"></div>
@@ -208,6 +213,7 @@
                 indices.forEach(i => {
                     const row = document.createElement('div');
                     row.className = 'row';
+                    // ensure that 1st input is focused for better UX
                     row.innerHTML = `
                         ${selectedTable} x ${i} = 
                         <input type="number" id="input-${i}" data-ans="${selectedTable * i}">
@@ -215,6 +221,7 @@
                     `;
                     container.appendChild(row);
                 });
+                document.getElementById("input-" + indices[0]).focus();
                 document.getElementById('check-btn').onclick = checkListAnswers;
             } 
             else if (selectedMode === 'c') {
@@ -310,7 +317,8 @@
                 <input type="number" id="flash-input" autofocus>
                 <div id="flash-feedback" style="margin-top:10px; height:20px;"></div>
             `;
-            document.getElementById('check-btn').innerText = "Submit Answer";
+            document.getElementById('flash-input').focus();
+            document.getElementById('check-btn').innerText = "✅ Submit Answer";
             document.getElementById('check-btn').onclick = checkFlashAnswer;
         }
 
