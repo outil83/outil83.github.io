@@ -142,6 +142,15 @@ const InputManager = {
   // --- Internal handlers ---
 
   _onKeyDown(e) {
+    // Never intercept keys while focus is inside an editable field
+    const tag = e.target?.tagName;
+    if (
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
+      e.target?.isContentEditable
+    ) return;
+
     const intent = KEY_MAP[e.key];
     if (intent) {
       e.preventDefault();
