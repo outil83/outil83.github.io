@@ -1,0 +1,343 @@
+/* ========================================
+   GConsole Pacman Arena — style.css
+   Mobile-first, BEM conventions
+   ======================================== */
+
+/* --- Page Layout --- */
+.pacman-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.pacman-header {
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  padding: 0 1rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.pacman-header__back {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color var(--transition);
+}
+
+.pacman-header__back:hover,
+.pacman-header__back:focus-visible {
+  color: var(--color-accent);
+  text-decoration: none;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.pacman-header__title {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+}
+
+/* --- HUD --- */
+.pacman-hud {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.pacman-hud__info {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--color-text-muted);
+}
+
+.pacman-hud__info span {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pacman-hud__score-val {
+  color: var(--color-accent) !important;
+  font-weight: 700;
+}
+
+.pacman-hud__level-val {
+  color: var(--color-primary-light) !important;
+  font-weight: 700;
+}
+
+.pacman-hud__controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pacman-hud__btn {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.pacman-hud__btn:hover,
+.pacman-hud__btn:focus-visible {
+  background: var(--color-secondary);
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.pacman-hud__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.pacman-hud__btn--start {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.pacman-hud__btn--start:hover,
+.pacman-hud__btn--start:focus-visible {
+  background: rgba(46, 204, 113, 0.15);
+}
+
+.pacman-hud__btn--pause {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.pacman-hud__btn--pause:hover,
+.pacman-hud__btn--pause:focus-visible {
+  background: rgba(245, 197, 24, 0.15);
+}
+
+/* --- Canvas Wrapper --- */
+.pacman-canvas-wrap {
+  position: relative;
+  margin: 0.75rem auto;
+  width: 100%;
+  max-width: min(100vw - 1rem, 560px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+#pacman-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  cursor: crosshair;
+  touch-action: none; /* prevent scroll while tapping canvas */
+}
+
+/* --- Pause Overlay --- */
+.pacman-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: var(--radius);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+}
+
+.pacman-overlay--hidden {
+  display: none;
+}
+
+.pacman-overlay__title {
+  font-size: clamp(1.5rem, 6vw, 2.5rem);
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.pacman-overlay__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.pacman-overlay__btn {
+  min-width: 140px;
+  min-height: 48px;
+  padding: 0.625rem 2rem;
+  border: 2px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--color-success);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.pacman-overlay__btn:hover,
+.pacman-overlay__btn:focus-visible {
+  background: rgba(46, 204, 113, 0.3);
+  outline: 2px solid var(--color-success);
+  outline-offset: 2px;
+}
+
+/* --- Level Selector --- */
+.pacman-overlay__levels {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pacman-overlay__btn--level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 80px;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--radius);
+  background: rgba(168, 85, 247, 0.12);
+  color: var(--color-primary-light);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.1s ease, border-color var(--transition);
+  gap: 0.2rem;
+}
+
+.pacman-overlay__btn--level:hover,
+.pacman-overlay__btn--level:focus-visible {
+  background: rgba(168, 85, 247, 0.28);
+  border-color: var(--color-primary-light);
+  transform: translateY(-2px);
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+.pacman-overlay__btn-level-num {
+  font-size: clamp(1.4rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pacman-overlay__btn-level-sub {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+}
+
+.pacman-overlay__btn--resume {
+  border-color: var(--color-accent);
+  background: rgba(245, 197, 24, 0.12);
+  color: var(--color-accent);
+}
+
+.pacman-overlay__btn--resume:hover,
+.pacman-overlay__btn--resume:focus-visible {
+  background: rgba(245, 197, 24, 0.28);
+  border-color: var(--color-accent);
+  outline-color: var(--color-accent);
+}
+
+/* --- Ad Slot --- */
+.pacman-ad {
+  margin: 0.5rem auto 0.75rem;
+  width: 100%;
+  max-width: min(100vw - 1rem, 560px);
+}
+
+/* ==========================================
+   Responsive Breakpoints
+   ========================================== */
+
+/* Tablet: 600px+ */
+@media (min-width: 600px) {
+  .pacman-canvas-wrap {
+    max-width: min(100vw - 2rem, 560px);
+  }
+
+  .pacman-hud {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .pacman-hud__info {
+    font-size: 1rem;
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  .pacman-canvas-wrap {
+    max-width: 800px;
+    margin: 1rem auto;
+  }
+
+  .pacman-hud {
+    padding: 0.75rem 2rem;
+  }
+
+  .pacman-hud__info {
+    font-size: 1.1rem;
+  }
+
+  .pacman-hud__btn {
+    font-size: 1rem;
+  }
+
+  .pacman-ad {
+    max-width: 800px;
+  }
+}
+
+/* TV/Large: 1440px+ */
+@media (min-width: 1440px) {
+  .pacman-canvas-wrap {
+    max-width: 900px;
+  }
+
+  .pacman-hud__info {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+  }
+
+  .pacman-ad {
+    max-width: 900px;
+  }
+}
+
+/* Touch-device: ensure 44px targets */
+@media (any-hover: none) {
+  .pacman-hud__btn,
+  .pacman-overlay__btn {
+    min-height: 52px;
+  }
+}

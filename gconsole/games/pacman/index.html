@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GConsole — Pacman Arena</title>
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="pacman-page">
+
+  <header class="pacman-header">
+    <a href="../../index.html" class="pacman-header__back" aria-label="Back to GConsole portal">
+      ← GConsole
+    </a>
+    <span class="pacman-header__title">Pacman Arena</span>
+  </header>
+
+  <!-- HUD -->
+  <div class="pacman-hud" role="region" aria-label="Game controls">
+    <div class="pacman-hud__info">
+      <span>
+        Score:&nbsp;<span
+          id="score-display"
+          class="pacman-hud__score-val"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label="Score">0</span>
+      </span>
+      <span>
+        Level:&nbsp;<span
+          id="level-display"
+          class="pacman-hud__level-val"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label="Level">1</span>
+      </span>
+    </div>
+
+    <div class="pacman-hud__controls">
+      <button
+        id="btn-start"
+        class="pacman-hud__btn pacman-hud__btn--start"
+        aria-label="Start game"
+        tabindex="0">
+        ▶ Start
+      </button>
+      <button
+        id="btn-pause"
+        class="pacman-hud__btn pacman-hud__btn--pause"
+        aria-label="Pause game"
+        tabindex="0"
+        disabled>
+        ⏸ Pause
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas + overlay -->
+  <div class="pacman-canvas-wrap">
+    <canvas id="pacman-canvas" aria-label="Pacman Arena game area" role="img"></canvas>
+
+    <div id="pacman-overlay" class="pacman-overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
+      <p id="overlay-title" class="pacman-overlay__title">Select Level</p>
+      <p id="overlay-subtitle" class="pacman-overlay__subtitle">How many ghosts can you handle?</p>
+
+      <!-- Level selection (shown before game starts) -->
+      <div id="overlay-levels" class="pacman-overlay__levels">
+        <button
+          class="pacman-overlay__btn pacman-overlay__btn--level"
+          data-level="1"
+          aria-label="Level 1 — 1 ghost"
+          tabindex="0">
+          <span class="pacman-overlay__btn-level-num">1</span>
+          <span class="pacman-overlay__btn-level-sub">1 ghost</span>
+        </button>
+        <button
+          class="pacman-overlay__btn pacman-overlay__btn--level"
+          data-level="2"
+          aria-label="Level 2 — 2 ghosts"
+          tabindex="0">
+          <span class="pacman-overlay__btn-level-num">2</span>
+          <span class="pacman-overlay__btn-level-sub">2 ghosts</span>
+        </button>
+        <button
+          class="pacman-overlay__btn pacman-overlay__btn--level"
+          data-level="3"
+          aria-label="Level 3 — 3 ghosts"
+          tabindex="0">
+          <span class="pacman-overlay__btn-level-num">3</span>
+          <span class="pacman-overlay__btn-level-sub">3 ghosts</span>
+        </button>
+      </div>
+
+      <!-- Resume button (shown when paused) -->
+      <div id="overlay-resume" class="pacman-overlay--hidden">
+        <button
+          id="btn-resume"
+          class="pacman-overlay__btn pacman-overlay__btn--resume"
+          aria-label="Resume game"
+          tabindex="0">
+          ▶ Resume
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ad slot -->
+  <div class="pacman-ad">
+    <div class="ad-slot" aria-hidden="true"></div>
+  </div>
+
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

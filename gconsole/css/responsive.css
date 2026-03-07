@@ -1,0 +1,118 @@
+/* ========================================
+   GConsole — Responsive Breakpoints
+   Mobile-first approach
+   ======================================== */
+
+/* ---- Small (Mobile): default styles ---- */
+/* Single column, large touch targets */
+
+.game-card__image {
+  height: 150px;
+}
+
+/* ---- Medium (Tablet): >= 600px ---- */
+@media (min-width: 600px) {
+  .game-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .game-card__image {
+    height: 180px;
+  }
+
+  .modal {
+    width: 80%;
+  }
+}
+
+/* ---- Large (Desktop): >= 1024px ---- */
+@media (min-width: 1024px) {
+  .game-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .game-card__image {
+    height: 200px;
+  }
+
+  /* Show sidebar ads */
+  .portal-layout__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .ad-slot--sidebar {
+    display: flex;
+    min-height: 250px;
+  }
+
+  .header {
+    padding: 0 2rem;
+  }
+
+  .main {
+    padding: 2rem;
+  }
+}
+
+/* ---- Extra Large (TV / Console): >= 1440px ---- */
+@media (min-width: 1440px) {
+  html {
+    font-size: 18px;
+  }
+
+  .game-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .game-card__image {
+    height: 220px;
+  }
+
+  /* Overscan-safe margins for TV */
+  .main {
+    padding: 2.5rem 3rem;
+  }
+
+  .header {
+    padding: 0 3rem;
+  }
+
+  /* Extra ad banner slot */
+  .ad-slot--banner-secondary {
+    display: flex;
+  }
+}
+
+/* ---- Focus styles for gamepad/keyboard navigation ---- */
+@media (any-hover: none) {
+  /* Touch devices: larger hit areas */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .game-card {
+    min-height: 44px;
+  }
+}
+
+/* ---- High contrast / Accessibility ---- */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #666;
+  }
+
+  .game-card:focus-visible {
+    outline-width: 4px;
+  }
+}
+
+/* ---- Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
