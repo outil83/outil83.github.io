@@ -1,0 +1,8 @@
+# _config.yml
+exclude:
+  - gconsole/docs/  			  # Exclude the specific failing file
+  - node_modules/                         # Exclude entire directories
+  - vendor/
+  - .github/
+  - README.md                             # If you don't want the README rendered
+
