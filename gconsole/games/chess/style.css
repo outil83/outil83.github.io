@@ -1,0 +1,618 @@
+/* ─── Chess — style.css ───────────────────────────────────────────────────── */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Board */
+  --sq:        72px;        /* single square size */
+  --board:     calc(var(--sq) * 8);
+  --light:     #f0d9b5;
+  --dark:      #b58863;
+  --sel:       #f6f669;
+  --last:      rgba(205, 210, 30, 0.45);
+  --valid-dot: rgba(0,0,0,0.20);
+  --capture-ring: rgba(220,30,30,0.45);
+  --check-color:  rgba(230, 30, 30, 0.65);
+
+  /* UI palette */
+  --bg:       #1a1a2e;
+  --surface:  #16213e;
+  --panel:    #0f3460;
+  --border:   rgba(255,255,255,0.10);
+  --accent:   #e94560;
+  --gold:     #f0c040;
+  --green:    #4caf50;
+  --text:     #e8e8e8;
+  --muted:    #8a9ab0;
+
+  --font: 'Segoe UI', system-ui, sans-serif;
+  --piece-font: 'Segoe UI Symbol', 'Apple Color Emoji', 'Noto Chess', serif;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+body.chess-page {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.ch-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+.ch-back {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.ch-back:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.ch-title { flex: 1; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.02em; }
+.ch-header-actions { display: flex; gap: 0.4rem; }
+
+/* ── Button base ─────────────────────────────────────────────────────────── */
+.ch-btn {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, transform 0.1s;
+}
+.ch-btn:hover  { background: rgba(255,255,255,0.1); }
+.ch-btn:active { transform: scale(0.97); }
+.ch-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.ch-btn--icon   { padding: 0.45rem 0.55rem; font-size: 1rem; }
+.ch-btn--danger { border-color: var(--accent); color: var(--accent); }
+.ch-btn--danger:hover { background: var(--accent); color: #fff; }
+.ch-btn--ghost  { background: transparent; border-color: rgba(255,255,255,0.18); color: var(--muted); }
+.ch-btn--ghost:hover  { background: rgba(255,255,255,0.06); color: var(--text); }
+.mt-1 { margin-top: 0.75rem; }
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.ch-layout {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* History panel (hidden on small screens) */
+.ch-panel--history {
+  width: 180px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: calc(var(--board) + 140px);
+  overflow: hidden;
+}
+@media (min-width: 900px) { .ch-panel--history { display: flex; } }
+
+.panel-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.move-history {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.move-history::-webkit-scrollbar { width: 3px; }
+.move-history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+.mh-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr 1fr;
+  gap: 0.15rem;
+  padding: 0.2rem 0.1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.mh-num  { color: var(--muted); font-size: 0.72rem; }
+.mh-move { padding: 0.05rem 0.3rem; border-radius: 3px; cursor: default; }
+.mh-move--last { background: rgba(240, 192, 64, 0.2); color: var(--gold); font-weight: 600; }
+
+/* ── Centre column ───────────────────────────────────────────────────────── */
+.ch-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Player cards ────────────────────────────────────────────────────────── */
+.player-card {
+  width: 100%;
+  max-width: var(--board);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.player-card--active {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px rgba(240,192,64,0.25);
+}
+.player-card--active .timer-val { color: var(--gold); }
+
+.player-card__info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.player-card__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.player-avatar { font-size: 1.3rem; line-height: 1; }
+.player-name   { font-size: 0.9rem; font-weight: 600; }
+.material-adv  { font-size: 0.78rem; color: var(--green); font-weight: 700; min-width: 1.5rem; }
+
+.captured-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  font-size: 0.85rem;
+  max-width: 120px;
+  line-height: 1.1;
+}
+.timer-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  min-width: 54px;
+  text-align: center;
+}
+.timer-val {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: color 0.3s;
+}
+
+/* ── Board wrap ───────────────────────────────────────────────────────────── */
+.board-wrap {
+  position: relative;
+  line-height: 0; /* kill inline gaps */
+}
+
+/* ── Chess Board Grid ────────────────────────────────────────────────────── */
+/*
+  Column 1 = rank labels (auto width)
+  Columns 2-9 = the 8 board squares
+*/
+.chess-board {
+  display: grid;
+  grid-template-columns: 18px repeat(8, var(--sq));
+  grid-template-rows: repeat(8, var(--sq));
+  border: 3px solid #6b4c1f;
+  border-radius: 3px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  user-select: none;
+}
+
+/* Rank labels */
+.rank-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  grid-column: 1;
+  padding-right: 2px;
+}
+
+/* Individual squares */
+.sq {
+  position: relative;
+  width: var(--sq);
+  height: var(--sq);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.sq--l { background: var(--light); }
+.sq--d { background: var(--dark);  }
+
+/* File labels (bottom row) */
+.file-label {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(0,0,0,0.38);
+  pointer-events: none;
+  line-height: 1;
+  z-index: 1;
+}
+.sq--d .file-label { color: rgba(240,218,180,0.55); }
+
+/* ── Square state highlights ─────────────────────────────────────────────── */
+.sq--last   { background: var(--last) !important; }
+.sq--selected { background: var(--sel) !important; }
+
+/* Valid move: small dot in the centre */
+.sq--valid::after {
+  content: '';
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: var(--valid-dot);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Capture: ring around the square */
+.sq--capture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 6px var(--capture-ring);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Check: red pulse on king */
+.sq--check {
+  background: var(--check-color) !important;
+  animation: check-pulse 0.7s ease infinite alternate;
+}
+@keyframes check-pulse {
+  from { background: rgba(220,40,40,0.6); }
+  to   { background: rgba(255,140,0,0.75); }
+}
+
+/* Drag source highlight */
+.sq--drag { opacity: 0.6; }
+
+/* ── Pieces ──────────────────────────────────────────────────────────────── */
+.piece {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--piece-font);
+  font-size: calc(var(--sq) * 0.78);
+  line-height: 1;
+  cursor: grab;
+  z-index: 10;
+  transition: transform 0.12s, filter 0.12s;
+  pointer-events: auto;
+}
+.piece:active { cursor: grabbing; }
+.piece:hover  { transform: scale(1.08); z-index: 15; }
+
+/* White pieces — white fill, dark shadow for contrast against light squares */
+.piece--w {
+  color: #fff;
+  text-shadow:
+    0 0 2px #000,
+    1px 1px 0 #333,
+    -1px -1px 0 #222;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.7));
+}
+/* Black pieces — very dark fill, subtle light halo for contrast against dark squares */
+.piece--b {
+  color: #1a1a1a;
+  text-shadow:
+    0 0 2px rgba(255,255,255,0.3),
+    1px 1px 0 rgba(255,255,255,0.2);
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+}
+
+/* Capture fly-off animation */
+.piece--capture-anim {
+  animation: piece-fly 0.3s ease forwards;
+  pointer-events: none;
+}
+@keyframes piece-fly {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: 0.5; transform: scale(1.3) translateY(-8px); }
+  100% { opacity: 0; transform: scale(0.3) translateY(10px); }
+}
+
+/* ── Promotion Picker ────────────────────────────────────────────────────── */
+.promotion-picker {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  padding: 0.6rem;
+  display: flex;
+  gap: 0.4rem;
+  z-index: 50;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  animation: card-in 0.2s ease;
+}
+.promo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 2.2rem;
+  font-family: var(--piece-font);
+  transition: background 0.18s, transform 0.1s;
+  min-width: 60px;
+}
+.promo-btn span { font-size: 0.65rem; font-family: var(--font); font-weight: 600; color: var(--muted); }
+.promo-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+.promo-btn:focus-visible { outline: 2px solid var(--gold); }
+
+/* ── Status bar ──────────────────────────────────────────────────────────── */
+.chess-status {
+  font-size: 0.88rem;
+  color: var(--muted);
+  text-align: center;
+  min-height: 1.4em;
+  padding: 0.2rem 0.5rem;
+  letter-spacing: 0.01em;
+}
+.chess-status--thinking { color: var(--gold); }
+.chess-status--check    { color: var(--accent); font-weight: 700; }
+.chess-status--over     { color: var(--green);  font-weight: 700; }
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+.ch-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Overlays ─────────────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,12,30,0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+.overlay[hidden] { display: none; }
+
+.overlay-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 2rem 1.75rem;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  animation: card-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: scale(0.86) translateY(18px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.overlay-icon  { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.overlay-title { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.overlay-sub   { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+
+.overlay-btns      { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+.overlay-btns--col { flex-direction: column; }
+
+/* Primary / ghost action buttons in overlays */
+.ov-btn {
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.18s, transform 0.12s;
+}
+.ov-btn:hover  { transform: translateY(-2px); }
+.ov-btn:active { transform: scale(0.97); }
+.ov-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.ov-btn--primary { background: var(--gold); color: #1a1a2e; border-color: var(--gold); }
+.ov-btn--primary:hover { background: #ffe070; }
+.ov-btn--ghost   { background: transparent; color: var(--muted); border-color: rgba(255,255,255,0.15); }
+.ov-btn--ghost:hover   { background: rgba(255,255,255,0.06); color: var(--text); }
+
+/* Mode & difficulty large buttons */
+.ov-mode-btn,
+.ov-diff-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+}
+.ov-mode-btn:hover,
+.ov-diff-btn:hover { transform: translateY(-2px); }
+.ov-mode-btn:active,
+.ov-diff-btn:active { transform: scale(0.98); }
+.ov-mode-btn:focus-visible,
+.ov-diff-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.ov-mode-btn__icon,
+.ov-diff-btn__icon { font-size: 1.8rem; flex-shrink: 0; }
+.ov-mode-btn__text strong,
+.ov-diff-btn__text strong { display: block; font-size: 0.95rem; font-weight: 700; }
+.ov-mode-btn__text small,
+.ov-diff-btn__text small  { font-size: 0.77rem; color: var(--muted); }
+
+.ov-mode-btn--pvp:hover { border-color: var(--green);  background: rgba(76,175,80,0.12); }
+.ov-mode-btn--pvc:hover { border-color: #2196f3;       background: rgba(33,150,243,0.12); }
+.ov-diff-btn--1:hover   { border-color: var(--green);  background: rgba(76,175,80,0.12); }
+.ov-diff-btn--2:hover   { border-color: #ff9800;       background: rgba(255,152,0,0.12); }
+.ov-diff-btn--3:hover   { border-color: var(--accent); background: rgba(233,69,96,0.12); }
+
+/* Game Over scores */
+.go-scores {
+  margin: 0.75rem 0 1.25rem;
+  text-align: left;
+}
+.score-heading {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4rem;
+}
+
+/* ── Modals ───────────────────────────────────────────────────────────────── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,12,30,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 1rem;
+}
+.modal[hidden] { display: none; }
+.modal-box {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 560px;
+  width: 100%;
+  max-height: 82vh;
+  overflow-y: auto;
+  position: relative;
+  animation: card-in 0.25s ease;
+}
+.modal-box::-webkit-scrollbar { width: 4px; }
+.modal-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
+
+.modal-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  transition: background 0.18s, color 0.18s;
+  z-index: 1;
+}
+.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.modal-heading { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+.modal-content h2    { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+.modal-content h3    { font-size: 0.95rem; font-weight: 700; color: var(--gold); margin: 1rem 0 0.3rem; }
+.modal-content h4    { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0.75rem 0 0.2rem; }
+.modal-content p     { font-size: 0.88rem; line-height: 1.65; color: var(--muted); }
+.modal-content ul    { padding-left: 1.1rem; }
+.modal-content li    { font-size: 0.88rem; line-height: 1.8; color: var(--muted); }
+.modal-content li strong { color: var(--text); }
+.modal-content section { margin-bottom: 0.6rem; }
+
+/* Score table */
+.score-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0.5rem 0 1rem;
+}
+.score-tbl th {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.score-tbl td { padding: 0.35rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.score-tbl tr:last-child td { border-bottom: none; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 580px) {
+  :root { --sq: 42px; }
+  .chess-board { grid-template-columns: 14px repeat(8, var(--sq)); }
+  .rank-label { font-size: 0.56rem; }
+  .file-label { font-size: 0.54rem; }
+  .piece      { font-size: calc(var(--sq) * 0.76); }
+  .timer-val  { font-size: 0.88rem; }
+  .player-name { font-size: 0.8rem; }
+  .promo-btn  { font-size: 1.6rem; min-width: 46px; padding: 0.3rem 0.4rem; }
+  .ch-controls { gap: 0.3rem; }
+  .ch-btn { padding: 0.4rem 0.6rem; font-size: 0.76rem; }
+  .overlay-card { padding: 1.25rem; }
+  .overlay-title { font-size: 1.4rem; }
+}
+
+@media (min-width: 581px) and (max-width: 899px) {
+  :root { --sq: 58px; }
+}
+
+@media (min-width: 1200px) {
+  :root { --sq: 82px; }
+}

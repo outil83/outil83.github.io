@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chess — GConsole</title>
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="chess-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="ch-header">
+    <a href="../../index.html" class="ch-back" aria-label="Back to portal">‹ GConsole</a>
+    <h1 class="ch-title">♟ Chess</h1>
+    <div class="ch-header-actions">
+      <button id="btn-scores" class="ch-btn ch-btn--icon" title="Scores">🏆</button>
+      <button id="btn-help"   class="ch-btn ch-btn--icon" title="Help / Rules">?</button>
+    </div>
+  </header>
+
+  <!-- ── Main Layout ─────────────────────────────────────────────────────── -->
+  <div class="ch-layout">
+
+    <!-- Left: Move history -->
+    <aside class="ch-panel ch-panel--history">
+      <h2 class="panel-title">Moves</h2>
+      <div id="move-history" class="move-history"></div>
+    </aside>
+
+    <!-- Centre: Board + player cards -->
+    <main class="ch-center">
+
+      <!-- Black player card (top) -->
+      <div class="player-card player-card--black">
+        <div class="player-card__info">
+          <span class="player-avatar">♚</span>
+          <span id="player-b-label" class="player-name">♟ Black</span>
+          <span id="adv-b" class="material-adv"></span>
+        </div>
+        <div class="player-card__right">
+          <div id="captured-b" class="captured-pieces"></div>
+          <div class="timer-box">
+            <span id="timer-b" class="timer-val">00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chess Board -->
+      <div class="board-wrap">
+        <!-- Board: col 1 = rank labels, cols 2-9 = squares -->
+        <div id="chess-board" class="chess-board" role="grid" aria-label="Chess board"></div>
+
+        <!-- Promotion picker (hidden until needed) -->
+        <div id="promotion-picker" class="promotion-picker" hidden aria-label="Choose promotion piece"></div>
+      </div>
+
+      <!-- White player card (bottom) -->
+      <div class="player-card player-card--white">
+        <div class="player-card__info">
+          <span class="player-avatar">♔</span>
+          <span id="player-w-label" class="player-name">♙ White</span>
+          <span id="adv-w" class="material-adv"></span>
+        </div>
+        <div class="player-card__right">
+          <div id="captured-w" class="captured-pieces"></div>
+          <div class="timer-box">
+            <span id="timer-w" class="timer-val">00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status bar -->
+      <p id="chess-status" class="chess-status">Select a mode to begin</p>
+
+      <!-- Game controls -->
+      <div class="ch-controls">
+        <button id="btn-resign"   class="ch-btn ch-btn--danger">🏳 Resign</button>
+        <button id="btn-draw"     class="ch-btn">🤝 Draw</button>
+        <button id="btn-flip"     class="ch-btn">⇅ Flip</button>
+        <button id="btn-new-game" class="ch-btn">⟳ New Game</button>
+      </div>
+    </main>
+
+  </div><!-- /.ch-layout -->
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       OVERLAYS
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Resume prompt -->
+  <div id="overlay-resume" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="overlay-icon">💾</div>
+      <h2 class="overlay-title">Resume Game?</h2>
+      <p id="resume-info" class="overlay-sub"></p>
+      <div class="overlay-btns">
+        <button id="btn-resume-yes" class="ov-btn ov-btn--primary">▶ Resume</button>
+        <button id="btn-resume-no"  class="ov-btn ov-btn--ghost">New Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode selection -->
+  <div id="overlay-mode" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="overlay-icon">♟</div>
+      <h2 class="overlay-title">Chess</h2>
+      <p class="overlay-sub">Choose game mode</p>
+      <div class="overlay-btns overlay-btns--col">
+
+        <button id="btn-mode-pvp" class="ov-mode-btn ov-mode-btn--pvp">
+          <span class="ov-mode-btn__icon">👥</span>
+          <div class="ov-mode-btn__text">
+            <strong>Player vs Player</strong>
+            <small>Two players on same device</small>
+          </div>
+        </button>
+
+        <button id="btn-mode-pvc" class="ov-mode-btn ov-mode-btn--pvc">
+          <span class="ov-mode-btn__icon">🤖</span>
+          <div class="ov-mode-btn__text">
+            <strong>Player vs Computer</strong>
+            <small>Choose difficulty</small>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Difficulty selection -->
+  <div id="overlay-difficulty" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="overlay-icon">🤖</div>
+      <h2 class="overlay-title">vs Computer</h2>
+      <p class="overlay-sub">Choose difficulty</p>
+      <div class="overlay-btns overlay-btns--col">
+
+        <button id="btn-lvl-1" class="ov-diff-btn ov-diff-btn--1">
+          <span class="ov-diff-btn__icon">🌱</span>
+          <div class="ov-diff-btn__text">
+            <strong>Level 1 — Easy</strong>
+            <small>Random legal moves</small>
+          </div>
+        </button>
+
+        <button id="btn-lvl-2" class="ov-diff-btn ov-diff-btn--2">
+          <span class="ov-diff-btn__icon">⚡</span>
+          <div class="ov-diff-btn__text">
+            <strong>Level 2 — Medium</strong>
+            <small>Picks smart captures</small>
+          </div>
+        </button>
+
+        <button id="btn-lvl-3" class="ov-diff-btn ov-diff-btn--3">
+          <span class="ov-diff-btn__icon">🔥</span>
+          <div class="ov-diff-btn__text">
+            <strong>Level 3 — Hard</strong>
+            <small>Minimax search, depth 4</small>
+          </div>
+        </button>
+
+      </div>
+      <button id="btn-diff-back" class="ch-btn ch-btn--ghost mt-1">← Back</button>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="overlay-gameover" class="overlay" hidden>
+    <div class="overlay-card">
+      <h2 id="go-title" class="overlay-title">Game Over</h2>
+      <p  id="go-sub"   class="overlay-sub"></p>
+      <div id="go-scores" class="go-scores"></div>
+      <div class="overlay-btns">
+        <button id="btn-go-rematch" class="ov-btn ov-btn--primary">⟳ Rematch</button>
+        <button id="btn-go-new"     class="ov-btn ov-btn--ghost">Change Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       MODALS
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Help / Rules -->
+  <div id="modal-help" class="modal" hidden>
+    <div class="modal-box">
+      <button id="btn-close-help" class="modal-close" aria-label="Close">✕</button>
+      <div id="help-content" class="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Full Scores -->
+  <div id="modal-scores" class="modal" hidden>
+    <div class="modal-box">
+      <button id="btn-close-scores" class="modal-close" aria-label="Close">✕</button>
+      <h2 class="modal-heading">🏆 Score History</h2>
+      <div id="modal-scores-body" class="modal-content"></div>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
