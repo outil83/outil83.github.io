@@ -30,7 +30,8 @@ let allTransactions = [];
 const widgetSelections = {
   Investment: new Set(),
   Income: new Set(),
-  Expenses: new Set()
+  Expenses: new Set(),
+  SubCategory: new Set()
 };
 
 // Persist/load widget selections to localStorage
@@ -39,7 +40,7 @@ function loadWidgetSelections() {
     const raw = localStorage.getItem('stmt_dashboard_widget_selections');
     if (!raw) return;
     const obj = JSON.parse(raw);
-    ['Investment','Income','Expenses'].forEach(k => {
+    ['Investment','Income','Expenses','SubCategory'].forEach(k => {
       widgetSelections[k] = new Set((obj[k] || []));
     });
   } catch (e) { /* ignore */ }
@@ -47,7 +48,7 @@ function loadWidgetSelections() {
 function saveWidgetSelections() {
   try {
     const obj = {};
-    ['Investment','Income','Expenses'].forEach(k => { obj[k] = Array.from(widgetSelections[k] || []); });
+    ['Investment','Income','Expenses','SubCategory'].forEach(k => { obj[k] = Array.from(widgetSelections[k] || []); });
     localStorage.setItem('stmt_dashboard_widget_selections', JSON.stringify(obj));
   } catch (e) {}
 }
@@ -61,7 +62,7 @@ function saveLastDrilldownSearch(v) {
 }
 
 function updateSelectionBadges() {
-  ['Cashflow','Investment','Income','Expenses'].forEach(k => {
+  ['Cashflow','Investment','Income','Expenses','SubCategory'].forEach(k => {
     const el = document.getElementById(`badge-${k}`);
     if (!el) return;
     if (k === 'Cashflow') { el.style.display = 'none'; return; }
@@ -647,11 +648,64 @@ function renderDashboardWidgets(transactions) {
   // Always use the standard list layout for expenses (no compact mobile card)
   document.getElementById('expenses-widget').classList.remove('compact');
 
+  // Sub-Category widget (sub-category-wise across all types, descending)
+  const subCatTotals = {};
+  transactions.filter(txn => txn.sub_category).forEach(txn => {
+    subCatTotals[txn.sub_category] = (subCatTotals[txn.sub_category] || 0) + txn.txn_amount;
+  });
+  const subCatSorted = Object.entries(subCatTotals).sort((a, b) => b[1] - a[1]);
+  document.getElementById('subcategory-content').innerHTML = `<div style="max-height:260px;overflow-y:auto;">
+    ${subCatSorted.slice(0,5).map(([cat, amt]) =>
+      `<div class='d-flex justify-content-between align-items-center mb-2'><label class="mb-0"><input type="checkbox" class="widget-cat-chk" data-widget="SubCategory" data-cat="${cat}" checked> <span class="ms-2">${cat}</span></label><span>₹${amt.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>`
+    ).join('')}
+    ${subCatSorted.slice(5).map(([cat, amt]) =>
+      `<div class='d-flex justify-content-between align-items-center mb-2 more-item subcat-more d-none'><label class="mb-0"><input type="checkbox" class="widget-cat-chk" data-widget="SubCategory" data-cat="${cat}" checked> <span class="ms-2">${cat}</span></label><span>₹${amt.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>`
+    ).join('')}
+  </div>` + (subCatSorted.length > 5 ? '<div class="text-end small text-muted"><a href="#" id="subcat-loadmore">Load more...</a></div>' : '');
+  // Wire up toggle handler for sub-category 'Load more'
+  if (subCatSorted.length > 5) {
+    setTimeout(() => {
+      const btn = document.getElementById('subcat-loadmore');
+      if (btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const hidden = Array.from(document.querySelectorAll('#subcategory-content .subcat-more'));
+          let anyHidden = hidden.some(h => h.classList.contains('d-none'));
+          hidden.forEach(h => {
+            if (anyHidden) h.classList.remove('d-none'); else h.classList.add('d-none');
+          });
+          btn.textContent = anyHidden ? 'Show less' : 'Load more...';
+        });
+      }
+    }, 0);
+  }
+  // wire up sub-category checkbox handlers
+  setTimeout(() => {
+    document.querySelectorAll('#subcategory-content .widget-cat-chk').forEach(chk => {
+      const cat = chk.dataset.cat;
+      const set = widgetSelections.SubCategory;
+      if (set.size === 0) set.add(cat);
+      chk.checked = set.has(cat);
+      chk.addEventListener('change', function(e) {
+        e.stopPropagation();
+        const c = this.dataset.cat;
+        if (this.checked) widgetSelections.SubCategory.add(c); else widgetSelections.SubCategory.delete(c);
+        saveWidgetSelections(); updateSelectionBadges();
+        try { if (window.lastDrillType === 'SubCategory') showDrilldown('SubCategory', transactions); } catch (e) {}
+      });
+      chk.addEventListener('click', e => e.stopPropagation());
+    });
+  }, 0);
+  // Always use the standard list layout for sub-category (no compact mobile card)
+  document.getElementById('subcategory-widget').classList.remove('compact');
+
   // Add drilldown event listeners
   document.getElementById('cashflow-content').onclick = () => showDrilldown('Cashflow', transactions);
   document.getElementById('investment-content').onclick = () => showDrilldown('Investment', transactions);
   document.getElementById('income-content').onclick = () => showDrilldown('Income', transactions);
   document.getElementById('expenses-content').onclick = () => showDrilldown('Expenses', transactions);
+  document.getElementById('subcategory-content').onclick = () => showDrilldown('SubCategory', transactions);
   // update badges after rendering
   updateSelectionBadges();
 }
@@ -710,6 +764,9 @@ function showDrilldown(type, transactions) {
   } else if (type === 'Expenses') {
     filteredTxns = transactions.filter(txn => txn.txn_type === 'Expense');
     columns = ['txn_date', 'category', 'sub_category', 'txn_amount', 'narration'];
+  } else if (type === 'SubCategory') {
+    filteredTxns = transactions.filter(txn => txn.sub_category);
+    columns = ['txn_date', 'sub_category', 'category', 'txn_type', 'txn_amount', 'narration'];
   }
   // Remember last drill type for re-render after slicer apply
   window.lastDrillType = type;
@@ -721,6 +778,13 @@ function showDrilldown(type, transactions) {
       filteredTxns = filteredTxns.filter(txn => sel.includes(txn.category));
     } else {
       // If nothing selected, show no rows
+      filteredTxns = [];
+    }
+  } else if (type === 'SubCategory') {
+    const sel = Array.from(widgetSelections.SubCategory || []);
+    if (sel.length > 0) {
+      filteredTxns = filteredTxns.filter(txn => sel.includes(txn.sub_category));
+    } else {
       filteredTxns = [];
     }
   }
