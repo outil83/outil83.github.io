@@ -436,6 +436,14 @@ function escapeAttr(s) {
     .replace(/>/g, '&gt;');
 }
 
+// Escape a string for use as HTML element text content
+function escapeText(s) {
+  return (s || '').toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // Render dashboard widgets (Section 2 + Section 3)
 function renderDashboardWidgets(transactions) {
   window._slicerFiltered = transactions;
@@ -597,7 +605,7 @@ function renderTreeWidget(containerId, txnType, transactions, displayType) {
            style="cursor:pointer;" data-uid="${uid}" data-cat="${encodeURIComponent(cat)}">
         <div class="d-flex align-items-center gap-1 text-truncate">
           <span class="material-icons tree-caret" style="font-size:16px;color:#aaa;flex-shrink:0;">${hasSubCats ? 'chevron_right' : 'remove'}</span>
-          <span class="fw-semibold small text-truncate">${escapeAttr(cat)}</span>
+          <span class="fw-semibold small text-truncate">${escapeText(cat)}</span>
         </div>
         <span class="small ms-2 flex-shrink-0">${fmt(data.total)}</span>
       </div>`;
@@ -610,7 +618,7 @@ function renderTreeWidget(containerId, txnType, transactions, displayType) {
                data-cat="${encodeURIComponent(cat)}" data-sub="${encodeURIComponent(sc)}">
             <div class="d-flex align-items-center gap-1 text-truncate" style="padding-left:18px;">
               <span class="material-icons" style="font-size:13px;color:#ccc;flex-shrink:0;">subdirectory_arrow_right</span>
-              <span class="small text-muted text-truncate">${escapeAttr(sc)}</span>
+              <span class="small text-muted text-truncate">${escapeText(sc)}</span>
             </div>
             <span class="small ms-2 flex-shrink-0 text-muted">${fmt(amt)}</span>
           </div>`;
@@ -695,7 +703,7 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
 
   let contentHtml = `
     <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-      <h6 class="mb-0 fw-bold">${escapeAttr(title)}</h6>
+      <h6 class="mb-0 fw-bold">${escapeText(title)}</h6>
       <div class="d-flex align-items-center gap-2">
         <span class="small text-muted" id="drilldown-records">Records: ${filteredTxns.length} out of ${transactions.length}</span>
         <div class="position-relative">
@@ -887,7 +895,7 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
         columns.map(c => {
           let val = txn[c];
           if (c === 'txn_amount') val = `₹${Number(val).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-          return `<td>${escapeAttr(String(val || ''))}</td>`;
+          return `<td>${escapeText(String(val || ''))}</td>`;
         }).join('') + `</tr>`;
     }).join('');
   }
@@ -899,7 +907,7 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
         columns.map(c => {
           let val = txn[c];
           if (c === 'txn_amount') val = `₹${Number(val).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-          return `<div class="d-flex justify-content-between"><div class="text-muted small">${labelMap[c]}</div><div>${escapeAttr(String(val || ''))}</div></div>`;
+          return `<div class="d-flex justify-content-between"><div class="text-muted small">${labelMap[c]}</div><div>${escapeText(String(val || ''))}</div></div>`;
         }).join('<hr class="my-1">') + `</div></div>`;
     }).join('');
   }
