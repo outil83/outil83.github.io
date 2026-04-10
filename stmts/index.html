@@ -20,29 +20,21 @@
 		.widget { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 0.5rem; padding: 0.5rem; min-height: 100%;}
 		.slicer-range { padding-left: 1rem; padding-right: 1rem; }
 
+		/* Tree widget rows */
+		.tree-cat-row:hover { background: #f0f4ff; }
+		.tree-sub-row:hover { background: #e8f0fe; }
+		.tree-caret { transition: transform 0.2s; }
+
 		/* Responsive adjustments */
 		@media (max-width: 576px) {
 			.dashboard-header h1 { font-size: 1rem; }
-			/* reduce header vertical padding on small phones */
 			.dashboard-header { padding: .5rem; }
 			.widget { padding: 1rem; margin-bottom: 1rem; }
-			/* ensure row has vertical gap between stacked columns */
 			.row { row-gap: 1rem; }
 			#timeseries-slicer .d-flex { flex-direction: column; align-items: stretch; gap: .5rem; }
 			#slicer-granularity { width: 100% !important; }
 			#slicer-apply { width: 100%; }
 			#slicer-slider { margin-top: .25rem; }
-			#investment-content div, #income-content div, #expenses-content div { font-size: 0.95rem; }
-			/* Reduce widget content height on small screens */
-			#investment-content > div, #income-content > div, #expenses-content > div { max-height: 180px !important; }
-
-			/* Compact mobile widget card */
-			.widget.compact .widget-title { display: none; }
-			.widget.compact .compact-card { display: block; padding: .5rem; }
-			.widget .compact-card { display: none; }
-			.compact-spark { font-family: monospace; font-size: 0.85rem; color: #666; }
-			/* Make load-more links bigger for touch */
-			.text-end a { padding: .5rem .75rem; display: inline-block; }
 		}
 	</style>
 </head>
@@ -83,35 +75,34 @@
 					<button id="slicer-apply" class="btn btn-primary btn-sm">Apply</button>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6 col-lg-3">
-					<div class="widget" id="cashflow-widget">
-						<h5><span class="material-icons">account_balance_wallet</span> Cashflow <span class="badge bg-secondary ms-2" id="badge-Cashflow" style="display:none">0</span></h5>
-						<div id="cashflow-content"></div>
+			<!-- Section 2: Cashflow summary bar + Account/Source filter -->
+			<div class="widget mb-3" id="cashflow-bar-widget">
+				<div id="cashflow-bar-content"></div>
+			</div>
+			<!-- Section 3: Four tree-table widgets -->
+			<div class="row g-2 mb-3">
+				<div class="col-sm-6 col-xl-3">
+					<div class="widget h-100" id="expense-tree-widget">
+						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">money_off</span> Expenses</h5>
+						<div id="expense-tree-content"></div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-3">
-					<div class="widget" id="investment-widget">
-						<h5><span class="material-icons">trending_up</span> Investment <span class="badge bg-secondary ms-2" id="badge-Investment" style="display:none">0</span></h5>
-						<div id="investment-content"></div>
+				<div class="col-sm-6 col-xl-3">
+					<div class="widget h-100" id="investment-tree-widget">
+						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">trending_up</span> Investment</h5>
+						<div id="investment-tree-content"></div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-3">
-					<div class="widget" id="income-widget">
-						<h5><span class="material-icons">attach_money</span> Income <span class="badge bg-secondary ms-2" id="badge-Income" style="display:none">0</span></h5>
-						<div id="income-content"></div>
+				<div class="col-sm-6 col-xl-3">
+					<div class="widget h-100" id="income-tree-widget">
+						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">attach_money</span> Income</h5>
+						<div id="income-tree-content"></div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-3">
-					<div class="widget" id="expenses-widget">
-						<h5><span class="material-icons">money_off</span> Expenses <span class="badge bg-secondary ms-2" id="badge-Expenses" style="display:none">0</span></h5>
-						<div id="expenses-content"></div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-3">
-					<div class="widget" id="subcategory-widget">
-						<h5><span class="material-icons">category</span> Sub-Category <span class="badge bg-secondary ms-2" id="badge-SubCategory" style="display:none">0</span></h5>
-						<div id="subcategory-content"></div>
+				<div class="col-sm-6 col-xl-3">
+					<div class="widget h-100" id="transfer-tree-widget">
+						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">swap_horiz</span> Transfer</h5>
+						<div id="transfer-tree-content"></div>
 					</div>
 				</div>
 			</div>
