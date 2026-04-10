@@ -880,11 +880,14 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
       if (input) {
         input.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') { ev.preventDefault(); popBtn.click(); } });
       }
-      document.addEventListener('click', function handler(ev) {
-        if (!pop) { document.removeEventListener('click', handler); return; }
+      if (document._drilldownOutsideClickHandler) {
+        document.removeEventListener('click', document._drilldownOutsideClickHandler);
+      }
+      document._drilldownOutsideClickHandler = function(ev) {
         if (ev.target === btn || btn.contains(ev.target) || pop.contains(ev.target)) return;
         pop.style.display = 'none';
-      });
+      };
+      document.addEventListener('click', document._drilldownOutsideClickHandler);
     }
   })();
 
