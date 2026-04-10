@@ -760,12 +760,21 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
   section.innerHTML = contentHtml;
   section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+  function compareDrilldownValues(a, b, col) {
+    if (col === 'txn_amount') return b.txn_amount - a.txn_amount;
+    if (col === 'txn_date') {
+      const aParsed = parseTxnDate(a.txn_date);
+      const bParsed = parseTxnDate(b.txn_date);
+      const aTime = aParsed instanceof Date ? aParsed.getTime() : NaN;
+      const bTime = bParsed instanceof Date ? bParsed.getTime() : NaN;
+      if (!Number.isNaN(aTime) && !Number.isNaN(bTime)) return bTime - aTime;
+    }
+    return String(a[col] || '').localeCompare(String(b[col] || ''));
+  }
+
   // Desktop: column sort
   window.sortDrilldown = function(col) {
-    const sorted = [...filteredTxns].sort((a, b) => {
-      if (col === 'txn_amount') return b.txn_amount - a.txn_amount;
-      return String(a[col] || '').localeCompare(String(b[col] || ''));
-    });
+    const sorted = [...filteredTxns].sort((a, b) => compareDrilldownValues(a, b, col));
     const body = document.getElementById('drilldown-body');
     if (!body) return;
     body.innerHTML = isSmall ? renderCardsList(sorted) : renderRowsTable(sorted);
@@ -781,10 +790,7 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
     if (sortSel) {
       sortSel.addEventListener('change', function() {
         const col = this.value;
-        const sorted = [...filteredTxns].sort((a, b) => {
-          if (col === 'txn_amount') return b.txn_amount - a.txn_amount;
-          return String(a[col] || '').localeCompare(String(b[col] || ''));
-        });
+        const sorted = [...filteredTxns].sort((a, b) => compareDrilldownValues(a, b, col));
         const body = document.getElementById('drilldown-body');
         if (body) body.innerHTML = renderCardsList(sorted);
         if (window._applyDrilldownSearch) {
