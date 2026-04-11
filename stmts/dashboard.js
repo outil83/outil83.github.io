@@ -470,8 +470,9 @@ function renderCashflowBar(slicerFiltered, accountFiltered) {
     if (t.txn_type === 'Income')      acc.income     += t.txn_amount;
     if (t.txn_type === 'Expense')     acc.expense    += t.txn_amount;
     if (t.txn_type === 'Investment')  acc.investment += t.txn_amount;
+    if (t.txn_type === 'Transfer')    acc.transfer   += t.txn_amount;
     return acc;
-  }, { income: 0, expense: 0, investment: 0 });
+  }, { income: 0, expense: 0, investment: 0, transfer: 0 });
 
   const fmt = amt => `₹${amt.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 
@@ -504,6 +505,12 @@ function renderCashflowBar(slicerFiltered, accountFiltered) {
         <span class="material-icons text-primary" style="font-size:20px;">savings</span>
         <span class="text-muted small">Investment</span>
         <span class="fw-bold text-primary">${fmt(cashflow.investment)}</span>
+      </div>
+      <div class="vr d-none d-sm-block"></div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-icons text-secondary" style="font-size:20px;">swap_horiz</span>
+        <span class="text-muted small">Transfer</span>
+        <span class="fw-bold text-secondary">${fmt(cashflow.transfer)}</span>
       </div>
       <div class="ms-auto">
         <div class="dropdown" id="account-filter-dropdown">
@@ -630,6 +637,9 @@ function renderTreeWidget(containerId, txnType, transactions, displayType) {
   container.innerHTML = html;
 
   // Wire category row click: toggle sub-cats + show drilldown
+  const autoRefreshSwitchId = { Expenses: 'auto-refresh-expense', Investment: 'auto-refresh-investment', Income: 'auto-refresh-income', Transfer: 'auto-refresh-transfer' };
+  const autoRefreshSwitch = document.getElementById(autoRefreshSwitchId[displayType]);
+
   container.querySelectorAll('.tree-cat-row').forEach(row => {
     row.addEventListener('click', function() {
       const cat = decodeURIComponent(this.dataset.cat);
@@ -643,7 +653,9 @@ function renderTreeWidget(containerId, txnType, transactions, displayType) {
           caret.style.transform = isOpen ? '' : 'rotate(90deg)';
         }
       }
-      showDrilldown(displayType, window._currentFilteredTransactions, cat, null);
+      if (autoRefreshSwitch && autoRefreshSwitch.checked) {
+        showDrilldown(displayType, window._currentFilteredTransactions, cat, null);
+      }
     });
   });
 
@@ -653,7 +665,9 @@ function renderTreeWidget(containerId, txnType, transactions, displayType) {
       e.stopPropagation();
       const cat = decodeURIComponent(this.dataset.cat);
       const sc  = decodeURIComponent(this.dataset.sub);
-      showDrilldown(displayType, window._currentFilteredTransactions, cat, sc);
+      if (autoRefreshSwitch && autoRefreshSwitch.checked) {
+        showDrilldown(displayType, window._currentFilteredTransactions, cat, sc);
+      }
     });
   });
 }
