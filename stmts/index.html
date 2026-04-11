@@ -83,25 +83,49 @@
 			<div class="row g-2 mb-3">
 				<div class="col-sm-6 col-xl-3">
 					<div class="widget h-100" id="expense-tree-widget">
-						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">money_off</span> Expenses</h5>
+						<h5 class="widget-title d-flex align-items-center justify-content-between mb-2">
+							<span class="d-flex align-items-center gap-1"><span class="material-icons">money_off</span> Expenses</span>
+							<div class="form-check form-switch mb-0 ms-2 d-flex align-items-center gap-1" title="Enable auto-refresh: drilldown table updates on item selection">
+								<input class="form-check-input mt-0" type="checkbox" id="auto-refresh-expense" role="switch">
+								<label class="form-check-label text-muted" for="auto-refresh-expense" style="font-size:0.7rem;white-space:nowrap;">Auto</label>
+							</div>
+						</h5>
 						<div id="expense-tree-content"></div>
 					</div>
 				</div>
 				<div class="col-sm-6 col-xl-3">
 					<div class="widget h-100" id="investment-tree-widget">
-						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">trending_up</span> Investment</h5>
+						<h5 class="widget-title d-flex align-items-center justify-content-between mb-2">
+							<span class="d-flex align-items-center gap-1"><span class="material-icons">trending_up</span> Investment</span>
+							<div class="form-check form-switch mb-0 ms-2 d-flex align-items-center gap-1" title="Enable auto-refresh: drilldown table updates on item selection">
+								<input class="form-check-input mt-0" type="checkbox" id="auto-refresh-investment" role="switch">
+								<label class="form-check-label text-muted" for="auto-refresh-investment" style="font-size:0.7rem;white-space:nowrap;">Auto</label>
+							</div>
+						</h5>
 						<div id="investment-tree-content"></div>
 					</div>
 				</div>
 				<div class="col-sm-6 col-xl-3">
 					<div class="widget h-100" id="income-tree-widget">
-						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">attach_money</span> Income</h5>
+						<h5 class="widget-title d-flex align-items-center justify-content-between mb-2">
+							<span class="d-flex align-items-center gap-1"><span class="material-icons">attach_money</span> Income</span>
+							<div class="form-check form-switch mb-0 ms-2 d-flex align-items-center gap-1" title="Enable auto-refresh: drilldown table updates on item selection">
+								<input class="form-check-input mt-0" type="checkbox" id="auto-refresh-income" role="switch">
+								<label class="form-check-label text-muted" for="auto-refresh-income" style="font-size:0.7rem;white-space:nowrap;">Auto</label>
+							</div>
+						</h5>
 						<div id="income-tree-content"></div>
 					</div>
 				</div>
 				<div class="col-sm-6 col-xl-3">
 					<div class="widget h-100" id="transfer-tree-widget">
-						<h5 class="widget-title d-flex align-items-center gap-1 mb-2"><span class="material-icons">swap_horiz</span> Transfer</h5>
+						<h5 class="widget-title d-flex align-items-center justify-content-between mb-2">
+							<span class="d-flex align-items-center gap-1"><span class="material-icons">swap_horiz</span> Transfer</span>
+							<div class="form-check form-switch mb-0 ms-2 d-flex align-items-center gap-1" title="Enable auto-refresh: drilldown table updates on item selection">
+								<input class="form-check-input mt-0" type="checkbox" id="auto-refresh-transfer" role="switch">
+								<label class="form-check-label text-muted" for="auto-refresh-transfer" style="font-size:0.7rem;white-space:nowrap;">Auto</label>
+							</div>
+						</h5>
 						<div id="transfer-tree-content"></div>
 					</div>
 				</div>
