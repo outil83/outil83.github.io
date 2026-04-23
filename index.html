@@ -1,18 +1,230 @@
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Outil</title>
+  <style>
+    :root {
+      --bg-top: #f8f5ee;
+      --bg-bottom: #e8f0ef;
+      --surface: #ffffff;
+      --surface-border: #d9e5e2;
+      --text-main: #19323c;
+      --text-muted: #4b6972;
+      --accent: #0f7b6c;
+      --accent-hover: #0d665a;
+      --shadow: 0 12px 30px rgba(17, 46, 62, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-main);
+      background: linear-gradient(165deg, var(--bg-top), var(--bg-bottom));
+      padding: 32px 20px;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2.1rem;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 18px;
+      min-height: 130px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .app-card:hover,
+    .app-card:focus-visible {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 16px 36px rgba(15, 123, 108, 0.16);
+      outline: none;
+    }
+
+    .app-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .app-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    .redirect-note {
+      margin-top: 20px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .redirect-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .redirect-btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--surface);
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .redirect-btn:hover,
+    .redirect-btn:focus-visible {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent-hover);
+      outline: none;
+    }
+
+    /* Tablet: 2 columns */
+    @media (max-width: 680px) {
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      body {
+        padding: 20px 16px;
+      }
+    }
+
+    /* Mobile: 1 column */
+    @media (max-width: 420px) {
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .redirect-actions {
+        flex-direction: column;
+      }
+
+      .redirect-btn {
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 1.35rem;
+      }
+    }
+  </style>
 </head>
-<body style="width:100%">
-<h1>Chores form</h1>
-<table style="width:100%">
-  <tr>
-    <td style="width: 50%; scroll: auto;">
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeD3l3LHdIYdMEXOGpSTG2-dDgfWVDjs_IceQrNhXTR384uKA/viewform?embedded=true" width="640" height="855" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-    </td>
-    <td style="width: 50%; scroll: auto;">
-      <iframe src="view-chores.html" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-    </td>
-  </tr>
-</table>
+<body>
+  <main class="page-wrap">
+    <h1 style="text-align: center;">Welcome to Outils!</h1>
+    <p class="subtitle" style="text-align: center;">Choose an app to continue.</p>
+
+    <ul class="card-grid">
+      <li>
+        <a class="app-card" href="/stmts/index.html">
+          <h3>Account Dashboard</h3>
+          <p>Review statements, balances, and account activity.</p>
+        </a>
+      </li>
+      <li>
+        <a class="app-card" href="/gconsole/index.html">
+          <h3>Game Console</h3>
+          <p>Open a curated collection of browser-based games.</p>
+        </a>
+      </li>
+      <li>
+        <a class="app-card" href="/school/index.html">
+          <h3>School Activities</h3>
+          <p>Access educational pages for alphabets and tables.</p>
+        </a>
+      </li>
+      <li>
+        <a class="app-card" href="/pacman/index.html">
+          <h3>Pacman Game</h3>
+          <p>Play a quick arcade round in your browser.</p>
+        </a>
+      </li>
+      <li>
+        <a class="app-card" href="/chores/index.html">
+          <h3>Chores for Kids</h3>
+          <p>Help children learn responsibility through fun tasks.</p>
+        </a>
+      </li>
+    </ul>
+
+    <p id="redirect-note" class="redirect-note">
+      Account Dashboard loads automatically in 5 seconds.
+    </p>
+    <div id="redirect-actions" class="redirect-actions">
+      <a class="redirect-btn" href="/stmts/index.html">Open now</a>
+      <a class="redirect-btn" href="javascript:void(0);" onclick="window.skipRedirect()">Skip Auto Redirect</a>
+    </div>
+  </main>
+
+  <script>
+    var redirectTimeoutHandle = setTimeout(function() {
+      window.location.href = "/stmts/index.html";
+    }, 5000);
+
+    window.skipRedirect = function() {
+      clearTimeout(redirectTimeoutHandle);
+      var noteElement = document.getElementById("redirect-note");
+      var actionsElement = document.getElementById("redirect-actions");
+
+      if (noteElement) {
+        noteElement.style.display = "none";
+      }
+
+      if (actionsElement) {
+        actionsElement.style.display = "none";
+      }
+    };
+  </script>
 </body>
 </html>

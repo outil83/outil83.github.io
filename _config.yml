@@ -4,5 +4,7 @@ exclude:
   - node_modules/                         # Exclude entire directories
   - vendor/
   - .github/
+  - money-insight/                 # Exclude entire directories 
+  - .venv/
   - README.md                             # If you don't want the README rendered
 
