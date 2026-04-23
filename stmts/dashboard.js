@@ -20,8 +20,8 @@ let accessToken = '';
 let sheetUrl = '';
 // Time-series slicer state
 let slicer = {
-  granularity: 'year', // 'year'|'quarter'|'month'
-  periods: [], // array of period keys (e.g., '2023', '2023-Q1', '2023-01')
+  granularity: 'year', // 'year'|'financial_year'|'quarter'|'month'
+  periods: [], // array of period keys (e.g., '2023', 'FY2023', '2023-Q1', '2023-01')
   startIdx: 0,
   endIdx: 0
 };
@@ -233,7 +233,11 @@ function computePeriodsFromTransactions(transactions) {
     const d = parseTxnDate(txn.txn_date);
     if (!d) return;
     if (slicer.granularity === 'year') set.add(String(d.getFullYear()));
-    else if (slicer.granularity === 'quarter') {
+    else if (slicer.granularity === 'financial_year') {
+      // FY starts Apr 1; a date in Jan–Mar belongs to the previous FY year
+      const fyYear = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+      set.add(`FY${fyYear}`);
+    } else if (slicer.granularity === 'quarter') {
       const q = Math.floor(d.getMonth() / 3) + 1;
       set.add(`${d.getFullYear()}-Q${q}`);
     } else if (slicer.granularity === 'month') {
@@ -246,6 +250,7 @@ function computePeriodsFromTransactions(transactions) {
   arr.sort((a, b) => {
     const keyToNum = (k) => {
       if (slicer.granularity === 'year') return Number(k);
+      if (slicer.granularity === 'financial_year') return Number(k.slice(2)); // 'FY2023' → 2023
       if (slicer.granularity === 'quarter') {
         const [y, q] = k.split('-Q'); return Number(y) * 10 + Number(q);
       }
@@ -334,7 +339,10 @@ function filterTransactionsBySlicer(transactions) {
     if (!d) return false;
     let key;
     if (slicer.granularity === 'year') key = String(d.getFullYear());
-    else if (slicer.granularity === 'quarter') key = `${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`;
+    else if (slicer.granularity === 'financial_year') {
+      const fyYear = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+      key = `FY${fyYear}`;
+    } else if (slicer.granularity === 'quarter') key = `${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`;
     else {
       const m = String(d.getMonth()+1).padStart(2,'0'); key = `${d.getFullYear()}-${m}`;
     }
