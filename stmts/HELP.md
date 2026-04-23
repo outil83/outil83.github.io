@@ -15,6 +15,7 @@ Quick features summary
 - Automatically finds or creates a folder named `stmt-dashboard` in the authenticated user's Drive.
 - Finds or creates a Google Sheet named `account-transactions` in that folder and initializes header columns if creating it.
 - Reads transaction rows (A2:K) from the sheet and maps them into transactions used by the UI.
+- Time-series slicer with granularity options: **Yearly**, **Financial Year** (Apr 1 – Mar 31), **Quarterly**, **Monthly**.
 - Shows four widgets: Cashflow, Investment, Income, Expenses.
   - Cashflow shows totals for Income, Expense and Investment.
   - Investment/Income/Expenses widgets list category-wise totals (descending) and support scrolling.
