@@ -330,6 +330,146 @@ function parseTxnDate(s) {
   return null;
 }
 
+// Return the period key for a transaction based on the current slicer granularity
+function getTxnPeriodKey(txn) {
+  const d = parseTxnDate(txn.txn_date);
+  if (!d) return null;
+  if (slicer.granularity === 'year') return String(d.getFullYear());
+  if (slicer.granularity === 'financial_year') {
+    const fyYear = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+    return `FY${fyYear}`;
+  }
+  if (slicer.granularity === 'quarter') return `${d.getFullYear()}-Q${Math.floor(d.getMonth() / 3) + 1}`;
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  return `${d.getFullYear()}-${mo}`;
+}
+
+// Linear trend values for an array of numbers (least-squares regression)
+function computeLinearTrend(values) {
+  const n = values.length;
+  if (n === 0) return [];
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  values.forEach((y, x) => { sumX += x; sumY += y; sumXY += x * y; sumX2 += x * x; });
+  const denom = n * sumX2 - sumX * sumX;
+  if (denom === 0) return values.map(() => (n > 0 ? sumY / n : 0));
+  const slope = (n * sumXY - sumX * sumY) / denom;
+  const intercept = (sumY - slope * sumX) / n;
+  return values.map((_, x) => Math.round((slope * x + intercept) * 100) / 100);
+}
+
+// Render a combined bar+trendline chart into the given canvas element.
+// When filterCat is set, groups by sub_category (top 5); otherwise groups by category.
+function buildTrendChart(canvasEl, filteredTxns, filterCat) {
+  // Destroy any previous chart bound to this canvas
+  if (window._drilldownChart) {
+    window._drilldownChart.destroy();
+    window._drilldownChart = null;
+  }
+
+  // Determine X-axis periods from the current slicer range
+  const periods = slicer.periods.length > 0
+    ? slicer.periods.slice(slicer.startIdx, slicer.endIdx + 1)
+    : (() => {
+        const set = new Set();
+        filteredTxns.forEach(t => { const pk = getTxnPeriodKey(t); if (pk) set.add(pk); });
+        return [...set].sort();
+      })();
+
+  if (periods.length === 0 || filteredTxns.length === 0) {
+    const parent = canvasEl.parentElement;
+    if (parent) parent.innerHTML = '<div class="text-center text-muted py-5">No data available for chart.</div>';
+    return;
+  }
+
+  // Group key selector
+  const getGroupKey = filterCat
+    ? txn => txn.sub_category || '(none)'
+    : txn => txn.category || '(uncategorized)';
+
+  // Aggregate: groupKey → total, groupKey → periodKey → total
+  const groupTotals = new Map();
+  const groupPeriodMap = new Map();
+
+  filteredTxns.forEach(txn => {
+    const gk = getGroupKey(txn);
+    const pk = getTxnPeriodKey(txn);
+    if (!pk) return;
+    groupTotals.set(gk, (groupTotals.get(gk) || 0) + txn.txn_amount);
+    if (!groupPeriodMap.has(gk)) groupPeriodMap.set(gk, new Map());
+    const pm = groupPeriodMap.get(gk);
+    pm.set(pk, (pm.get(pk) || 0) + txn.txn_amount);
+  });
+
+  // Sort groups by total descending; limit to top 5 sub-categories when drilling in
+  let groups = [...groupTotals.entries()].sort((a, b) => b[1] - a[1]);
+  if (filterCat) groups = groups.slice(0, 5);
+
+  const palette = [
+    '#2196F3', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0',
+    '#00BCD4', '#FF5722', '#607D8B', '#795548', '#FFC107'
+  ];
+
+  const datasets = [];
+  groups.forEach(([gk], idx) => {
+    const color = palette[idx % palette.length];
+    const pm = groupPeriodMap.get(gk) || new Map();
+    const barData = periods.map(p => pm.get(p) || 0);
+    const trendData = computeLinearTrend(barData);
+
+    // Bar series
+    datasets.push({
+      type: 'bar',
+      label: gk,
+      data: barData,
+      backgroundColor: color + '99',
+      borderColor: color,
+      borderWidth: 1,
+      order: 2
+    });
+
+    // Trendline series (dashed line)
+    datasets.push({
+      type: 'line',
+      label: gk + ' \u2197',
+      data: trendData,
+      borderColor: color,
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderDash: [6, 3],
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+      order: 1
+    });
+  });
+
+  const fmtAmt = v => `\u20B9${Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  window._drilldownChart = new Chart(canvasEl, {
+    type: 'bar',
+    data: { labels: periods, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${fmtAmt(ctx.parsed.y)}`
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Period' } },
+        y: {
+          title: { display: true, text: 'Amount (\u20B9)' },
+          ticks: { callback: v => `\u20B9${Number(v).toLocaleString()}` }
+        }
+      }
+    }
+  });
+}
+
 function filterTransactionsBySlicer(transactions) {
   if (!slicer.periods || slicer.periods.length === 0) return transactions;
   const startKey = slicer.periods[slicer.startIdx];
@@ -686,6 +826,12 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
   window.lastDrillCat    = filterCat    || null;
   window.lastDrillSubCat = filterSubCat || null;
 
+  // Destroy any existing trend chart before rebuilding the DOM
+  if (window._drilldownChart) {
+    window._drilldownChart.destroy();
+    window._drilldownChart = null;
+  }
+
   if (!transactions) transactions = [];
 
   // Map display type → txn_type field value
@@ -742,6 +888,10 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
             </div>
           </div>
         </div>
+        <div class="btn-group btn-group-sm ms-1" role="group" aria-label="View toggle">
+          <button type="button" class="btn btn-outline-secondary active" id="drilldown-view-table" title="Table view"><span class="material-icons" style="font-size:16px;vertical-align:middle;">table_rows</span></button>
+          <button type="button" class="btn btn-outline-secondary" id="drilldown-view-chart" title="Trend chart"><span class="material-icons" style="font-size:16px;vertical-align:middle;">bar_chart</span></button>
+        </div>
       </div>
     </div>`;
 
@@ -763,7 +913,7 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
       </div>`;
   }
 
-  contentHtml += `<div style="max-height:400px;overflow-y:auto;">`;
+  contentHtml += `<div id="drilldown-table-view"><div style="max-height:400px;overflow-y:auto;">`;
   if (!isSmall) {
     contentHtml += `<table class="table table-bordered table-sm table-hover"><thead><tr>` +
       columns.map(col =>
@@ -776,11 +926,41 @@ function showDrilldown(type, transactions, filterCat, filterSubCat) {
   } else {
     contentHtml += `<div id="drilldown-body">` + renderCardsList(filteredTxns) + `</div>`;
   }
-  contentHtml += `</div>`;
+  contentHtml += `</div></div>`;
+  contentHtml += `<div id="drilldown-chart-view" style="display:none;"><div style="position:relative;height:440px;"><canvas id="drilldown-trend-canvas"></canvas></div></div>`;
 
   const section = document.getElementById('drilldown-section');
   section.innerHTML = contentHtml;
   section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // View toggle wiring
+  const tableViewBtn = document.getElementById('drilldown-view-table');
+  const chartViewBtn = document.getElementById('drilldown-view-chart');
+  const tableView    = document.getElementById('drilldown-table-view');
+  const chartView    = document.getElementById('drilldown-chart-view');
+  let chartBuilt = false;
+
+  if (tableViewBtn && chartViewBtn) {
+    tableViewBtn.addEventListener('click', function() {
+      tableViewBtn.classList.add('active');
+      chartViewBtn.classList.remove('active');
+      if (tableView) tableView.style.display = '';
+      if (chartView) chartView.style.display = 'none';
+    });
+    chartViewBtn.addEventListener('click', function() {
+      chartViewBtn.classList.add('active');
+      tableViewBtn.classList.remove('active');
+      if (tableView) tableView.style.display = 'none';
+      if (chartView) {
+        chartView.style.display = '';
+        if (!chartBuilt) {
+          const canvas = document.getElementById('drilldown-trend-canvas');
+          if (canvas) buildTrendChart(canvas, filteredTxns, filterCat);
+          chartBuilt = true;
+        }
+      }
+    });
+  }
 
   function compareDrilldownValues(a, b, col) {
     if (col === 'txn_amount') return b.txn_amount - a.txn_amount;
