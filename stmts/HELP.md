@@ -77,6 +77,18 @@ UI details and interactions
     - Expenses: `txn_date`, `category`, `sub_category`, `txn_amount`, `narration`
   - Each column header is clickable to sort by that column (amount sorts numerically, others sort lexicographically).
   - Above the table there are small text inputs per column to filter rows inline (case-insensitive substring match).
+  - A **Table / Chart** toggle button group in the top-right of the drilldown header switches between the table view and the trend chart view.
+
+Trend chart (`#drilldown-chart-view`):
+  - Click the chart icon button (bar_chart) to activate. Click the table icon to return to the table/card view.
+  - **X axis**: time periods derived from the current slicer granularity (Yearly / Financial Year / Quarterly / Monthly).
+  - **Y axis**: aggregated transaction amount in INR.
+  - **Grouping**:
+    - When no category filter is active: each category is a separate bar series.
+    - When a category filter is active (drill-in): the top 5 sub-categories become the bar series.
+  - Each series renders as grouped bars plus a dashed **linear trendline** computed via least-squares regression.
+  - Tooltips display INR-formatted amounts. Legend is shown at the top.
+  - Powered by **Chart.js 4** loaded from CDN (`chart.umd.min.js`).
 
 Limitations & known behaviors
 ----------------------------
